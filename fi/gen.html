@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Undangan Massal + WA</title>
+    <title>Generator Undangan Massal + Pesan</title>
     
     <style>
         /* --- CSS DASAR --- */
@@ -215,7 +215,7 @@ Terima kasih.
                 window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
             });
 
-            // 2. LOGIKA MASSAL (Sesuai Request)
+            // 2. LOGIKA MASSAL (FITUR UTAMA)
             const bulkInput = document.getElementById("bulkInput");
             const bulkListOutput = document.getElementById("bulkListOutput");
             const bulkResultText = document.getElementById("bulkResultText");
@@ -238,10 +238,13 @@ Terima kasih.
                         // 2. Buat Isi Pesan WA Lengkap
                         const waMessage = generateWhatsAppMessage(cleanName, linkUrl);
                         
-                        // 3. Buat Link Tombol WA (Encode seluruh pesan)
-                        const waLink = `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
+                        // 3. Encode Pesan untuk disimpan di tombol (Agar aman dari error tanda kutip)
+                        const safeMsgEncoded = encodeURIComponent(waMessage);
 
-                        // 4. Tambahkan ke HTML List (Card)
+                        // 4. Buat Link Tombol WA
+                        const waLink = `https://wa.me/?text=${safeMsgEncoded}`;
+
+                        // 5. Tambahkan ke HTML List (Card)
                         listHTML += `
                         <div class="result-card">
                             <div class="result-info">
@@ -252,19 +255,17 @@ Terima kasih.
                                 <a href="${waLink}" target="_blank" class="btn-success btn-sm" style="text-decoration:none; text-align:center; line-height:30px;">
                                     &#128241; Kirim WA
                                 </a>
-                                <button class="btn-copy-sm btn-sm" onclick="copyText('${linkUrl}')">
-                                    Salin Link
+                                <button class="btn-copy-sm btn-sm" onclick="copyFullMessage('${safeMsgEncoded}')">
+                                    Salin Pesan
                                 </button>
                             </div>
                         </div>`;
 
-                        // 5. Simpan untuk backup text area
                         rawLinks += `${linkUrl}\n`;
                         count++;
                     }
                 });
 
-                // Tampilkan Hasil
                 bulkListOutput.innerHTML = listHTML;
                 bulkResultText.value = rawLinks;
                 
@@ -273,16 +274,18 @@ Terima kasih.
                 }
             });
             
-            // Tombol Salin Semua (Backup)
+            // Backup Copy (Link Saja)
             document.getElementById("copyBulkBtn").addEventListener("click", function() {
                 if(!bulkResultText.value) return;
                 navigator.clipboard.writeText(bulkResultText.value).then(() => showAlert("Link mentah tersalin!"));
             });
         });
 
-        // Fungsi Global untuk tombol "Salin Link" kecil
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => showAlert("Link berhasil disalin!"));
+        // --- FUNGSI BARU: SALIN PESAN PENUH ---
+        // Menerima pesan yang sudah di-encode, men-decode-nya, lalu copy ke clipboard
+        function copyFullMessage(encodedMsg) {
+            const fullMessage = decodeURIComponent(encodedMsg);
+            navigator.clipboard.writeText(fullMessage).then(() => showAlert("Pesan lengkap berhasil disalin!"));
         }
     </script>
 </body>
