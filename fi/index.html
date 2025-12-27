@@ -955,8 +955,11 @@ QS. Ar-Rum 21</h1>				</div>
   <div id="toast-notification">Notifikasi</div>
 </div>
 
+
+
 <script>
-  // === GANTI URL INI DENGAN DEPLOYMENT BARU ANDA ===
+  // === CONFIGURATION ===
+  // Pastikan URL ini benar
   const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwkufCQ-t7YNTHpL6hh-2M4a9PD16jBDLSGZpub1TsmwOSsVvSj5rvYQDRv0TPw-fm_9A/exec'; 
   
   const AVATAR_COLORS = ['#E57373', '#F06292', '#BA68C8', '#9575CD', '#7986CB', '#64B5F6', '#4FC3F7', '#4DD0E1', '#4DB6AC', '#81C784', '#AED581', '#FFB74D', '#FF8A65', '#A1887F', '#90A4AE'];
@@ -993,7 +996,8 @@ QS. Ar-Rum 21</h1>				</div>
               list.innerHTML = '<div style="text-align:center; font-style:italic; color:#999; margin-top:20px;">Jadilah yang pertama memberikan ucapan.</div>';
           } else {
               data.forEach((item) => {
-                  // PASSING TIMESTAMP DARI GOOGLE SHEET
+                  // Debugging: Cek di Console browser apakah timestamp masuk
+                  // console.log("Data Row:", item); 
                   renderComment(item.nama, item.kehadiran, item.ucapan, item.timestamp, item.likes); 
               });
           }
@@ -1017,8 +1021,8 @@ QS. Ar-Rum 21</h1>				</div>
         showToast("Mohon gunakan bahasa yang sopan 🙏", "error"); return; 
     }
 
-    // Untuk komentar baru, gunakan waktu browser saat ini
-    const currentTime = new Date();
+    // Gunakan waktu browser saat ini untuk komentar baru
+    const currentTime = new Date(); 
     renderComment(nama, kehadiran, ucapan, currentTime, 0, true); 
     spawnFloatingHearts(10); 
     
@@ -1044,14 +1048,13 @@ QS. Ar-Rum 21</h1>				</div>
     }).then(response => { }).catch(error => { });
   });
 
-  // === FUNGSI RENDER UTAMA ===
   function renderComment(nama, kehadiran, ucapan, rawDate, likesCount = 0, isNew = false) {
     const list = document.getElementById('aes_comments_list');
     let badgeClass = kehadiran === 'Hadir' ? 'status-hadir' : 'status-tidak';
     let kehadiranText = kehadiran === 'Hadir' ? 'HADIR' : 'TIDAK HADIR';
     let inisial = nama.charAt(0).toUpperCase();
     
-    // FORMAT TANGGAL INDONESIA
+    // FORMAT TANGGAL LEBIH AMAN
     let dateDisplay = formatDateIndo(rawDate);
 
     let hash = 0;
@@ -1062,7 +1065,9 @@ QS. Ar-Rum 21</h1>				</div>
     let isLoved = localStorage.getItem(uniqueID) === 'true';
     let loveClass = isLoved ? 'loved' : '';
     let iconHeart = isLoved ? '❤️' : '🤍';
-    let currentDisplayLikes = likesCount;
+    
+    // Pastikan likesCount angka valid
+    let currentDisplayLikes = likesCount ? likesCount : 0;
 
     const htmlItem = `
       <div class="comment-card">
@@ -1090,11 +1095,16 @@ QS. Ar-Rum 21</h1>				</div>
     else { list.insertAdjacentHTML('beforeend', htmlItem); }
   }
 
-  // === HELPER: FORMAT TANGGAL CANTIK ===
+  // === PERBAIKAN FUNGSI FORMAT TANGGAL ===
   function formatDateIndo(dateString) {
-      if(!dateString) return '';
+      // Jika data kosong/null/undefined dari sheet
+      if(!dateString) return 'Baru saja'; 
+
       const date = new Date(dateString);
-      // Opsi: 27 Des, 14:30
+      
+      // Jika format tanggal invalid
+      if (isNaN(date.getTime())) return 'Baru saja';
+
       const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false };
       return date.toLocaleDateString('id-ID', options);
   }
@@ -1163,7 +1173,6 @@ QS. Ar-Rum 21</h1>				</div>
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
-
 
 
 	
@@ -1741,6 +1750,7 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 <!-- Mirrored from web.menujuacara.id/tema-25-foto/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 10 Dec 2025 00:21:14 GMT -->
 
 </html>
+
 
 
 
