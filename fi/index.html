@@ -843,10 +843,7 @@ QS. Ar-Rum 21</h1>				</div>
   }
 
   .rsvp-premium-section {
-    /* === UPDATE FONT DI SINI === */
-    /* Menggunakan 'inherit' agar font sama persis dengan tema website Anda */
     font-family: inherit; 
-    
     width: 100%;       
     max-width: 100%;   
     box-sizing: border-box; 
@@ -865,10 +862,10 @@ QS. Ar-Rum 21</h1>				</div>
     color: var(--primary-color);
     margin-bottom: 8px;
     font-size: 1.8rem;
-    font-weight: normal; /* Biasanya font judul lebih tipis/elegan */
+    font-weight: normal; 
     letter-spacing: 1px;
     text-transform: uppercase;
-    font-family: inherit; /* Pastikan judul juga ikut font tema */
+    font-family: inherit; 
   }
 
   .rsvp-subtitle {
@@ -889,13 +886,16 @@ QS. Ar-Rum 21</h1>				</div>
     border-radius: 8px;
     background: var(--bg-soft);
     font-size: 14px;
-    
-    /* Font input juga harus inherit agar seragam */
     font-family: inherit; 
-    
     color: var(--text-dark);
     box-sizing: border-box;
     transition: all 0.3s ease;
+  }
+
+  /* Mencegah resize horizontal yg merusak layout */
+  textarea.input-aesthetic {
+    resize: vertical; 
+    min-height: 60px;
   }
 
   .input-aesthetic:focus {
@@ -917,10 +917,7 @@ QS. Ar-Rum 21</h1>				</div>
     letter-spacing: 2px;
     text-transform: uppercase;
     font-weight: bold;
-    
-    /* Font tombol ikut tema */
     font-family: inherit; 
-    
     transition: all 0.3s ease;
     margin-top: 10px;
   }
@@ -990,8 +987,6 @@ QS. Ar-Rum 21</h1>				</div>
     border-left: 2px solid #eee;
     padding-left: 10px;
     font-family: inherit;
-
-	  /* === PERBAIKAN DI SINI === */
     text-align: left !important; /* Paksa rata kiri */
   }
   .comment-date { display: block; font-size: 10px; color: #bbb; margin-top: 8px; text-align: right; font-family: inherit; }
@@ -1041,7 +1036,7 @@ QS. Ar-Rum 21</h1>				</div>
     </div>
     
     <div class="form-group">
-      <textarea id="aes_ucapan" class="input-aesthetic" rows="2" placeholder="Tuliskan ucapan & doa Anda di sini..."></textarea>
+      <textarea id="aes_ucapan" class="input-aesthetic" rows="3" placeholder="Tuliskan ucapan & doa Anda di sini..."></textarea>
     </div>
     
     <button type="submit" class="btn-aesthetic" id="aes_btn">Kirim Konfirmasi</button>
@@ -1053,7 +1048,7 @@ QS. Ar-Rum 21</h1>				</div>
 
 <script>
   // === CONFIGURATION ===
-  // ISI URL GOOGLE SCRIPT ANDA DI SINI
+  // URL Script Anda
   const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwcGIne0JywTGfBzOtf6H5F67UjbZeiQfXRDvQqNwrAOdL8ua6GEZxbS8iqX8aHslL5/exec'; 
 
   document.addEventListener("DOMContentLoaded", function() {
@@ -1116,7 +1111,7 @@ QS. Ar-Rum 21</h1>				</div>
     showToast("Terima kasih atas ucapannya!", "success");
     document.getElementById('aestheticForm').reset();
     
-    // Auto-fill nama lagi jika user mau kirim ulang (opsional)
+    // Auto-fill nama lagi (Opsional, uncomment jika perlu)
     // autoFillName();
 
     const originalText = btn.innerText;
@@ -1146,6 +1141,9 @@ QS. Ar-Rum 21</h1>				</div>
     let kehadiranText = kehadiran === 'Hadir' ? 'HADIR' : 'TIDAK HADIR';
     let inisial = nama.charAt(0).toUpperCase();
 
+    // Logic Tampilan Tanggal: Hanya muncul jika isNew = true
+    let dateHtml = isNew ? '<small class="comment-date">Baru saja</small>' : '';
+
     const htmlItem = `
       <div class="comment-card">
         <div class="avatar-circle">${inisial}</div>
@@ -1155,7 +1153,7 @@ QS. Ar-Rum 21</h1>				</div>
             <span class="status-badge ${badgeClass}">${kehadiranText}</span>
           </div>
           <div class="comment-message">${escapeHtml(ucapan)}</div>
-          <small class="comment-date">${isNew ? 'Baru saja' : ''}</small>
+          ${dateHtml}
         </div>
       </div>
     `;
@@ -1167,7 +1165,6 @@ QS. Ar-Rum 21</h1>				</div>
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
-
 
 
 
@@ -1743,6 +1740,7 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 <!-- Mirrored from web.menujuacara.id/tema-25-foto/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 10 Dec 2025 00:21:14 GMT -->
 
 </html>
+
 
 
 
