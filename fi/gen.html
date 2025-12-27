@@ -275,7 +275,7 @@
 
             document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
                 const rawText = bulkInput.value;
-                if (!rawText.trim()) { showAlert("Paste daftar nama dulu!"); return; }
+                if (!rawText.trim()) { showAlert("Input daftar nama dulu!"); return; }
 
                 const names = rawText.split('\n');
                 let listHTML = "";
