@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Undangan Massal + WA</title>
+    
+    <style>
+        /* --- CSS DASAR --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; color: #333;
+        }
+        .container {
+            background: #ffffff; padding: 30px; border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            width: 100%; max-width: 600px; text-align: center;
+            box-sizing: border-box; margin-top: 20px;
+        }
+        h2 { margin-top: 0; margin-bottom: 20px; color: #222; }
+
+        /* --- TAB NAVIGATION --- */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab-btn {
+            flex: 1; padding: 12px; cursor: pointer;
+            background: none; border: none; font-weight: 600; color: #888;
+            transition: all 0.3s;
+        }
+        .tab-btn.active { color: #007bff; border-bottom: 2px solid #007bff; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+
+        /* --- FORM ELEMENTS --- */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        
+        input[type="text"], textarea {
+            width: 100%; padding: 12px 15px; font-size: 14px;
+            border: 1px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; font-family: inherit;
+        }
+        textarea#bulkInput { height: 100px; }
+
+        /* --- TOMBOL --- */
+        button {
+            width: 100%; padding: 12px 20px; font-size: 15px; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; margin-bottom: 10px; color: white;
+        }
+        .btn-primary { background-color: #007bff; }
+        .btn-primary:hover { background-color: #0056b3; }
+        
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
+        .btn-success { background-color: #25D366; }
+        .btn-success:hover { background-color: #1EAE57; }
+
+        /* --- LIST HASIL (CARD STYLE) --- */
+        #bulkListOutput {
+            margin-top: 20px; text-align: left;
+            max-height: 400px; overflow-y: auto; /* Scroll jika terlalu panjang */
+            border: 1px solid #eee; padding: 10px; border-radius: 8px;
+        }
+        
+        .result-card {
+            background: #fff; border: 1px solid #e0e0e0;
+            border-radius: 8px; padding: 15px; margin-bottom: 10px;
+            display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .result-info strong { color: #333; font-size: 1.1em; display: block; }
+        .result-info small { color: #007bff; word-break: break-all; }
+        
+        .action-row { display: flex; gap: 10px; }
+        .btn-sm { padding: 8px 15px; font-size: 13px; margin-bottom: 0; flex: 1; }
+        
+        /* Tombol Copy Kecil (Abu) */
+        .btn-copy-sm { background-color: #f1f3f5; color: #333; border: 1px solid #ddd; }
+        .btn-copy-sm:hover { background-color: #e9ecef; }
+
+        /* --- CUSTOM ALERT (Estetis) --- */
+        .aesthetic-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .aesthetic-alert-overlay.active { opacity: 1; visibility: visible; }
+        .aesthetic-alert-box {
+            background: white; padding: 25px; border-radius: 20px; width: 80%; max-width: 320px;
+            text-align: center; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .aesthetic-alert-overlay.active .aesthetic-alert-box { transform: scale(1); }
+        .alert-btn { background: #007bff; color: white; padding: 10px 25px; border-radius: 50px; margin-top: 15px; display: inline-block; width: auto; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Generator Undangan</h2>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('single')">Satuan</button>
+            <button class="tab-btn" onclick="switchTab('bulk')">Massal (Banyak)</button>
+        </div>
+
+        <div id="tab-single" class="tab-content active">
+            <div class="form-group">
+                <label>Nama Tamu:</label>
+                <input type="text" id="namaInput" placeholder="Contoh: Afnan Al Fatih">
+            </div>
+            <button class="btn-primary" id="buatLinkBtn">Buat Link</button>
+            <div id="hasilLink" style="margin: 15px 0; padding:10px; background:#f8f9fa; border-radius:5px; word-break:break-all;">Link muncul di sini...</div>
+            <button class="btn-success" id="kirimWaBtn">Kirim WA Langsung</button>
+        </div>
+
+        <div id="tab-bulk" class="tab-content">
+            <div class="form-group">
+                <label>Paste Daftar Nama (Satu nama per baris):</label>
+                <textarea id="bulkInput" placeholder="Budi Santoso&#10;Siti Aminah&#10;Joko Widodo"></textarea>
+            </div>
+            <button class="btn-primary" id="bulkGenerateBtn">Generate Daftar Undangan</button>
+            
+            <div id="bulkListOutput">
+                <p style="text-align:center; color:#999;">Hasil akan muncul di sini...</p>
+            </div>
+            
+            <div style="margin-top:20px;">
+                <label style="font-size:12px;">Link Mentah (Untuk Excel):</label>
+                <textarea id="bulkResultText" readonly style="height:60px; font-size:11px; color:#777;"></textarea>
+                <button class="btn-secondary btn-sm" id="copyBulkBtn" style="width:100%; margin-top:5px;">Salin Semua Link Mentah</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert" class="aesthetic-alert-overlay">
+        <div class="aesthetic-alert-box">
+            <h3 style="margin:0 0 10px;">Notifikasi</h3>
+            <p id="alert-msg" style="color:#666;">Pesan</p>
+            <button class="alert-btn" onclick="document.getElementById('custom-alert').classList.remove('active')">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURASI ---
+        const baseURL = "https://fitri-ihsan.github.io/fi/?";
+
+        // --- FUNGSI UTAMA: TEMPLATE PESAN WA ---
+        function generateWhatsAppMessage(namaAsli, linkLengkap) {
+            return `Kepada Yth.
+Bapak/Ibu/Saudara(i)
+*${namaAsli}*
+--------------------
+
+*Assalamualaikum Warahmatullahi Wabarakatuh*
+
+Tanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.
+
+*Nurfitriani & Syukur Al Ihsan*
+
+Berikut Link Undangan kami:
+${linkLengkap}
+
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.
+Terima kasih.
+
+*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
+        }
+
+        // --- FUNGSI TAB ---
+        function switchTab(mode) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if(mode === 'single') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('tab-single').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('tab-bulk').classList.add('active');
+            }
+        }
+
+        // --- FUNGSI ALERT ---
+        function showAlert(msg) {
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').classList.add('active');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // 1. LOGIKA SATUAN
+            const namaInput = document.getElementById("namaInput");
+            const hasilLink = document.getElementById("hasilLink");
+
+            document.getElementById("buatLinkBtn").addEventListener("click", function() {
+                const nama = namaInput.value.trim();
+                if (!nama) { showAlert("Masukkan nama tamu dulu!"); return; }
+                const link = baseURL + encodeURIComponent(nama).replace(/%20/g, '+');
+                hasilLink.textContent = link;
+            });
+
+            document.getElementById("kirimWaBtn").addEventListener("click", function() {
+                const nama = namaInput.value.trim();
+                const link = hasilLink.textContent;
+                if (!nama || link.includes("Link muncul")) { showAlert("Buat link dulu!"); return; }
+                const msg = generateWhatsAppMessage(nama, link);
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+            });
+
+            // 2. LOGIKA MASSAL (Sesuai Request)
+            const bulkInput = document.getElementById("bulkInput");
+            const bulkListOutput = document.getElementById("bulkListOutput");
+            const bulkResultText = document.getElementById("bulkResultText");
+
+            document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
+                const rawText = bulkInput.value;
+                if (!rawText.trim()) { showAlert("Paste daftar nama dulu!"); return; }
+
+                const names = rawText.split('\n');
+                let listHTML = "";
+                let rawLinks = "";
+                let count = 0;
+
+                names.forEach(name => {
+                    const cleanName = name.trim();
+                    if (cleanName) {
+                        // 1. Buat Link Undangan
+                        const linkUrl = baseURL + encodeURIComponent(cleanName).replace(/%20/g, '+');
+                        
+                        // 2. Buat Isi Pesan WA Lengkap
+                        const waMessage = generateWhatsAppMessage(cleanName, linkUrl);
+                        
+                        // 3. Buat Link Tombol WA (Encode seluruh pesan)
+                        const waLink = `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
+
+                        // 4. Tambahkan ke HTML List (Card)
+                        listHTML += `
+                        <div class="result-card">
+                            <div class="result-info">
+                                <strong>${cleanName}</strong>
+                                <small>${linkUrl}</small>
+                            </div>
+                            <div class="action-row">
+                                <a href="${waLink}" target="_blank" class="btn-success btn-sm" style="text-decoration:none; text-align:center; line-height:30px;">
+                                    &#128241; Kirim WA
+                                </a>
+                                <button class="btn-copy-sm btn-sm" onclick="copyText('${linkUrl}')">
+                                    Salin Link
+                                </button>
+                            </div>
+                        </div>`;
+
+                        // 5. Simpan untuk backup text area
+                        rawLinks += `${linkUrl}\n`;
+                        count++;
+                    }
+                });
+
+                // Tampilkan Hasil
+                bulkListOutput.innerHTML = listHTML;
+                bulkResultText.value = rawLinks;
+                
+                if (count > 0) {
+                    showAlert(`Berhasil membuat ${count} undangan!`);
+                }
+            });
+            
+            // Tombol Salin Semua (Backup)
+            document.getElementById("copyBulkBtn").addEventListener("click", function() {
+                if(!bulkResultText.value) return;
+                navigator.clipboard.writeText(bulkResultText.value).then(() => showAlert("Link mentah tersalin!"));
+            });
+        });
+
+        // Fungsi Global untuk tombol "Salin Link" kecil
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => showAlert("Link berhasil disalin!"));
+        }
+    </script>
+</body>
+</html>
