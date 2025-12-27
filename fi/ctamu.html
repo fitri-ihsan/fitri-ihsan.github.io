@@ -143,11 +143,11 @@
 <body>
 
     <div class="container">
-        <h2>mks-Invitation <br>Generate Tamu Undangan</h2>
+        <h2>Fitri-Ihsan Invitation <br>Generate Tamu Undangan</h2>
 
         <div class="form-group">
             <label for="namaInput">Masukkan Nama Tamu:</label>
-            <input type="text" id="namaInput" placeholder="Contoh: Darmy Alfian">
+            <input type="text" id="namaInput" placeholder="Contoh: Afnan Al Fatih">
         </div>
 
         <button id="buatLinkBtn">Buat Undangan</button>
@@ -158,7 +158,7 @@
         
         <p class="separator">atau</p>
         
-        <button id="kirimWaBtn">Kirim Undangan via WhatsApp</button>
+        <button id="kirimWaBtn">Langsung Kirim via WhatsApp</button>
     </div>
 
     <script>
@@ -172,7 +172,7 @@
             const copyMessageBtn = document.getElementById("copyMessageBtn"); // Elemen baru
             const kirimWaBtn = document.getElementById("kirimWaBtn");
             
-            const baseURL = "https://mks-invit.github.io/darmy-alfian/?to=";
+            const baseURL = "https://fitri-ihsan.github.io/fi/?";
 
             // FUNGSI UTAMA: Membuat Template Pesan WhatsApp
             function generateWhatsAppMessage(namaAsli, linkLengkap) {
@@ -185,6 +185,8 @@ Bapak/Ibu/Saudara(i)
 
 Tanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.
 
+*Nurfitriani & Syukur Al Ihsan*
+
 Berikut Link Undangan Perikahan kami:
 
 ${linkLengkap}
@@ -195,7 +197,7 @@ Terima kasih
 *Wassalamualaikum Warahmatullahi Wabarakatuh*
 
 Hormat Kami,
-Darmi & Alfian`;
+Fitri & Ihsan`;
             }
 
             // 1. Fungsionalitas Tombol "Buat Undangan"
