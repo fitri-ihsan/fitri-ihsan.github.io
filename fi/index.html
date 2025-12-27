@@ -829,345 +829,176 @@ QS. Ar-Rum 21</h1>				</div>
 
 
 
+
 <style>
-  /* --- 1. CONFIG UTAMA & FONT --- */
+  /* --- CONFIG & STYLE TETAP SAMA (CLEAN VERSION) --- */
   :root {
-    --primary-color: #A88B64; /* Warna Emas */
+    --primary-color: #A88B64;
     --text-dark: #2c3e50;
     --text-light: #666;
-    --bg-soft: #fcfbf9;
-    --white: #ffffff;
+    --bg-card: #ffffff;
+    --bg-input: #fcfbf9;
     --radius: 12px;
   }
 
   .rsvp-premium-section {
-    font-family: inherit; 
-    width: 100%;       
-    max-width: 100%;   
-    box-sizing: border-box; 
-    margin: 20px 0;    
-    padding: 30px 25px;
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    position: relative;
-    z-index: 9999 !important;
-    overflow: hidden;
+    font-family: inherit; width: 100%; max-width: 100%; box-sizing: border-box; 
+    margin: 20px 0; padding: 30px 25px;
+    background: var(--bg-card); border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eaeaea;
+    position: relative; z-index: 10; overflow: hidden;
   }
   
-  .rsvp-title {
-    text-align: center;
-    color: var(--primary-color);
-    margin-bottom: 8px;
-    font-size: 1.8rem;
-    font-weight: normal; 
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-family: inherit; 
-  }
+  .comments-wrapper::-webkit-scrollbar { width: 5px; }
+  .comments-wrapper::-webkit-scrollbar-track { background: #f9f9f9; }
+  .comments-wrapper::-webkit-scrollbar-thumb { background-color: #d4c5b0; border-radius: 10px; }
 
-  .rsvp-subtitle {
-    text-align: center;
-    color: var(--text-light);
-    font-size: 0.9rem;
-    margin-bottom: 30px;
-    font-style: italic;
-    font-family: inherit;
-  }
+  .rsvp-title { text-align: center; color: var(--primary-color); margin-bottom: 8px; font-size: 1.8rem; text-transform: uppercase; }
+  .rsvp-subtitle { text-align: center; color: var(--text-light); font-size: 0.9rem; margin-bottom: 30px; font-style: italic; }
 
-  .form-group { margin-bottom: 20px; position: relative; }
-
+  .form-group { margin-bottom: 20px; }
   .input-aesthetic {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background: var(--bg-soft);
-    font-size: 14px;
-    font-family: inherit; 
-    color: var(--text-dark);
-    box-sizing: border-box;
-    transition: all 0.3s ease;
+    width: 100%; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;
+    background: var(--bg-input); font-size: 14px; font-family: inherit; color: var(--text-dark);
+    box-sizing: border-box; transition: all 0.3s ease;
   }
-
-  textarea.input-aesthetic {
-    resize: vertical; 
-    min-height: 60px;
-  }
-
-  .input-aesthetic:focus {
-    outline: none;
-    background: #fff;
-    border-color: var(--primary-color);
-    box-shadow: 0 5px 15px rgba(168, 139, 100, 0.1);
-  }
-
+  .input-aesthetic:focus { outline: none; background: #fff; border-color: var(--primary-color); }
+  
   .btn-aesthetic {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--text-dark);
-    color: var(--primary-color);
-    border: 1px solid var(--text-dark);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-family: inherit; 
-    transition: all 0.3s ease;
-    margin-top: 10px;
+    width: 100%; padding: 15px; background-color: var(--text-dark); color: var(--primary-color);
+    border: 1px solid var(--text-dark); border-radius: 8px; cursor: pointer; font-size: 14px;
+    letter-spacing: 2px; text-transform: uppercase; font-weight: bold; transition: all 0.3s ease; margin-top: 10px;
   }
-
-  .btn-aesthetic:hover {
-    background-color: var(--white);
-    color: var(--text-dark);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-
+  .btn-aesthetic:hover { background-color: #fff; color: var(--text-dark); }
   .btn-aesthetic:disabled { opacity: 0.7; cursor: not-allowed; }
 
-  /* --- AREA KOMENTAR SCROLLABLE --- */
+  #already-rsvp-message { display: none; text-align: center; padding: 40px 20px; background: #fdfdfd; border-radius: 12px; border: 1px dashed #A88B64; }
+  .success-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+
   .comments-wrapper {
-    margin-top: 40px;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
-    max-height: 230px; 
-    overflow-y: auto; 
-    scrollbar-width: thin; 
-    scrollbar-color: var(--primary-color) #f0f0f0;
-    margin-bottom: 15px; /* Jarak ke statistik */
+    margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;
+    max-height: 300px; overflow-y: auto; scrollbar-width: thin; padding-right: 5px;
   }
 
-  .comments-wrapper::-webkit-scrollbar { width: 6px; }
-  .comments-wrapper::-webkit-scrollbar-track { background: #f9f9f9; border-radius: 10px; }
-  .comments-wrapper::-webkit-scrollbar-thumb { background-color: #d4c5b0; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
-  .comments-wrapper::-webkit-scrollbar-thumb:hover { background-color: var(--primary-color); }
+  .comment-card { display: flex; gap: 15px; margin-bottom: 20px; animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .avatar-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff; flex-shrink: 0; }
 
-  .comment-card {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding-right: 5px;
-    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .avatar-circle {
-    width: 45px;
-    height: 45px;
-    background-color: var(--bg-soft);
-    border: 1px solid #eee;
-    color: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    flex-shrink: 0;
-    font-family: inherit;
-  }
-
-  /* WARNA SELANG-SELING */
-  .comment-body { 
-    flex-grow: 1; 
-    padding: 12px 15px; 
-    border-radius: 0 12px 12px 12px; 
-    position: relative;
-  }
+  .comment-body { flex-grow: 1; padding: 12px 15px; border-radius: 0 12px 12px 12px; position: relative; }
   .comment-card:nth-child(odd) .comment-body { background-color: #ffffff; border: 1px solid #eee; }
   .comment-card:nth-child(even) .comment-body { background-color: #fbf9f4; border: 1px solid #f2efe6; }
 
   .comment-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .comment-user { font-weight: bold; font-size: 15px; color: var(--text-dark); font-family: inherit; }
-  
-  .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; font-family: inherit; }
+  .comment-user { font-weight: bold; font-size: 15px; color: var(--text-dark); }
+  .status-badge { font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
   .status-hadir { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
   .status-tidak { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
-  .comment-message {
-    font-size: 14px;
-    color: var(--text-light);
-    line-height: 1.6;
-    margin-top: 5px;
-    white-space: pre-wrap;
-    border-left: none; 
-    padding-left: 0;
-    font-family: inherit;
-    text-align: left !important; 
-  }
-  .comment-date { display: block; font-size: 10px; color: #bbb; margin-top: 8px; text-align: right; font-family: inherit; }
+  .comment-message { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-top: 5px; white-space: pre-wrap; text-align: left; }
+  
+  .comment-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+  .comment-date { font-size: 10px; color: #bbb; } /* Style tanggal */
 
-  /* --- STATISTIK SUMMARY --- */
-  .stats-footer {
-    border-top: 1px dashed #ddd; /* Garis pemisah putus-putus */
-    padding-top: 15px;
-    margin-top: 0;
-    display: flex;
-    justify-content: center; /* Rata tengah */
-    gap: 30px; /* Jarak antar statistik */
-    font-family: inherit;
-  }
-
-  .stat-item {
-    text-align: center;
-  }
-
-  .stat-count {
-    display: block;
-    font-size: 1.4rem;
-    font-weight: bold;
-    line-height: 1;
-    margin-bottom: 3px;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  /* Warna Statistik */
-  #stat_count_hadir { color: #2e7d32; } /* Hijau */
-  #stat_count_tidak { color: #c62828; } /* Merah */
-
-  /* --- TOAST NOTIFICATION --- */
-  #toast-notification {
-    visibility: hidden;
-    min-width: 250px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 50px;
-    padding: 12px 25px;
-    position: absolute;
-    z-index: 10001;
-    left: 50%;
-    bottom: 30px;
-    transform: translateX(-50%);
-    font-size: 14px;
-    opacity: 0;
-    transition: opacity 0.5s, bottom 0.5s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    font-family: inherit;
-  }
-  #toast-notification.show { visibility: visible; opacity: 1; bottom: 50px; }
-  #toast-notification.error { background-color: #d32f2f; }
-  #toast-notification.success { background-color: #388E3C; }
-
+  .btn-love { background: none; border: none; cursor: pointer; font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; transition: all 0.2s; }
+  .btn-love:hover { background: #f5f5f5; }
+  .btn-love.loved { color: #e91e63; background: #fce4ec; } 
+  
+  #hearts-container { position: fixed; bottom: 0; right: 20px; width: 100px; height: 100vh; pointer-events: none; z-index: 99999; overflow: hidden; }
+  .floating-heart { position: absolute; bottom: -20px; font-size: 24px; animation: floatUp 3s linear forwards; opacity: 0; }
+  
+  @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-80vh) scale(1.5); opacity: 0; } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .stats-footer { border-top: 1px dashed #ddd; padding-top: 15px; display: flex; justify-content: center; gap: 30px; }
+  .stat-count { display: block; font-size: 1.4rem; font-weight: bold; line-height: 1; margin-bottom: 3px; }
+  .stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  #stat_count_hadir { color: #2e7d32; } #stat_count_tidak { color: #c62828; }
+
+  #toast-notification { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 12px 25px; position: absolute; z-index: 10001; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.5s, bottom 0.5s; }
+  #toast-notification.show { visibility: visible; opacity: 1; bottom: 50px; }
+  #toast-notification.success { background-color: #388E3C; } #toast-notification.error { background-color: #d32f2f; }
 </style>
+
+<div id="hearts-container"></div>
 
 <div class="rsvp-premium-section" id="rsvp-section">
   <div class="rsvp-title">RSVP & Wishes</div>
   <div class="rsvp-subtitle">Mohon konfirmasi kehadiran dan berikan doa restu</div>
   
-  <form id="aestheticForm">
-    <div class="form-group">
-      <input type="text" id="aes_nama" class="input-aesthetic" placeholder="Nama Lengkap" autocomplete="off">
-    </div>
-    
-    <div class="form-group">
-      <select id="aes_hadir" class="input-aesthetic">
-        <option value="" disabled selected>Apakah Anda akan hadir?</option>
-        <option value="Hadir">Insya Allah, Hadir</option>
-        <option value="Tidak Hadir">Mohon Maaf, Tidak Sempat Hadir</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <textarea id="aes_ucapan" class="input-aesthetic" rows="3" placeholder="Tuliskan ucapan & doa Anda di sini..."></textarea>
-    </div>
-    
-    <button type="submit" class="btn-aesthetic" id="aes_btn">Kirim Konfirmasi</button>
-  </form>
+  <div id="form-container">
+      <form id="aestheticForm">
+        <div class="form-group"><input type="text" id="aes_nama" class="input-aesthetic" placeholder="Nama Lengkap" autocomplete="off"></div>
+        <div class="form-group">
+          <select id="aes_hadir" class="input-aesthetic">
+            <option value="" disabled selected>Apakah Anda akan hadir?</option>
+            <option value="Hadir">Insya Allah, Hadir</option>
+            <option value="Tidak Hadir">Mohon Maaf, Tidak Sempat Hadir</option>
+          </select>
+        </div>
+        <div class="form-group"><textarea id="aes_ucapan" class="input-aesthetic" rows="3" placeholder="Tuliskan ucapan & doa Anda di sini..."></textarea></div>
+        <button type="submit" class="btn-aesthetic" id="aes_btn">Kirim Konfirmasi</button>
+      </form>
+  </div>
+
+  <div id="already-rsvp-message">
+      <span class="success-icon">✨</span>
+      <h3>Terima Kasih!</h3>
+      <p style="font-size:14px; color:#666; margin-top:5px;">Konfirmasi Anda telah kami terima.<br>Sampai jumpa di hari bahagia kami.</p>
+  </div>
 
   <div class="comments-wrapper" id="aes_comments_list"></div>
 
   <div class="stats-footer">
-    <div class="stat-item">
-        <span class="stat-count" id="stat_count_hadir">0</span>
-        <span class="stat-label">Hadir</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-count" id="stat_count_tidak">0</span>
-        <span class="stat-label">Berhalangan</span>
-    </div>
+    <div class="stat-item"><span class="stat-count" id="stat_count_hadir">0</span><span class="stat-label">Hadir</span></div>
+    <div class="stat-item"><span class="stat-count" id="stat_count_tidak">0</span><span class="stat-label">Berhalangan</span></div>
   </div>
 
-  <div id="toast-notification">Pesan Notifikasi</div>
+  <div id="toast-notification">Notifikasi</div>
 </div>
 
 <script>
-  // === CONFIGURATION ===
-  const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwcGIne0JywTGfBzOtf6H5F67UjbZeiQfXRDvQqNwrAOdL8ua6GEZxbS8iqX8aHslL5/exec'; 
+  // === GANTI URL INI DENGAN DEPLOYMENT BARU ANDA ===
+  const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwkufCQ-t7YNTHpL6hh-2M4a9PD16jBDLSGZpub1TsmwOSsVvSj5rvYQDRv0TPw-fm_9A/exec'; 
+  
+  const AVATAR_COLORS = ['#E57373', '#F06292', '#BA68C8', '#9575CD', '#7986CB', '#64B5F6', '#4FC3F7', '#4DD0E1', '#4DB6AC', '#81C784', '#AED581', '#FFB74D', '#FF8A65', '#A1887F', '#90A4AE'];
+  const BAD_WORDS = ['anjing', 'babi', 'bodoh', 'tolol', 'bangsat', 'jancok', 'kontol', 'memek', 'sex', 'slot', 'gacor'];
 
   document.addEventListener("DOMContentLoaded", function() {
+      checkLocalStorage(); 
       loadCommentsAesthetic();
       autoFillName(); 
   });
 
-  function autoFillName() {
-      var queryString = window.location.search;
-      if (queryString) {
-          var rawName = queryString.substring(1);
-          var cleanName = decodeURIComponent(rawName.replace(/\+/g, ' '));
-          var inputNama = document.getElementById('aes_nama');
-          if(inputNama) {
-              inputNama.value = cleanName;
-          }
+  function checkLocalStorage() {
+      if (localStorage.getItem('hasRSVP_Wedding')) {
+          document.getElementById('form-container').style.display = 'none';
+          document.getElementById('already-rsvp-message').style.display = 'block';
       }
-  }
-
-  function showToast(message, type = 'normal') {
-      const toast = document.getElementById("toast-notification");
-      toast.innerText = message;
-      toast.className = ''; 
-      if(type === 'error') toast.classList.add('error');
-      if(type === 'success') toast.classList.add('success');
-      toast.classList.add("show");
-      setTimeout(function(){ toast.classList.remove("show"); }, 3000);
   }
 
   function loadCommentsAesthetic() {
       const list = document.getElementById('aes_comments_list');
-      
-      // Element Statistik
-      const countHadirEl = document.getElementById('stat_count_hadir');
-      const countTidakEl = document.getElementById('stat_count_tidak');
-
       list.innerHTML = '<div style="text-align:center; font-size:12px; color:#999; margin-top:20px;">Memuat doa & ucapan...</div>';
 
       fetch(SHEET_API_URL)
       .then(response => response.json())
       .then(data => {
           list.innerHTML = ''; 
+          let countHadir = data.filter(item => item.kehadiran === 'Hadir').length;
+          let countTidak = data.filter(item => item.kehadiran !== 'Hadir').length;
           
-          let countHadir = 0;
-          let countTidak = 0;
+          animateValue("stat_count_hadir", 0, countHadir, 1500);
+          animateValue("stat_count_tidak", 0, countTidak, 1500);
 
           if(data.length === 0) {
               list.innerHTML = '<div style="text-align:center; font-style:italic; color:#999; margin-top:20px;">Jadilah yang pertama memberikan ucapan.</div>';
+          } else {
+              data.forEach((item) => {
+                  // PASSING TIMESTAMP DARI GOOGLE SHEET
+                  renderComment(item.nama, item.kehadiran, item.ucapan, item.timestamp, item.likes); 
+              });
           }
-          
-          data.forEach(item => {
-              // Hitung Statistik
-              if(item.kehadiran === 'Hadir') {
-                  countHadir++;
-              } else {
-                  countTidak++;
-              }
-
-              // Render Komentar
-              renderComment(item.nama, item.kehadiran, item.ucapan, false); 
-          });
-
-          // Update Tampilan Angka Statistik
-          countHadirEl.innerText = countHadir;
-          countTidakEl.innerText = countTidak;
       })
-      .catch(error => { console.log("Load error"); list.innerHTML = ''; });
+      .catch(error => { console.log("Load error", error); list.innerHTML = ''; });
   }
 
   document.getElementById('aestheticForm').addEventListener('submit', function(e) {
@@ -1181,62 +1012,150 @@ QS. Ar-Rum 21</h1>				</div>
     if(!kehadiran) { showToast("Silakan pilih Kehadiran", "error"); return; }
     if(!ucapan) { showToast("Silakan tulis Ucapan", "error"); return; }
 
-    renderComment(nama, kehadiran, ucapan, true);
-    
-    // Update Statistik Realtime (Optimistic UI)
-    const countHadirEl = document.getElementById('stat_count_hadir');
-    const countTidakEl = document.getElementById('stat_count_tidak');
-    if(kehadiran === 'Hadir') {
-        countHadirEl.innerText = parseInt(countHadirEl.innerText) + 1;
-    } else {
-        countTidakEl.innerText = parseInt(countTidakEl.innerText) + 1;
+    const combinedText = (nama + " " + ucapan).toLowerCase();
+    if(BAD_WORDS.some(word => combinedText.includes(word))) {
+        showToast("Mohon gunakan bahasa yang sopan 🙏", "error"); return; 
     }
+
+    // Untuk komentar baru, gunakan waktu browser saat ini
+    const currentTime = new Date();
+    renderComment(nama, kehadiran, ucapan, currentTime, 0, true); 
+    spawnFloatingHearts(10); 
+    
+    localStorage.setItem('hasRSVP_Wedding', 'true');
+    const countEl = kehadiran === 'Hadir' ? document.getElementById('stat_count_hadir') : document.getElementById('stat_count_tidak');
+    countEl.innerText = parseInt(countEl.innerText) + 1;
 
     showToast("Terima kasih atas ucapannya!", "success");
     document.getElementById('aestheticForm').reset();
     
-    const originalText = btn.innerText;
+    setTimeout(() => {
+        document.getElementById('form-container').style.display = 'none';
+        document.getElementById('already-rsvp-message').style.display = 'block';
+    }, 1500);
+    
     btn.innerText = "MENGIRIM...";
     btn.disabled = true;
-    btn.style.opacity = "0.7";
-
+    
     fetch(SHEET_API_URL, {
       method: 'POST',
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({ nama, kehadiran, ucapan })
-    })
-    .then(response => {
-        setTimeout(() => {
-            btn.innerText = "TERKIRIM";
-            setTimeout(() => { btn.innerText = originalText; btn.disabled = false; btn.style.opacity = "1"; }, 2000);
-        }, 1000);
-    })
-    .catch(error => {
-        btn.innerText = originalText; btn.disabled = false; btn.style.opacity = "1";
-    });
+      body: JSON.stringify({ nama, kehadiran, ucapan }) 
+    }).then(response => { }).catch(error => { });
   });
 
-  function renderComment(nama, kehadiran, ucapan, isNew) {
+  // === FUNGSI RENDER UTAMA ===
+  function renderComment(nama, kehadiran, ucapan, rawDate, likesCount = 0, isNew = false) {
     const list = document.getElementById('aes_comments_list');
     let badgeClass = kehadiran === 'Hadir' ? 'status-hadir' : 'status-tidak';
     let kehadiranText = kehadiran === 'Hadir' ? 'HADIR' : 'TIDAK HADIR';
     let inisial = nama.charAt(0).toUpperCase();
-    let dateHtml = isNew ? '<small class="comment-date">Baru saja</small>' : '';
+    
+    // FORMAT TANGGAL INDONESIA
+    let dateDisplay = formatDateIndo(rawDate);
+
+    let hash = 0;
+    for (let i = 0; i < nama.length; i++) { hash = nama.charCodeAt(i) + ((hash << 5) - hash); }
+    let avatarColor = AVATAR_COLORS[Math.abs(hash % AVATAR_COLORS.length)];
+
+    let uniqueID = 'like_' + nama.replace(/\s/g, '') + '_' + ucapan.substring(0,5).replace(/\s/g, '');
+    let isLoved = localStorage.getItem(uniqueID) === 'true';
+    let loveClass = isLoved ? 'loved' : '';
+    let iconHeart = isLoved ? '❤️' : '🤍';
+    let currentDisplayLikes = likesCount;
 
     const htmlItem = `
       <div class="comment-card">
-        <div class="avatar-circle">${inisial}</div>
+        <div class="avatar-circle" style="background-color: ${avatarColor};">${inisial}</div>
         <div class="comment-body">
           <div class="comment-head">
             <span class="comment-user">${escapeHtml(nama)}</span>
             <span class="status-badge ${badgeClass}">${kehadiranText}</span>
           </div>
           <div class="comment-message">${escapeHtml(ucapan)}</div>
-          ${dateHtml}
+          
+          <div class="comment-footer">
+            <span class="comment-date">🕒 ${dateDisplay}</span>
+            <button class="btn-love ${loveClass}" id="${uniqueID}" 
+                data-nama="${escapeHtml(nama)}" data-ucapan="${escapeHtml(ucapan)}"
+                onclick="toggleLove(this)">
+                <span class="love-icon">${iconHeart}</span> <span class="love-count">${currentDisplayLikes}</span>
+            </button>
+          </div>
         </div>
       </div>
     `;
-    list.insertAdjacentHTML('afterbegin', htmlItem);
+    
+    if(isNew) { list.insertAdjacentHTML('afterbegin', htmlItem); } 
+    else { list.insertAdjacentHTML('beforeend', htmlItem); }
+  }
+
+  // === HELPER: FORMAT TANGGAL CANTIK ===
+  function formatDateIndo(dateString) {
+      if(!dateString) return '';
+      const date = new Date(dateString);
+      // Opsi: 27 Des, 14:30
+      const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false };
+      return date.toLocaleDateString('id-ID', options);
+  }
+
+  function toggleLove(btn) {
+      if (btn.classList.contains('loved')) { spawnFloatingHearts(3); return; }
+      let countSpan = btn.querySelector('.love-count');
+      let iconSpan = btn.querySelector('.love-icon');
+      btn.classList.add('loved');
+      iconSpan.innerText = '❤️';
+      countSpan.innerText = parseInt(countSpan.innerText) + 1;
+      localStorage.setItem(btn.id, 'true'); 
+      spawnFloatingHearts(5); 
+
+      fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: 'like', nama: btn.getAttribute('data-nama'), ucapan: btn.getAttribute('data-ucapan') })
+      });
+  }
+
+  function spawnFloatingHearts(amount) {
+      const container = document.getElementById('hearts-container');
+      const emojis = ['❤️', '💖', '💕', '🥰', '✨'];
+      for (let i = 0; i < amount; i++) {
+          setTimeout(() => {
+              const el = document.createElement('div');
+              el.classList.add('floating-heart');
+              el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+              el.style.left = Math.random() * 80 + 'px'; 
+              el.style.fontSize = (Math.random() * 20 + 15) + 'px';
+              el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+              container.appendChild(el);
+              setTimeout(() => { el.remove(); }, 4000);
+          }, i * 200); 
+      }
+  }
+
+  function animateValue(id, start, end, duration) {
+      if (start === end) return;
+      var range = end - start; var current = start; var increment = end > start ? 1 : -1;
+      var stepTime = Math.abs(Math.floor(duration / range)); var obj = document.getElementById(id);
+      var timer = setInterval(function() { current += increment; obj.innerHTML = current; if (current == end) { clearInterval(timer); } }, stepTime);
+  }
+
+  function autoFillName() {
+      var queryString = window.location.search;
+      if (queryString) {
+          var cleanName = decodeURIComponent(queryString.substring(1).replace(/\+/g, ' '));
+          var inputNama = document.getElementById('aes_nama');
+          if(inputNama) inputNama.value = cleanName;
+      }
+  }
+
+  function showToast(message, type = 'normal') {
+      const toast = document.getElementById("toast-notification");
+      toast.innerText = message; toast.className = ''; 
+      if(type === 'error') toast.classList.add('error');
+      if(type === 'success') toast.classList.add('success');
+      toast.classList.add("show");
+      setTimeout(function(){ toast.classList.remove("show"); }, 3000);
   }
 
   function escapeHtml(text) {
@@ -1247,9 +1166,7 @@ QS. Ar-Rum 21</h1>				</div>
 
 
 
-
-
-							
+	
 
 
 				
@@ -1824,8 +1741,6 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 <!-- Mirrored from web.menujuacara.id/tema-25-foto/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 10 Dec 2025 00:21:14 GMT -->
 
 </html>
-
-
 
 
 
