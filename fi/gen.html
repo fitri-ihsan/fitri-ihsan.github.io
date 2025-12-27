@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Undangan Slide</title>
+    <title>Generator Undangan Swipe</title>
     
     <style>
         /* --- CSS DASAR --- */
@@ -13,16 +13,19 @@
             margin: 0; padding: 20px;
             display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh; color: #333;
-            overflow-x: hidden; /* Mencegah scroll horizontal body */
+            overflow-x: hidden;
+            user-select: none; /* Mencegah seleksi teks saat swipe */
         }
         .container {
             background: #ffffff; padding: 30px; border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             width: 100%; max-width: 600px; text-align: center;
             box-sizing: border-box; margin-top: 20px;
-            overflow: hidden; /* Penting untuk efek slide */
+            overflow: hidden; 
+            position: relative;
         }
-        h2 { margin-top: 0; margin-bottom: 20px; color: #222; }
+        h2 { margin-top: 0; margin-bottom: 5px; color: #222; }
+        .subtitle { font-size: 12px; color: #999; margin-bottom: 20px; display: block; }
 
         /* --- TAB NAVIGATION --- */
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; position: relative; z-index: 2; }
@@ -33,20 +36,21 @@
         }
         .tab-btn.active { color: #007bff; border-bottom: 2px solid #007bff; }
 
-        /* --- SLIDER CONTAINER (PENTING UNTUK EFEK GESER) --- */
+        /* --- SLIDER CONTAINER --- */
         .tab-window {
             width: 100%;
-            overflow: hidden; /* Menyembunyikan tab yang di luar layar */
+            overflow: hidden;
+            touch-action: pan-y; /* Penting: Izinkan scroll vertikal, blok scroll horizontal browser */
         }
         
         .tab-slider {
-            display: flex; /* Menyusun tab berdampingan */
-            width: 200%; /* Karena ada 2 tab, lebarnya 200% */
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Animasi halus */
+            display: flex; 
+            width: 200%; 
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .tab-panel {
-            width: 50%; /* Setiap tab mengambil setengah lebar slider (100% container) */
+            width: 50%; 
             flex-shrink: 0;
             padding: 5px;
             box-sizing: border-box;
@@ -60,6 +64,7 @@
             width: 100%; padding: 12px 15px; font-size: 14px;
             border: 1px solid #ddd; border-radius: 8px;
             box-sizing: border-box; font-family: inherit;
+            user-select: text; /* Izinkan teks input dipilih */
         }
         textarea#bulkInput { height: 100px; }
 
@@ -72,7 +77,6 @@
         .btn-primary { background-color: #007bff; margin-bottom: 15px; }
         .btn-primary:hover { background-color: #0056b3; }
         
-        /* Tombol Aksi Row (Berdampingan) */
         .action-row { display: flex; gap: 10px; margin-top: 10px; }
         .action-row button { margin-bottom: 0; flex: 1; }
 
@@ -82,11 +86,10 @@
         .btn-secondary { background-color: #6c757d; }
         .btn-secondary:hover { background-color: #5a6268; }
 
-        /* Tombol Copy Kecil (Abu) */
         .btn-copy-sm { background-color: #f1f3f5; color: #333; border: 1px solid #ddd; }
         .btn-copy-sm:hover { background-color: #e9ecef; }
 
-        /* --- LIST HASIL (CARD STYLE) --- */
+        /* --- LIST HASIL --- */
         #bulkListOutput {
             margin-top: 20px; text-align: left;
             max-height: 400px; overflow-y: auto;
@@ -122,13 +125,14 @@
 
     <div class="container">
         <h2>Generator Undangan</h2>
+        <span class="subtitle">Geser layar (Swipe) kiri/kanan untuk pindah menu</span>
         
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('single')">Satuan</button>
             <button class="tab-btn" onclick="switchTab('bulk')">Massal (Banyak)</button>
         </div>
 
-        <div class="tab-window">
+        <div class="tab-window" id="swipeArea">
             <div class="tab-slider" id="tabSlider">
                 
                 <div class="tab-panel">
@@ -177,72 +181,69 @@
     </div>
 
     <script>
-        // --- KONFIGURASI ---
         const baseURL = "https://fitri-ihsan.github.io/fi/?";
 
-        // --- FUNGSI UTAMA: TEMPLATE PESAN WA ---
-        function generateWhatsAppMessage(namaAsli, linkLengkap) {
-            return `Kepada Yth.
-Bapak/Ibu/Saudara(i)
-*${namaAsli}*
---------------------
+        // --- FUNGSI SLIDE & SWIPE ---
+        let currentTab = 'single'; // Melacak posisi saat ini
 
-*Assalamualaikum Warahmatullahi Wabarakatuh*
-
-Tanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.
-
-*Nurfitriani & Syukur Al Ihsan*
-
-Berikut Link Undangan kami:
-${linkLengkap}
-
-Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.
-Terima kasih.
-
-*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
-        }
-
-        // --- FUNGSI SLIDE TAB (BARU) ---
         function switchTab(mode) {
             const slider = document.getElementById('tabSlider');
             const btns = document.querySelectorAll('.tab-btn');
 
-            // Reset tombol
             btns.forEach(btn => btn.classList.remove('active'));
 
             if(mode === 'single') {
                 btns[0].classList.add('active');
-                // Geser slider ke 0% (Kiri)
                 slider.style.transform = 'translateX(0)';
+                currentTab = 'single';
             } else {
                 btns[1].classList.add('active');
-                // Geser slider ke -50% (Kanan)
                 slider.style.transform = 'translateX(-50%)';
+                currentTab = 'bulk';
             }
         }
 
-        // --- FUNGSI ALERT ---
-        function showAlert(msg) {
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('custom-alert').classList.add('active');
-        }
-
-        // --- FUNGSI COPY HELPER ---
-        function copyToClipboard(text, successMsg) {
-            navigator.clipboard.writeText(text).then(() => showAlert(successMsg))
-            .catch(err => {
-                console.error('Gagal:', err);
-                showAlert("Gagal menyalin. Izin browser mungkin diblokir.");
-            });
-        }
-
+        // --- LOGIKA SENTUH / SWIPE ---
         document.addEventListener("DOMContentLoaded", function() {
+            const swipeArea = document.getElementById('swipeArea');
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let minSwipeDistance = 50; // Jarak minimal usapan agar dihitung swipe
+
+            swipeArea.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            swipeArea.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+
+            function handleSwipe() {
+                const distance = touchStartX - touchEndX;
+
+                // Jika jarak swipe cukup jauh
+                if (Math.abs(distance) > minSwipeDistance) {
+                    // Swipe ke KIRI (Jari bergerak dari kanan ke kiri)
+                    // Artinya user ingin melihat konten di SEBELAH KANAN
+                    if (distance > 0 && currentTab === 'single') {
+                        switchTab('bulk');
+                    }
+                    
+                    // Swipe ke KANAN (Jari bergerak dari kiri ke kanan)
+                    // Artinya user ingin melihat konten di SEBELAH KIRI
+                    if (distance < 0 && currentTab === 'bulk') {
+                        switchTab('single');
+                    }
+                }
+            }
+
+            // --- KODE LAMA (LOGIKA TOMBOL & GENERATOR) ---
             
-            // === LOGIKA TAB 1: SATUAN ===
+            // LOGIKA TAB 1: SATUAN
             const namaInput = document.getElementById("namaInput");
             const hasilLink = document.getElementById("hasilLink");
 
-            // 1. Tombol Buat Link
             document.getElementById("buatLinkBtn").addEventListener("click", function() {
                 const nama = namaInput.value.trim();
                 if (!nama) { showAlert("Masukkan nama tamu dulu!"); return; }
@@ -251,28 +252,23 @@ Terima kasih.
                 hasilLink.style.color = "#000";
             });
 
-            // 2. Tombol Kirim WA (Satuan)
             document.getElementById("kirimWaBtn").addEventListener("click", function() {
                 const nama = namaInput.value.trim();
                 const link = hasilLink.textContent;
                 if (!nama || link.includes("Link muncul")) { showAlert("Klik 'Buat Link' dulu!"); return; }
-                
                 const msg = generateWhatsAppMessage(nama, link);
                 window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
             });
 
-            // 3. Tombol Salin Pesan (BARU untuk Satuan)
             document.getElementById("copyMessageSingleBtn").addEventListener("click", function() {
                 const nama = namaInput.value.trim();
                 const link = hasilLink.textContent;
                 if (!nama || link.includes("Link muncul")) { showAlert("Klik 'Buat Link' dulu!"); return; }
-                
                 const msg = generateWhatsAppMessage(nama, link);
                 copyToClipboard(msg, "Pesan WA berhasil disalin!");
             });
 
-
-            // === LOGIKA TAB 2: MASSAL ===
+            // LOGIKA TAB 2: MASSAL
             const bulkInput = document.getElementById("bulkInput");
             const bulkListOutput = document.getElementById("bulkListOutput");
             const bulkResultText = document.getElementById("bulkResultText");
@@ -309,7 +305,6 @@ Terima kasih.
                                 </button>
                             </div>
                         </div>`;
-
                         rawLinks += `${linkUrl}\n`;
                         count++;
                     }
@@ -317,20 +312,30 @@ Terima kasih.
 
                 bulkListOutput.innerHTML = listHTML;
                 bulkResultText.value = rawLinks;
-                
-                if (count > 0) {
-                    showAlert(`Berhasil membuat ${count} undangan!`);
-                }
+                if (count > 0) showAlert(`Berhasil membuat ${count} undangan!`);
             });
             
-            // Backup Copy (Link Saja)
             document.getElementById("copyBulkBtn").addEventListener("click", function() {
                 if(!bulkResultText.value) return;
                 copyToClipboard(bulkResultText.value, "Semua link mentah tersalin!");
             });
         });
 
-        // Helper untuk tombol HTML onclick (Massal)
+        // --- HELPER FUNCTIONS ---
+        function generateWhatsAppMessage(namaAsli, linkLengkap) {
+            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n${linkLengkap}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
+        }
+
+        function showAlert(msg) {
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').classList.add('active');
+        }
+
+        function copyToClipboard(text, successMsg) {
+            navigator.clipboard.writeText(text).then(() => showAlert(successMsg))
+            .catch(err => { console.error(err); showAlert("Gagal menyalin."); });
+        }
+
         function copyFullMessage(encodedMsg) {
             const fullMessage = decodeURIComponent(encodedMsg);
             copyToClipboard(fullMessage, "Pesan lengkap berhasil disalin!");
