@@ -35,6 +35,20 @@
         }
         textarea#bulkInput { height: 100px; }
 
+        /* --- SEARCH BOX --- */
+        .search-box {
+            width: 100%; padding: 10px 15px; font-size: 14px;
+            border: 1px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; font-family: inherit;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .search-box:focus {
+            background-color: #fff;
+            border-color: #007bff;
+            outline: none;
+        }
+
         /* --- TOMBOL --- */
         button, .btn-link {
             width: 100%; padding: 12px 20px; font-size: 15px; font-weight: bold;
@@ -58,7 +72,7 @@
 
         /* --- LIST HASIL --- */
         #bulkListOutput {
-            margin-top: 20px; text-align: left;
+            margin-top: 10px; text-align: left;
             max-height: 600px; overflow-y: auto;
             border: 1px solid #eee; padding: 10px; border-radius: 8px;
             background: #fafafa;
@@ -70,6 +84,9 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: transform 0.2s;
         }
+        /* Class helper untuk menyembunyikan item saat search */
+        .hidden-item { display: none !important; }
+
         .result-card.new-item { border-left: 5px solid #007bff; background-color: #f0f7ff; }
         
         .result-info strong { color: #333; font-size: 1.1em; display: block; }
@@ -132,11 +149,15 @@
             Daftar Tamu (<span id="countDisplay">0</span>)
         </h3>
         
+        <input type="text" id="searchInput" class="search-box" placeholder="&#128269; Cari nama tamu...">
+        
         <div id="bulkListOutput">
             <div style="text-align:center; padding:20px; color:#999;" id="loadingMsg">
                 <div class="spinner"></div> Memuat data dari Google Sheet...
             </div>
         </div>
+        
+        <p id="noResultMsg" style="display:none; color:#999; font-size:14px; margin-top:10px;">Nama tidak ditemukan.</p>
         
         <div style="margin-top:20px; display:none;">
             <textarea id="bulkResultText"></textarea>
@@ -161,14 +182,40 @@
 
         const bulkListOutput = document.getElementById("bulkListOutput");
         const syncStatus = document.getElementById("syncStatus");
-        const countDisplay = document.getElementById("countDisplay"); // Element Counter
+        const countDisplay = document.getElementById("countDisplay");
+        const searchInput = document.getElementById("searchInput");
+        const noResultMsg = document.getElementById("noResultMsg");
         
-        let currentTotalTamu = 0; // Variabel global untuk simpan jumlah
+        let currentTotalTamu = 0;
 
         document.addEventListener("DOMContentLoaded", function() {
             loadDataFromSheet();
 
             const bulkInput = document.getElementById("bulkInput");
+            
+            // --- FUNGSI SEARCH (Filter) ---
+            searchInput.addEventListener("keyup", function(e) {
+                const term = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll(".result-card");
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const name = card.querySelector("strong").innerText.toLowerCase();
+                    if(name.includes(term)) {
+                        card.classList.remove("hidden-item");
+                        visibleCount++;
+                    } else {
+                        card.classList.add("hidden-item");
+                    }
+                });
+
+                // Tampilkan pesan jika tidak ada hasil
+                if(visibleCount === 0 && cards.length > 0) {
+                    noResultMsg.style.display = "block";
+                } else {
+                    noResultMsg.style.display = "none";
+                }
+            });
             
             // --- FUNGSI GENERATE BARU ---
             document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
@@ -179,7 +226,6 @@
                 let count = 0;
                 let dataToSync = []; 
 
-                // Proses Input
                 names.reverse().forEach(name => {
                     const cleanName = name.trim();
                     if (cleanName) {
@@ -198,9 +244,12 @@
                     dataToSync.reverse(); 
                     sendToGoogleSheet(dataToSync);
                     
-                    // UPDATE JUMLAH TAMU SECARA REALTIME
                     currentTotalTamu += count;
                     updateCounter(currentTotalTamu);
+                    
+                    // Reset search jika ada data baru masuk
+                    searchInput.value = "";
+                    searchInput.dispatchEvent(new Event('keyup')); // Trigger refresh filter
                     
                 } else {
                     showAlert("Tidak ada nama valid.");
@@ -208,13 +257,11 @@
             });
         });
 
-        // --- FUNGSI UPDATE COUNTER ---
         function updateCounter(num) {
             countDisplay.innerText = num;
             currentTotalTamu = num;
         }
 
-        // --- FUNGSI BACA DATA DARI SHEET (GET) ---
         function loadDataFromSheet() {
             if(scriptURL.includes("GANTI_DENGAN")) {
                 document.getElementById("loadingMsg").innerText = "URL Script belum diatur.";
@@ -226,7 +273,6 @@
             .then(data => {
                 bulkListOutput.innerHTML = "";
                 
-                // UPDATE JUMLAH TAMU DARI DATABASE
                 updateCounter(data.length);
                 
                 if(data.length === 0) {
@@ -294,9 +340,8 @@
             syncStatus.innerText = message;
         }
 
-        // --- HELPER FUNCTIONS ---
         function generateWhatsAppMessage(namaAsli, linkLengkap) {
-            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n${linkLengkap}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
+            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n${linkLengkap}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*\n\nHormat Kami\n*Fitri & Ihsan*`;
         }
 
         function showAlert(msg) {
