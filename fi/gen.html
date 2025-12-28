@@ -74,12 +74,15 @@
         .btn-settings:hover { border-color: var(--primary); color: var(--primary); background: #f0f7ff; }
 
         /* TOOLBAR */
-        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; margin-top: 10px; }
+        .toolbar { display: flex; gap: 8px; margin-bottom: 15px; margin-top: 10px; }
         .search-container { position: relative; flex: 2; }
         .search-box { width: 100%; padding: 12px 35px 12px 15px; font-size: 14px; border: 1px solid #eee; border-radius: var(--radius); background-color: #f9f9f9; outline: none; transition: 0.3s; box-sizing: border-box; }
         .search-box:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); }
         .search-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ccc; display: none; font-size: 18px; }
-        .sort-select { flex: 1; padding: 0 10px; border: 1px solid #eee; border-radius: var(--radius); background: #f9f9f9; font-size: 13px; outline: none; cursor: pointer; color: var(--dark); }
+        
+        .sort-select { padding: 0 10px; border: 1px solid #eee; border-radius: var(--radius); background: #f9f9f9; font-size: 13px; outline: none; cursor: pointer; color: var(--dark); }
+        /* Style khusus untuk filter baru agar muat */
+        .filter-select { flex: 1.2; font-weight: 600; color: var(--primary); border-color: #dbeafe; background: #eff6ff; }
 
         /* LIST OUTPUT */
         #bulkListOutput { margin-top: 10px; text-align: left; max-height: 550px; overflow-y: auto; padding-right: 5px; }
@@ -154,9 +157,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         #syncStatus { font-size: 12px; margin: 10px 0; font-weight: 500; height: 16px; transition: color 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        
-        /* New for Pending Queue */
-        .queue-badge { background: #f39c12; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; vertical-align: middle; margin-left: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -198,11 +198,17 @@
                 <input type="text" id="searchInput" class="search-box" placeholder="Cari nama...">
                 <span id="clearSearch" class="search-clear">&times;</span>
             </div>
-            <select id="sortSelect" class="sort-select">
-                <option value="newest">Baru</option>
-                <option value="oldest">Lama</option>
-                <option value="az">A-Z</option>
-                <option value="unsent">Belum</option>
+            
+            <select id="filterSelect" class="sort-select filter-select">
+                <option value="all">Semua Status</option>
+                <option value="sent">Sudah Dikirim</option>
+                <option value="unsent">Belum Dikirim</option>
+            </select>
+
+            <select id="sortSelect" class="sort-select" style="flex:1;">
+                <option value="newest">Urut: Baru</option>
+                <option value="oldest">Urut: Lama</option>
+                <option value="az">Urut: A-Z</option>
             </select>
         </div>
 
@@ -225,7 +231,7 @@
     <div id="editModal" class="modal-overlay">
         <div class="modal-box">
             <h3 class="modal-title">Edit Nama Tamu</h3>
-            <p class="modal-desc">Ubah nama tamu di bawah ini. Link akan otomatis diperbarui.</p>
+            <p class="modal-desc">Ubah nama tamu di bawah ini.</p>
             <input type="text" id="editNameInput" class="modal-input" placeholder="Nama Tamu">
             <div class="modal-footer">
                 <button class="modal-btn btn-cancel" onclick="closeModal('editModal')">Batal</button>
@@ -237,7 +243,7 @@
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-box">
             <h3 class="modal-title" style="color:var(--danger)">Hapus Tamu?</h3>
-            <p class="modal-desc">Apakah Anda yakin ingin menghapus <b><span id="deleteNameTarget"></span></b>? Data yang dihapus tidak bisa dikembalikan.</p>
+            <p class="modal-desc">Yakin hapus <b><span id="deleteNameTarget"></span></b>?</p>
             <div class="modal-footer">
                 <button class="modal-btn btn-cancel" onclick="closeModal('deleteModal')">Batal</button>
                 <button class="modal-btn btn-confirm-delete" id="confirmDeleteBtn">Hapus</button>
@@ -248,11 +254,11 @@
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-box" style="max-width:450px;">
             <h3 class="modal-title">Template WhatsApp</h3>
-            <p class="modal-desc" style="margin-bottom:10px">Kode <b>{nama}</b> dan <b>{link}</b> adalah rumus variabel.<br><b>Jangan diubah !!!</b></p>
+            <p class="modal-desc" style="margin-bottom:10px">Kode <b>{nama}</b> dan <b>{link}</b> adalah rumus variabel wajib.<br><b>JANGAN DIUBAH !!!</b></p>
             <textarea id="templateInput" style="height:120px; font-size:12px; margin-bottom:15px; text-align:left;"></textarea>
             <div class="modal-footer">
                 <button class="modal-btn btn-cancel" onclick="closeModal('settingsModal')">Batal</button>
-                <button class="modal-btn btn-confirm-primary" id="saveSettingsBtn">Simpan Template</button>
+                <button class="modal-btn btn-confirm-primary" id="saveSettingsBtn">Simpan</button>
             </div>
         </div>
     </div>
@@ -267,8 +273,8 @@
         let currentTemplate = "";
         let currentEditId = null;
         let currentDeleteId = null;
-        let pendingQueue = []; // Antrian data saat offline
-        let isSyncing = false; // Flag status sync
+        let pendingQueue = []; 
+        let isSyncing = false; 
 
         const defaultTemplate = `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*{nama}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) *{nama}* untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n{link}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
 
@@ -278,6 +284,7 @@
             status: document.getElementById("syncStatus"),
             search: document.getElementById("searchInput"),
             sort: document.getElementById("sortSelect"),
+            filter: document.getElementById("filterSelect"), // <--- ELEMEN BARU
             input: document.getElementById("bulkInput"),
             clearSearch: document.getElementById("clearSearch"),
             stats: {
@@ -290,7 +297,6 @@
 
         // --- INITIALIZATION ---
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Load Queue dari LocalStorage jika ada sisa sebelumnya
             const savedQueue = localStorage.getItem("pendingQueue");
             if(savedQueue) pendingQueue = JSON.parse(savedQueue);
 
@@ -313,13 +319,13 @@
                 renderList();
                 showAlert("Template disimpan!");
                 saveToCache();
-                
-                // Masukkan ke antrian
                 addToQueue({ action: "save_template", template: newTpl });
             };
 
+            // Event Listeners untuk Filter & Sortir
             els.search.addEventListener("keyup", renderList);
             els.sort.addEventListener("change", renderList);
+            els.filter.addEventListener("change", renderList); // <--- LISTENER BARU
             els.clearSearch.onclick = () => { els.search.value = ""; renderList(); };
 
             document.getElementById("confirmEditBtn").onclick = submitEdit;
@@ -328,24 +334,18 @@
                 if(e.key === "Enter") submitEdit();
             });
 
-            // --- AUTO SYNC LISTENER ---
-            // Ketika internet nyala, otomatis jalankan antrian
             window.addEventListener('online',  () => {
                 updateStatus('loading', 'Internet terhubung. Menyinkronkan...');
                 processQueue();
-                // Refresh data agar sinkron jika ada update dari orang lain
                 loadData(); 
             });
             window.addEventListener('offline', () => updateStatus('error', 'Koneksi terputus. Mode Offline.'));
             
-            // Coba jalankan antrian saat start (siapa tau ada sisa)
             if(navigator.onLine) processQueue();
         });
 
-        // --- CORE DATA LOGIC WITH CACHE ---
-        
+        // --- CORE DATA LOGIC ---
         function loadData() {
-            // 1. Load Cache First
             const cached = localStorage.getItem("guestDataCache");
             if(cached) {
                 try {
@@ -361,7 +361,6 @@
                 } catch(e) { console.error("Cache error", e); }
             }
 
-            // 2. Fetch Fresh Data (Only if Online)
             if(!navigator.onLine) {
                 updateStatus("error", "Offline Mode");
                 return;
@@ -371,7 +370,6 @@
                 document.getElementById("loadingMsg").innerText = "⚠ URL Script belum diatur."; return;
             }
             
-            // Jangan timpa status jika sedang sync antrian
             if(!isSyncing) updateStatus("loading", "Menyinkronkan data...");
             
             fetch(scriptURL)
@@ -411,14 +409,12 @@
             const names = raw.split('\n').map(n => n.trim()).filter(n => n);
             if(names.length === 0) return;
 
-            // Validasi Input
             const inputDupes = names.filter((item, index) => names.map(n => n.toLowerCase()).indexOf(item.toLowerCase()) !== index);
             if(inputDupes.length > 0) {
                 showAlert("Gagal! Ada nama kembar di input:\n- " + [...new Set(inputDupes)].join("\n- "));
                 return;
             }
 
-            // Validasi Database
             const existing = allGuests.map(g => g.nama.toLowerCase());
             const dbDupes = names.filter(n => existing.includes(n.toLowerCase()));
             if(dbDupes.length > 0) {
@@ -433,34 +429,41 @@
                 isSent: "FALSE"
             }));
 
-            // UI Optimistic
             allGuests.unshift(...tempGuests);
             saveToCache();
             renderList();
             els.input.value = "";
             showAlert(`${tempGuests.length} Tamu ditambahkan.`);
-            
-            // Masuk Antrian
             addToQueue({ action: "create", data: tempGuests });
         }
 
-        // --- UI FUNCTIONS ---
+        // --- UI FUNCTIONS (UPDATED FOR FILTERING) ---
 
         function renderList() {
             const term = els.search.value.toLowerCase();
             const sort = els.sort.value;
+            const filter = els.filter.value; // Ambil nilai Filter Status
+
             els.clearSearch.style.display = term ? "block" : "none";
 
+            // 1. Filter Pencarian Nama
             let filtered = allGuests.filter(g => g.nama.toLowerCase().includes(term));
 
+            // 2. Filter Status (LOGIKA BARU)
+            if (filter === 'sent') {
+                filtered = filtered.filter(g => g.isSent === "TRUE" || g.isSent === true);
+            } else if (filter === 'unsent') {
+                filtered = filtered.filter(g => g.isSent !== "TRUE" && g.isSent !== true);
+            }
+
+            // 3. Sorting
             if(sort === 'newest') filtered.sort((a,b) => b.id - a.id);
             else if(sort === 'oldest') filtered.sort((a,b) => a.id - b.id);
             else if(sort === 'az') filtered.sort((a,b) => a.nama.localeCompare(b.nama));
-            else if(sort === 'unsent') filtered = filtered.filter(g => g.isSent !== "TRUE");
-
-            updateStats(allGuests);
-            els.output.innerHTML = "";
             
+            updateStats(allGuests); // Stats tetap menghitung total global
+            
+            els.output.innerHTML = "";
             if(filtered.length === 0) {
                 if(allGuests.length > 0) document.getElementById("noResultMsg").style.display = "block";
                 return;
@@ -570,37 +573,27 @@
         }
 
         // --- QUEUE & SYNC SYSTEM ---
-        
-        // 1. Tambah ke Antrian
         function addToQueue(payload) {
             pendingQueue.push(payload);
             localStorage.setItem("pendingQueue", JSON.stringify(pendingQueue));
-            
-            // Coba proses langsung jika ada internet
-            if(navigator.onLine) {
-                processQueue();
-            } else {
-                updateStatus("loading", `Menunggu internet (${pendingQueue.length} antrian)`);
-            }
+            if(navigator.onLine) processQueue();
+            else updateStatus("loading", `Menunggu internet (${pendingQueue.length} antrian)`);
         }
 
-        // 2. Proses Antrian (Recursive)
         async function processQueue() {
             if(pendingQueue.length === 0) {
                 isSyncing = false;
                 updateStatus("idle", "Semua data tersinkron");
                 return;
             }
-
             if(!navigator.onLine) {
                 isSyncing = false;
                 updateStatus("error", `Offline (${pendingQueue.length} tertunda)`);
                 return;
             }
-
             isSyncing = true;
-            updateStatus("loading", `Mengupload ${pendingQueue.length} data...`);
-            const item = pendingQueue[0]; // Ambil item pertama (FIFO)
+            updateStatus("loading", `Sinkronisasi ${pendingQueue.length} data...`);
+            const item = pendingQueue[0]; 
 
             try {
                 await fetch(scriptURL, {
@@ -609,28 +602,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(item)
                 });
-                
-                // Sukses: Hapus dari antrian
                 pendingQueue.shift(); 
                 localStorage.setItem("pendingQueue", JSON.stringify(pendingQueue));
-                
-                // Lanjut ke item berikutnya
                 processQueue();
-
             } catch (err) {
                 console.error("Sync fail", err);
                 isSyncing = false;
-                updateStatus("error", "Gagal upload, mencoba lagi nanti...");
+                updateStatus("error", "Gagal Sinkron, mencoba lagi nanti...");
             }
         }
 
         // --- UTILS ---
         function updateStatus(state, msg) {
-            // Priority: Error > Loading > Idle
             const icon = state === 'loading' ? '<div class="spinner"></div>' : '';
             els.status.innerHTML = icon + msg;
             els.status.style.color = state === 'error' ? 'red' : (state === 'loading' ? '#f39c12' : '#2ecc71');
-            
             if(state === 'idle') setTimeout(() => els.status.innerText = "", 3000);
         }
         window.openModal = (id) => document.getElementById(id).classList.add('active');
