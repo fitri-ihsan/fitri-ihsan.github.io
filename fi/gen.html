@@ -158,7 +158,7 @@
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
 
         .modal-title { margin: 0 0 10px; font-size: 18px; color: var(--dark); font-weight: 700; }
-        .modal-desc { margin: 0 0 20px; font-size: 13px; color: var(--gray); line-height: 1.5; }
+        .modal-desc { margin: 0 0 20px; font-size: 13px; color: var(--gray); line-height: 1.5; white-space: pre-wrap; }
 
         .modal-input {
             width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
@@ -396,12 +396,36 @@
             });
         }
 
-        function handleGenerate() {
+function handleGenerate() {
             const raw = els.input.value;
             if(!raw.trim()) { showAlert("Mohon isi nama tamu terlebih dahulu."); return; }
 
+            // Ambil input, trim spasi, dan hapus baris kosong
             const names = raw.split('\n').map(n => n.trim()).filter(n => n);
             if(names.length === 0) return;
+
+            // --- VALIDASI 1: CEK DUPLIKAT DI DALAM INPUT ITU SENDIRI ---
+            // Mencari nama yang ditulis lebih dari 1 kali dalam textarea
+            const inputDuplicates = names.filter((item, index) => 
+                names.map(n => n.toLowerCase()).indexOf(item.toLowerCase()) !== index
+            );
+
+            if (inputDuplicates.length > 0) {
+                // Gunakan Set agar nama yang muncul di alert unik (tidak berulang-ulang)
+                const uniqueDupes = [...new Set(inputDuplicates)];
+                showAlert("Gagal! Ada nama kembar di dalam input Anda (baris berbeda):\n\n- " + uniqueDupes.join("\n- "));
+                return; 
+            }
+
+            // --- VALIDASI 2: CEK DUPLIKAT TERHADAP DATA LAMA ---
+            const existingNames = allGuests.map(g => g.nama.toLowerCase());
+            const dbDuplicates = names.filter(newName => existingNames.includes(newName.toLowerCase()));
+
+            if (dbDuplicates.length > 0) {
+                showAlert("Gagal! Nama berikut sudah pernah disimpan sebelumnya:\n\n- " + dbDuplicates.join("\n- "));
+                return;
+            }
+            // --- VALIDASI SELESAI ---
 
             // 1. Buat Data Lokal Sementara (Instant)
             const tempGuests = names.map((name, index) => ({
@@ -590,5 +614,6 @@
             if(state === 'idle') setTimeout(() => els.status.innerText = "", 2000);
         }
     </script>
+
 </body>
 </html>
