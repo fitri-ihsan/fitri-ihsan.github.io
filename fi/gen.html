@@ -53,6 +53,7 @@
         .bg-blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
         .bg-green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
         .bg-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+		.bg-purple { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
         
         .stat-num { font-size: 24px; font-weight: 800; display: block; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .stat-label { font-size: 11px; opacity: 0.9; font-weight: 600; text-transform: uppercase; }
@@ -189,21 +190,26 @@
         <h2>Generator Tamu Undangan</h2>
         <span class="subtitle">The Wedding of Fitri & Ihsan</span>
         
-        <div class="dashboard">
-            <div class="stat-card bg-blue">
-                <span class="stat-num" id="statTotal">0</span>
-                <span class="stat-label">Total</span>
-            </div>
-            <div class="stat-card bg-green">
-                <span class="stat-num" id="statSent">0</span>
-                <span class="stat-label">Terkirim</span>
-            </div>
-            <div class="stat-card bg-orange">
-                <span class="stat-num" id="statPending">0</span>
-                <span class="stat-label">Belum</span>
-            </div>
-        </div>
-
+		<div class="dashboard">
+    <div class="stat-card bg-blue">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-card bg-green">
+        <span class="stat-num" id="statSent">0</span>
+        <span class="stat-label">Terkirim</span>
+    </div>
+    <div class="stat-card bg-orange">
+        <span class="stat-num" id="statPending">0</span>
+        <span class="stat-label">Belum</span>
+    </div>
+    
+    <div class="stat-card bg-purple">
+        <span class="stat-num" id="statPercent">0%</span>
+        <span class="stat-label">Progres</span>
+    </div>
+</div>
+		
         <button class="btn-settings" id="openSettingsBtn">&#9881; Atur Template Pesan</button>
 
         <div class="form-group">
@@ -302,7 +308,8 @@
             stats: {
                 total: document.getElementById("statTotal"),
                 sent: document.getElementById("statSent"),
-                pending: document.getElementById("statPending")
+                pending: document.getElementById("statPending"),
+                percent: document.getElementById("statPercent") // <--- TAMBAHAN
             }
         };
 
@@ -519,13 +526,22 @@ function handleGenerate() {
             });
         }
 
-        function updateStats(data) {
+function updateStats(data) {
             const total = data.length;
             const sent = data.filter(g => g.isSent === "TRUE" || g.isSent === true).length;
+            
             els.stats.total.innerText = total;
             els.stats.sent.innerText = sent;
             els.stats.pending.innerText = total - sent;
+
+            // --- HITUNG PERSENTASE ---
+            let percentage = 0;
+            if (total > 0) {
+                percentage = Math.round((sent / total) * 100);
+            }
+            els.stats.percent.innerText = percentage + "%";
         }
+
 
         // --- ACTION HANDLERS (MODAL TRIGGER) ---
 
