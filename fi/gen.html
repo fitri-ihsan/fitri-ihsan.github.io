@@ -6,401 +6,588 @@
     <title>Generator Tamu Undangan | Fitri & Ihsan</title>
     
     <style>
-        /* --- CSS DASAR --- */
+        /* --- VARIABLES & BASE --- */
+        :root {
+            --primary: #4a90e2;
+            --primary-hover: #357abd;
+            --success: #2ecc71;
+            --success-hover: #27ae60;
+            --danger: #e74c3c;
+            --danger-hover: #c0392b;
+            --dark: #34495e;
+            --gray: #95a5a6;
+            --light: #f8f9fa;
+            --bg: #f0f2f5;
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
             margin: 0; padding: 20px;
             display: flex; justify-content: center; align-items: flex-start;
-            min-height: 100vh; color: #333;
-            overflow-x: hidden;
+            min-height: 100vh; color: var(--dark);
         }
+
         .container {
-            background: #ffffff; padding: 30px; border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            width: 100%; max-width: 600px; text-align: center;
-            box-sizing: border-box; margin-top: 20px;
-            position: relative;
-        }
-        h2 { margin-top: 0; margin-bottom: 5px; color: #222; }
-        
-        /* --- FORM ELEMENTS --- */
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; }
-        
-        textarea {
-            width: 100%; padding: 12px 15px; font-size: 14px;
-            border: 1px solid #ddd; border-radius: 8px;
-            box-sizing: border-box; font-family: inherit;
-            /* AGAR TIDAK BISA DITARIK HORIZONTAL (Hanya Vertikal) */
-            resize: vertical; 
-        }
-        textarea#bulkInput { height: 100px; }
-
-        /* --- SEARCH BOX WRAPPER --- */
-        .search-container {
-            position: relative;
-            width: 100%;
-            margin-bottom: 10px;
+            background: #ffffff; padding: 30px; border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%; max-width: 550px; text-align: center;
+            box-sizing: border-box; position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .search-box {
-            width: 100%; 
-            padding: 10px 35px 10px 15px; 
-            font-size: 14px;
-            border: 1px solid #ddd; border-radius: 8px;
-            box-sizing: border-box; font-family: inherit;
-            background-color: #f9f9f9;
-        }
-        .search-box:focus {
-            background-color: #fff;
-            border-color: #007bff;
-            outline: none;
-        }
+        h2 { margin: 0 0 5px; color: var(--dark); letter-spacing: -0.5px; }
+        .subtitle { color: var(--gray); font-weight: 400; margin-bottom: 25px; display: block; font-size: 0.9em; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* --- TOMBOL X HAPUS --- */
-        .search-clear {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #999;
-            font-size: 18px;
-            font-weight: bold;
-            display: none; 
-            user-select: none;
-        }
-        .search-clear:hover { color: #dc3545; }
-
-        /* --- TOMBOL UTAMA --- */
-        button, .btn-link {
-            width: 100%; padding: 12px 20px; font-size: 15px; font-weight: bold;
-            border: none; border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; color: white; display: inline-block;
-            box-sizing: border-box; text-decoration: none;
-        }
-        .btn-primary { background-color: #007bff; margin-bottom: 15px; }
-        .btn-primary:hover { background-color: #0056b3; }
-        
-        .action-row { display: flex; gap: 10px; margin-top: 10px; }
-        
-        .btn-success { background-color: #25D366; }
-        .btn-success:hover { background-color: #1EAE57; }
-
-        .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5a6268; }
-
-        .btn-copy-sm { background-color: #f1f3f5; color: #333; border: 1px solid #ddd; }
-        .btn-copy-sm:hover { background-color: #e9ecef; }
-
-        /* --- LIST HASIL --- */
-        #bulkListOutput {
-            margin-top: 10px; text-align: left;
-            max-height: 600px; overflow-y: auto;
-            border: 1px solid #eee; padding: 10px; border-radius: 8px;
-            background: #fafafa;
-        }
-        .result-card {
-            background: #fff; border: 1px solid #e0e0e0;
-            border-radius: 8px; padding: 15px; margin-bottom: 10px;
-            display: flex; flex-direction: column; gap: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        /* --- DASHBOARD --- */
+        .dashboard { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            flex: 1; padding: 15px 10px; border-radius: var(--radius);
+            color: white; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.2s;
         }
+        .stat-card:hover { transform: translateY(-3px); }
+        .bg-blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .bg-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
         
-        .hidden-item { display: none !important; }
+        .stat-num { font-size: 24px; font-weight: 800; display: block; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-label { font-size: 11px; opacity: 0.9; font-weight: 600; text-transform: uppercase; }
 
-        .result-card.new-item { border-left: 5px solid #007bff; background-color: #f0f7ff; }
-        
-        .result-info strong { color: #333; font-size: 1.1em; display: block; }
-        .result-info small { color: #007bff; word-break: break-all; }
-
-        /* --- STATUS SYNC --- */
-        .sync-status {
-            font-size: 12px; margin-top: -10px; margin-bottom: 15px;
-            display: block; min-height: 1.5em; font-weight: 500;
+        /* --- INPUT AREA --- */
+        textarea {
+            width: 100%; padding: 15px; font-size: 14px;
+            border: 2px solid #eee; border-radius: var(--radius);
+            box-sizing: border-box; resize: vertical; height: 100px;
+            margin-bottom: 15px; font-family: inherit; transition: border 0.3s;
+            background: #fafafa; outline: none;
         }
-        .status-idle { color: #999; }
-        .status-loading { color: #e67e22; }
-        .status-success { color: #28a745; }
-        .status-error { color: #dc3545; }
-        
-        /* --- LOADING SPINNER --- */
-        .spinner {
-            display: inline-block; width: 12px; height: 12px;
-            border: 2px solid #ccc;
-            border-radius: 50%; border-top-color: #333;
-            animation: spin 1s ease-in-out infinite; margin-right: 5px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        textarea:focus { border-color: var(--primary); background: #fff; }
 
-        /* --- CUSTOM ALERT --- */
-        .aesthetic-alert-overlay {
+        /* --- BUTTONS --- */
+        button, .btn-wa {
+            border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 600; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 14px;
+        }
+        .btn-primary { 
+            width: 100%; padding: 14px; 
+            background: var(--primary); color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-settings { background: none; color: var(--gray); border: 1px dashed #ccc; margin-bottom: 20px; font-size: 12px; padding: 8px 20px; border-radius: 50px; }
+        .btn-settings:hover { border-color: var(--primary); color: var(--primary); background: #f0f7ff; }
+
+        /* --- TOOLBAR --- */
+        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; margin-top: 10px; }
+        .search-container { position: relative; flex: 2; }
+        .search-box { width: 100%; padding: 12px 35px 12px 15px; font-size: 14px; border: 1px solid #eee; border-radius: var(--radius); background-color: #f9f9f9; outline: none; transition: 0.3s; box-sizing: border-box; }
+        .search-box:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); }
+        .search-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ccc; display: none; font-size: 18px; }
+        .sort-select { flex: 1; padding: 0 10px; border: 1px solid #eee; border-radius: var(--radius); background: #f9f9f9; font-size: 13px; outline: none; cursor: pointer; color: var(--dark); }
+
+        /* --- LIST OUTPUT --- */
+        #bulkListOutput { margin-top: 10px; text-align: left; max-height: 550px; overflow-y: auto; padding-right: 5px; }
+        
+        /* SCROLLBAR CUSTOM */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ccc; }
+
+        .result-card {
+            background: #fff; border: 1px solid #f0f0f0;
+            border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        
+        .result-card.sent { border-left: 4px solid var(--success); background: #f8fff9; }
+        .result-card.not-sent { border-left: 4px solid #e0e0e0; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-header strong { font-size: 16px; color: var(--dark); display: block; margin-bottom: 4px; }
+        .card-header small { color: var(--gray); font-size: 11px; word-break: break-all; }
+        
+        .card-actions { display: flex; gap: 2px; }
+        .icon-btn { background: transparent; color: #ccc; padding: 6px; font-size: 16px; border-radius: 6px; }
+        .icon-btn:hover { background: #f5f5f5; color: var(--primary); }
+        .btn-delete:hover { color: var(--danger); background: #fff5f5; }
+
+        /* --- ACTION ROW BUTTONS --- */
+        .action-row { display: flex; gap: 8px; margin-top: 5px; }
+        
+        .btn-wa { background-color: var(--success); flex: 2; color: white; padding: 10px; font-size: 13px; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2); }
+        .btn-wa:hover { background-color: var(--success-hover); transform: translateY(-1px); }
+
+        .btn-copy { background-color: #fff; border: 1px solid #eee; color: var(--dark); flex: 1; font-size: 13px; font-weight: 600; }
+        .btn-copy:hover { background-color: #f8f9fa; border-color: #ddd; }
+
+        .btn-check { background-color: #f1f3f5; color: #bdc3c7; width: 42px; flex: 0 0 42px; font-size: 18px; padding: 0; transition: 0.3s; }
+        .btn-check.active { background-color: var(--success); color: white; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3); }
+
+        /* --- MODAL SYSTEM (AESTHETIC) --- */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px);
             z-index: 9999; display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s;
+            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .aesthetic-alert-overlay.active { opacity: 1; visibility: visible; }
-        .aesthetic-alert-box {
-            background: white; padding: 25px; border-radius: 20px; width: 80%; max-width: 320px;
-            text-align: center; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .modal-box {
+            background: white; padding: 30px; border-radius: 20px;
+            width: 85%; max-width: 380px; text-align: center;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.05);
         }
-        .aesthetic-alert-overlay.active .aesthetic-alert-box { transform: scale(1); }
-        .alert-btn { background: #007bff; color: white; padding: 10px 25px; border-radius: 50px; margin-top: 15px; display: inline-block; width: auto; }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
+
+        .modal-title { margin: 0 0 10px; font-size: 18px; color: var(--dark); font-weight: 700; }
+        .modal-desc { margin: 0 0 20px; font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+        .modal-input {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 15px; outline: none; box-sizing: border-box; margin-bottom: 20px;
+            text-align: center; color: var(--dark);
+        }
+        .modal-input:focus { border-color: var(--primary); background: #fcfeff; }
+
+        .modal-footer { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn { flex: 1; padding: 12px; font-size: 14px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; }
+        
+        .btn-cancel { background: #f1f3f5; color: var(--dark); }
+        .btn-cancel:hover { background: #e9ecef; }
+        
+        .btn-confirm-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); }
+        .btn-confirm-delete { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3); }
+
+        /* --- LOADING SPINNER --- */
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ddd; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #syncStatus { font-size: 12px; margin: 10px 0; font-weight: 500; height: 16px; transition: color 0.3s; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h2>Generator Tamu Undangan</h2>
-        <label style="color:#666; font-weight:normal; margin-bottom:20px;">NURFITRIANI & SYUKUR AL IHSAN</label>
+        <span class="subtitle">The Wedding of Fitri & Ihsan</span>
         
-        <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
-
-        <div class="form-group">
-            <label>Buat Undangan Baru:</label>
-            <textarea id="bulkInput" placeholder="Masukkan nama tamu baru disini..."></textarea>
-        </div>
-        
-        <button class="btn-primary" id="bulkGenerateBtn">Generate & Simpan</button>
-        
-        <span id="syncStatus" class="sync-status status-idle"></span>
-        
-        <h3 style="text-align:left; font-size:16px; margin-bottom:10px;">
-            Daftar Tamu (<span id="countDisplay">0</span>)
-        </h3>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="&#128269; Cari nama tamu...">
-            <span id="clearSearch" class="search-clear" title="Hapus pencarian">&times;</span>
-        </div>
-        
-        <div id="bulkListOutput">
-            <div style="text-align:center; padding:20px; color:#999;" id="loadingMsg">
-                <div class="spinner"></div> Memuat data dari Google Sheet...
+        <div class="dashboard">
+            <div class="stat-card bg-blue">
+                <span class="stat-num" id="statTotal">0</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-card bg-green">
+                <span class="stat-num" id="statSent">0</span>
+                <span class="stat-label">Terkirim</span>
+            </div>
+            <div class="stat-card bg-orange">
+                <span class="stat-num" id="statPending">0</span>
+                <span class="stat-label">Belum</span>
             </div>
         </div>
+
+        <button class="btn-settings" id="openSettingsBtn">&#9881; Atur Template Pesan</button>
+
+        <div class="form-group">
+            <textarea id="bulkInput" placeholder="Ketik nama tamu baru disini... (Tekan enter untuk baris baru)&#10;Contoh:&#10;Jojo Wiroro&#10;Bowo Wibowo&#10;Lilil Lahidi"></textarea>
+            <button class="btn-primary" id="bulkGenerateBtn">Tambah Daftar Tamu</button>
+        </div>
         
-        <p id="noResultMsg" style="display:none; color:#999; font-size:14px; margin-top:10px;">Nama tidak ditemukan.</p>
-        
-        <div style="margin-top:20px; display:none;">
-            <textarea id="bulkResultText"></textarea>
+        <div id="syncStatus"></div>
+
+        <div class="toolbar">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-box" placeholder="Cari nama...">
+                <span id="clearSearch" class="search-clear">&times;</span>
+            </div>
+            <select id="sortSelect" class="sort-select">
+                <option value="newest">Baru</option>
+                <option value="oldest">Lama</option>
+                <option value="az">A-Z</option>
+                <option value="unsent">Belum</option>
+            </select>
+        </div>
+
+        <div id="bulkListOutput">
+            <div style="text-align:center; padding:40px 20px; color:#ccc;" id="loadingMsg">
+                <div class="spinner"></div> Mengambil data...
+            </div>
+        </div>
+        <p id="noResultMsg" style="display:none; color:#999; font-size:14px;">Tamu tidak ditemukan.</p>
+    </div>
+
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title">Info</h3>
+            <p id="alertMsg" class="modal-desc">Pesan notifikasi.</p>
+            <button class="modal-btn btn-confirm-primary" style="width:100%" onclick="closeModal('alertModal')">OK</button>
         </div>
     </div>
 
-    <div id="custom-alert" class="aesthetic-alert-overlay">
-        <div class="aesthetic-alert-box">
-            <h3 style="margin:0 0 10px;">Notifikasi</h3>
-            <p id="alert-msg" style="color:#666;">Pesan</p>
-            <button class="alert-btn" onclick="document.getElementById('custom-alert').classList.remove('active')">OK</button>
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title">Edit Nama Tamu</h3>
+            <p class="modal-desc">Ubah nama tamu di bawah ini. Link akan otomatis diperbarui.</p>
+            <input type="text" id="editNameInput" class="modal-input" placeholder="Nama Tamu">
+            <div class="modal-footer">
+                <button class="modal-btn btn-cancel" onclick="closeModal('editModal')">Batal</button>
+                <button class="modal-btn btn-confirm-primary" id="confirmEditBtn">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title" style="color:var(--danger)">Hapus Tamu?</h3>
+            <p class="modal-desc">Apakah Anda yakin ingin menghapus <b><span id="deleteNameTarget"></span></b>? Data yang dihapus tidak bisa dikembalikan.</p>
+            <div class="modal-footer">
+                <button class="modal-btn btn-cancel" onclick="closeModal('deleteModal')">Batal</button>
+                <button class="modal-btn btn-confirm-delete" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-box" style="max-width:450px;">
+            <h3 class="modal-title">Template WhatsApp</h3>
+            <p class="modal-desc" style="margin-bottom:10px">Gunakan <b>{nama}</b> dan <b>{link}</b> sebagai variabel.<br><b>Jangan diubah !!!</b></p>
+            <textarea id="templateInput" style="height:120px; font-size:12px; margin-bottom:15px; text-align:left;"></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn btn-cancel" onclick="closeModal('settingsModal')">Batal</button>
+                <button class="modal-btn btn-confirm-primary" id="saveSettingsBtn">Simpan Template</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // --- CONFIGURATION ---
+        // PASTITAN URL DEPLOY ADALAH YANG TERBARU SETELAH UPDATE SCRIPT DI GAS
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx5Do6JwIv_NzPobEaXYl5qpgQERe3n-EqrD4baLDhn9yr8ci6Urhaam0MpyC_nSMZgYg/exec'; 
         const baseURL = "https://fitri-ihsan.github.io/fi/?";
-        
-        // ---------------------------------------------------------
-        // PASTE URL GOOGLE APPS SCRIPT ANDA DI SINI:
-        // ---------------------------------------------------------
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwcUqk5BHC8wLGzKAkZ-bCr0biS020OIWbvm-C8mmmCPOQbJwZFzlOsb9uIR7scgwJj/exec'; 
 
-        const bulkListOutput = document.getElementById("bulkListOutput");
-        const syncStatus = document.getElementById("syncStatus");
-        const countDisplay = document.getElementById("countDisplay");
-        const searchInput = document.getElementById("searchInput");
-        const clearSearchBtn = document.getElementById("clearSearch");
-        const noResultMsg = document.getElementById("noResultMsg");
-        
-        let currentTotalTamu = 0;
+        // --- GLOBAL VARIABLES ---
+        let allGuests = []; 
+        let currentTemplate = ""; // Menyimpan template dari Cloud
+        let currentEditId = null;
+        let currentDeleteId = null;
 
-        document.addEventListener("DOMContentLoaded", function() {
-            loadDataFromSheet();
+        const defaultTemplate = `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*{nama}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) *{nama}* untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n{link}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
 
-            const bulkInput = document.getElementById("bulkInput");
-            
-            // --- FUNGSI SEARCH (Filter & Clear) ---
-            searchInput.addEventListener("keyup", function(e) {
-                filterNames(e.target.value);
-            });
-
-            // Klik tombol X
-            clearSearchBtn.addEventListener("click", function() {
-                searchInput.value = ""; // Kosongkan input
-                filterNames(""); // Reset filter
-            });
-
-            function filterNames(term) {
-                term = term.toLowerCase();
-                const cards = document.querySelectorAll(".result-card");
-                let visibleCount = 0;
-
-                // Tampilkan/Sembunyikan Tombol X
-                if (term.length > 0) {
-                    clearSearchBtn.style.display = "block";
-                } else {
-                    clearSearchBtn.style.display = "none";
-                }
-
-                cards.forEach(card => {
-                    const name = card.querySelector("strong").innerText.toLowerCase();
-                    if(name.includes(term)) {
-                        card.classList.remove("hidden-item");
-                        visibleCount++;
-                    } else {
-                        card.classList.add("hidden-item");
-                    }
-                });
-
-                if(visibleCount === 0 && cards.length > 0) {
-                    noResultMsg.style.display = "block";
-                } else {
-                    noResultMsg.style.display = "none";
-                }
+        // --- DOM ELEMENTS ---
+        const els = {
+            output: document.getElementById("bulkListOutput"),
+            status: document.getElementById("syncStatus"),
+            search: document.getElementById("searchInput"),
+            sort: document.getElementById("sortSelect"),
+            input: document.getElementById("bulkInput"),
+            clearSearch: document.getElementById("clearSearch"),
+            stats: {
+                total: document.getElementById("statTotal"),
+                sent: document.getElementById("statSent"),
+                pending: document.getElementById("statPending")
             }
+        };
+
+        // --- INITIALIZATION ---
+        document.addEventListener("DOMContentLoaded", function() {
+            loadData();
             
-            // --- FUNGSI GENERATE BARU ---
-            document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
-                const rawText = bulkInput.value;
-                if (!rawText.trim()) { showAlert("Input daftar nama dulu!"); return; }
+            // Initial render dengan template default dulu agar tidak error
+            currentTemplate = localStorage.getItem("localTemplate") || defaultTemplate;
 
-                const names = rawText.split('\n');
-                let count = 0;
-                let dataToSync = []; 
+            // Bind Main Buttons
+            document.getElementById("bulkGenerateBtn").onclick = handleGenerate;
+            document.getElementById("openSettingsBtn").onclick = () => {
+                // Saat buka modal, isi dengan currentTemplate
+                document.getElementById("templateInput").value = currentTemplate;
+                openModal('settingsModal');
+            };
+            
+            document.getElementById("saveSettingsBtn").onclick = () => {
+                const newTpl = document.getElementById("templateInput").value;
+                
+                // 1. Update variabel lokal (Optimistic)
+                currentTemplate = newTpl;
+                localStorage.setItem("localTemplate", newTpl); // Cadangan di local
+                
+                // 2. Tutup modal & Render ulang list (agar link WA berubah)
+                closeModal('settingsModal');
+                renderList();
+                showAlert("Template disimpan!");
 
-                names.reverse().forEach(name => {
-                    const cleanName = name.trim();
-                    if (cleanName) {
-                        const linkUrl = baseURL + encodeURIComponent(cleanName).replace(/%20/g, '+');
-                        
-                        const itemData = { nama: cleanName, link: linkUrl };
-                        dataToSync.push(itemData);
-
-                        addCardToUI(cleanName, linkUrl, true);
-                        count++;
-                    }
+                // 3. Simpan ke Backend (Silent Sync)
+                updateStatus("loading", "Menyimpan template...");
+                postData({ action: "save_template", template: newTpl }, () => {
+                    updateStatus("idle", "Template tersimpan di Cloud");
                 });
+            };
 
-                if (count > 0) {
-                    bulkInput.value = "";
-                    dataToSync.reverse(); 
-                    sendToGoogleSheet(dataToSync);
-                    
-                    currentTotalTamu += count;
-                    updateCounter(currentTotalTamu);
-                    
-                    // Reset search jika ada data baru masuk
-                    searchInput.value = "";
-                    filterNames(""); 
-                    
-                } else {
-                    showAlert("Tidak ada nama valid.");
-                }
+            // Bind Search & Sort
+            els.search.addEventListener("keyup", renderList);
+            els.sort.addEventListener("change", renderList);
+            els.clearSearch.onclick = () => { els.search.value = ""; renderList(); };
+
+            // Bind Modal Actions
+            document.getElementById("confirmEditBtn").onclick = submitEdit;
+            document.getElementById("confirmDeleteBtn").onclick = submitDelete;
+            document.getElementById("editNameInput").addEventListener("keypress", (e) => {
+                if(e.key === "Enter") submitEdit();
             });
         });
 
-        function updateCounter(num) {
-            countDisplay.innerText = num;
-            currentTotalTamu = num;
+        // --- MODAL UTILITIES ---
+        window.openModal = function(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        window.showAlert = function(msg) {
+            document.getElementById("alertMsg").innerText = msg;
+            openModal("alertModal");
         }
 
-        function loadDataFromSheet() {
+        // --- CORE DATA LOGIC ---
+
+        function loadData() {
             if(scriptURL.includes("GANTI_DENGAN")) {
-                document.getElementById("loadingMsg").innerText = "URL Script belum diatur.";
+                document.getElementById("loadingMsg").innerText = "⚠ URL Script belum diatur."; return;
+            }
+            fetch(scriptURL)
+            .then(res => res.json())
+            .then(data => {
+                // HANDLE NEW STRUCTURE { guests: [], template: "" }
+                if(data.guests) {
+                    allGuests = data.guests;
+                    
+                    // Jika ada template dari server, pakai itu. Jika kosong, pakai default.
+                    if(data.template && data.template.trim() !== "") {
+                        currentTemplate = data.template;
+                        localStorage.setItem("localTemplate", currentTemplate); // Update cadangan
+                    }
+                } else {
+                    // Fallback jika backend belum update (masih array)
+                    if(Array.isArray(data)) allGuests = data;
+                }
+                
+                renderList();
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("loadingMsg").innerText = "Gagal memuat data.";
+            });
+        }
+
+        function handleGenerate() {
+            const raw = els.input.value;
+            if(!raw.trim()) { showAlert("Mohon isi nama tamu terlebih dahulu."); return; }
+
+            const names = raw.split('\n').map(n => n.trim()).filter(n => n);
+            if(names.length === 0) return;
+
+            // 1. Buat Data Lokal Sementara (Instant)
+            const tempGuests = names.map((name, index) => ({
+                id: Date.now() + index, 
+                nama: name,
+                link: baseURL + encodeURIComponent(name).replace(/%20/g, '+'),
+                isSent: "FALSE"
+            }));
+
+            // 2. Update State & UI secara Optimistic
+            allGuests.unshift(...tempGuests);
+            
+            renderList();
+            els.input.value = "";
+            showAlert(`${tempGuests.length} Tamu ditambahkan.`);
+
+            // 3. Sinkronisasi ke Server
+            updateStatus("loading", "Menyimpan ke Cloud...");
+            postData({ action: "create", data: tempGuests }, () => {
+                updateStatus("idle", "Tersimpan");
+            });
+        }
+
+        // --- RENDER & UI ---
+
+        function renderList() {
+            const term = els.search.value.toLowerCase();
+            const sort = els.sort.value;
+            
+            els.clearSearch.style.display = term ? "block" : "none";
+
+            // Filter
+            let filtered = allGuests.filter(g => g.nama.toLowerCase().includes(term));
+
+            // Sort
+            if(sort === 'newest') filtered.sort((a,b) => b.id - a.id);
+            else if(sort === 'oldest') filtered.sort((a,b) => a.id - b.id);
+            else if(sort === 'az') filtered.sort((a,b) => a.nama.localeCompare(b.nama));
+            else if(sort === 'unsent') filtered = filtered.filter(g => g.isSent !== "TRUE");
+
+            updateStats(allGuests);
+
+            els.output.innerHTML = "";
+            if(filtered.length === 0) {
+                if(allGuests.length === 0) {
+                     // Empty state handling
+                } else {
+                    document.getElementById("noResultMsg").style.display = "block";
+                }
                 return;
             }
+            document.getElementById("noResultMsg").style.display = "none";
 
-            fetch(scriptURL)
-            .then(response => response.json())
-            .then(data => {
-                bulkListOutput.innerHTML = "";
-                
-                updateCounter(data.length);
-                
-                if(data.length === 0) {
-                    bulkListOutput.innerHTML = '<p style="text-align:center; color:#ccc;">Belum ada data tamu.</p>';
-                    return;
-                }
+            // Gunakan currentTemplate untuk link WA
+            const tplToUse = currentTemplate;
 
-                data.forEach(item => {
-                    addCardToUI(item.nama, item.link, false);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById("loadingMsg").innerText = "Gagal memuat data. Cek koneksi/script.";
+            filtered.forEach(item => {
+                const isSent = item.isSent === "TRUE" || item.isSent === true;
+                const sentClass = isSent ? "sent" : "not-sent";
+                const checkClass = isSent ? "active" : "";
+                
+                const waMsg = tplToUse.replace(/{nama}/g, item.nama).replace(/{link}/g, item.link);
+                const waLink = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+                const safeMsgEncoded = encodeURIComponent(waMsg);
+
+                const html = `
+                <div class="result-card ${sentClass}">
+                    <div class="card-header">
+                        <div style="flex:1">
+                            <strong>${item.nama}</strong>
+                            <small>${item.link}</small>
+                        </div>
+                        <div class="card-actions">
+                            <button class="icon-btn" onclick="prepEdit('${item.id}', '${item.nama}')" title="Edit">&#9998;</button>
+                            <button class="icon-btn btn-delete" onclick="prepDelete('${item.id}', '${item.nama}')" title="Hapus">&times;</button>
+                        </div>
+                    </div>
+                    <div class="action-row">
+                        <a href="${waLink}" target="_blank" class="btn-wa" onclick="markAsSent('${item.id}')">
+                            &#128241; Kirim WA
+                        </a>
+                        <button class="btn-copy" onclick="handleCopy('${item.id}', '${safeMsgEncoded}')">
+                            Salin
+                        </button>
+                        <button class="btn-check ${checkClass}" onclick="toggleStatus('${item.id}', ${!isSent})" title="Status">
+                            &#10003;
+                        </button>
+                    </div>
+                </div>`;
+                els.output.insertAdjacentHTML('beforeend', html);
             });
         }
 
-        function addCardToUI(nama, link, isNew) {
-            const waMessage = generateWhatsAppMessage(nama, link);
-            const safeMsgEncoded = encodeURIComponent(waMessage);
-            const waLink = `https://wa.me/?text=${safeMsgEncoded}`;
-            
-            const newClass = isNew ? "new-item" : "";
-
-            const cardHTML = `
-            <div class="result-card ${newClass}">
-                <div class="result-info">
-                    <strong>${nama}</strong>
-                    <small>${link}</small>
-                </div>
-                <div class="action-row">
-                    <a href="${waLink}" target="_blank" class="btn-link btn-success" style="text-align:center; display:flex; align-items:center; justify-content:center; flex:1; font-size:13px;">
-                        &#128241; Kirim WA
-                    </a>
-                    <button class="btn-copy-sm" onclick="copyFullMessage('${safeMsgEncoded}')" style="flex:1;">
-                        Salin Pesan
-                    </button>
-                </div>
-            </div>`;
-
-            bulkListOutput.insertAdjacentHTML('afterbegin', cardHTML);
+        function updateStats(data) {
+            const total = data.length;
+            const sent = data.filter(g => g.isSent === "TRUE" || g.isSent === true).length;
+            els.stats.total.innerText = total;
+            els.stats.sent.innerText = sent;
+            els.stats.pending.innerText = total - sent;
         }
 
-        function sendToGoogleSheet(data) {
-            updateStatus("loading", "⏳ Menyimpan ke database...");
+        // --- ACTION HANDLERS (MODAL TRIGGER) ---
 
+        window.prepEdit = function(id, name) {
+            currentEditId = id;
+            document.getElementById("editNameInput").value = name;
+            openModal("editModal");
+            setTimeout(() => document.getElementById("editNameInput").focus(), 100);
+        }
+
+        function submitEdit() {
+            const newName = document.getElementById("editNameInput").value;
+            if(!newName || !currentEditId) return;
+
+            const newLink = baseURL + encodeURIComponent(newName).replace(/%20/g, '+');
+            
+            // Optimistic UI Update
+            const idx = allGuests.findIndex(g => g.id == currentEditId);
+            if(idx > -1) {
+                allGuests[idx].nama = newName;
+                allGuests[idx].link = newLink;
+                renderList();
+            }
+
+            closeModal("editModal");
+            postData({ action: "update", id: currentEditId, newName: newName, newLink: newLink });
+        }
+
+        window.prepDelete = function(id, name) {
+            currentDeleteId = id;
+            document.getElementById("deleteNameTarget").innerText = name;
+            openModal("deleteModal");
+        }
+
+        function submitDelete() {
+            if(!currentDeleteId) return;
+            
+            // Optimistic UI Update
+            allGuests = allGuests.filter(g => g.id != currentDeleteId);
+            renderList();
+            
+            closeModal("deleteModal");
+            postData({ action: "delete", id: currentDeleteId });
+        }
+
+        window.handleCopy = function(id, encodedMsg) {
+            markAsSent(id);
+            const msg = decodeURIComponent(encodedMsg);
+            navigator.clipboard.writeText(msg).then(() => showAlert("Pesan disalin & ditandai terkirim!"));
+        }
+
+        window.toggleStatus = function(id, newStatus) {
+            const statusStr = newStatus ? "TRUE" : "FALSE";
+            const idx = allGuests.findIndex(g => g.id == id);
+            
+            // Optimistic UI
+            if(idx > -1) {
+                allGuests[idx].isSent = statusStr;
+                renderList();
+            }
+            postData({ action: "toggle_status", id: id, status: statusStr });
+        }
+
+        window.markAsSent = function(id) {
+            const idx = allGuests.findIndex(g => g.id == id);
+            if(idx > -1 && allGuests[idx].isSent !== "TRUE") {
+                toggleStatus(id, true);
+            }
+        }
+
+        // --- BACKEND SYNC ---
+        function postData(payload, callback) {
             fetch(scriptURL, {
                 method: 'POST',
-                mode: 'no-cors', 
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(() => {
-                updateStatus("success", "✓ Tersimpan!");
-                setTimeout(() => { updateStatus("idle", ""); }, 3000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                updateStatus("error", "⚠ Gagal menyimpan.");
-            });
+                body: JSON.stringify(payload)
+            }).then(() => {
+                if(callback) callback();
+            }).catch(err => updateStatus("error", "Gagal menyimpan"));
         }
 
-        function updateStatus(state, message) {
-            syncStatus.className = 'sync-status status-' + state;
-            syncStatus.innerText = message;
-        }
-
-        function generateWhatsAppMessage(namaAsli, linkLengkap) {
-            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) *${namaAsli}* untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n*${linkLengkap}*\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) *${namaAsli}* berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*\n\nHormat Kami\n*Fitri & Ihsan*`;
-        }
-
-        function showAlert(msg) {
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('custom-alert').classList.add('active');
-        }
-
-        function copyToClipboard(text, successMsg) {
-            navigator.clipboard.writeText(text).then(() => showAlert(successMsg))
-            .catch(err => { console.error(err); showAlert("Gagal menyalin."); });
-        }
-
-        function copyFullMessage(encodedMsg) {
-            const fullMessage = decodeURIComponent(encodedMsg);
-            copyToClipboard(fullMessage, "Pesan lengkap berhasil disalin!");
+        function updateStatus(state, msg) {
+            els.status.innerText = msg;
+            els.status.style.color = state === 'error' ? '#e74c3c' : (state === 'loading' ? '#f39c12' : '#2ecc71');
+            if(state === 'idle') setTimeout(() => els.status.innerText = "", 2000);
         }
     </script>
 </body>
