@@ -128,14 +128,18 @@
         
         <span id="syncStatus" class="sync-status status-idle"></span>
         
-        <h3 style="text-align:left; font-size:16px; margin-bottom:10px;">Daftar Tamu (Database):</h3>
+        <h3 style="text-align:left; font-size:16px; margin-bottom:10px;">
+            Daftar Tamu (<span id="countDisplay">0</span>)
+        </h3>
+        
         <div id="bulkListOutput">
             <div style="text-align:center; padding:20px; color:#999;" id="loadingMsg">
                 <div class="spinner"></div> Memuat data dari Google Sheet...
             </div>
         </div>
         
-        <div style="margin-top:20px; display:none;"> <textarea id="bulkResultText"></textarea>
+        <div style="margin-top:20px; display:none;">
+            <textarea id="bulkResultText"></textarea>
         </div>
     </div>
 
@@ -157,9 +161,11 @@
 
         const bulkListOutput = document.getElementById("bulkListOutput");
         const syncStatus = document.getElementById("syncStatus");
+        const countDisplay = document.getElementById("countDisplay"); // Element Counter
+        
+        let currentTotalTamu = 0; // Variabel global untuk simpan jumlah
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Langsung load data saat web dibuka
             loadDataFromSheet();
 
             const bulkInput = document.getElementById("bulkInput");
@@ -173,33 +179,40 @@
                 let count = 0;
                 let dataToSync = []; 
 
-                // Proses nama satu per satu
-                // Kita balik urutannya agar saat di prepend, urutan input tetap terjaga secara visual
+                // Proses Input
                 names.reverse().forEach(name => {
                     const cleanName = name.trim();
                     if (cleanName) {
                         const linkUrl = baseURL + encodeURIComponent(cleanName).replace(/%20/g, '+');
                         
-                        // Data object
                         const itemData = { nama: cleanName, link: linkUrl };
-                        dataToSync.push(itemData); // Masuk antrian sync
+                        dataToSync.push(itemData);
 
-                        // Tambahkan ke UI (Paling Atas)
                         addCardToUI(cleanName, linkUrl, true);
                         count++;
                     }
                 });
 
                 if (count > 0) {
-                    bulkInput.value = ""; // Kosongkan input
-                    // Kembalikan urutan dataToSync ke normal untuk dikirim ke Sheet
+                    bulkInput.value = "";
                     dataToSync.reverse(); 
                     sendToGoogleSheet(dataToSync);
+                    
+                    // UPDATE JUMLAH TAMU SECARA REALTIME
+                    currentTotalTamu += count;
+                    updateCounter(currentTotalTamu);
+                    
                 } else {
                     showAlert("Tidak ada nama valid.");
                 }
             });
         });
+
+        // --- FUNGSI UPDATE COUNTER ---
+        function updateCounter(num) {
+            countDisplay.innerText = num;
+            currentTotalTamu = num;
+        }
 
         // --- FUNGSI BACA DATA DARI SHEET (GET) ---
         function loadDataFromSheet() {
@@ -211,15 +224,16 @@
             fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
-                // Hapus loading message
                 bulkListOutput.innerHTML = "";
+                
+                // UPDATE JUMLAH TAMU DARI DATABASE
+                updateCounter(data.length);
                 
                 if(data.length === 0) {
                     bulkListOutput.innerHTML = '<p style="text-align:center; color:#ccc;">Belum ada data tamu.</p>';
                     return;
                 }
 
-                // Render setiap item dari database
                 data.forEach(item => {
                     addCardToUI(item.nama, item.link, false);
                 });
@@ -230,7 +244,6 @@
             });
         }
 
-        // --- FUNGSI TAMPILKAN KARTU (UI) ---
         function addCardToUI(nama, link, isNew) {
             const waMessage = generateWhatsAppMessage(nama, link);
             const safeMsgEncoded = encodeURIComponent(waMessage);
@@ -254,11 +267,9 @@
                 </div>
             </div>`;
 
-            // Prepend: Tambahkan ke paling atas list
             bulkListOutput.insertAdjacentHTML('afterbegin', cardHTML);
         }
 
-        // --- FUNGSI KIRIM KE GOOGLE SHEET (POST) ---
         function sendToGoogleSheet(data) {
             updateStatus("loading", "⏳ Menyimpan ke database...");
 
