@@ -93,7 +93,6 @@
         ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #ccc; }
 
-/* --- PERBAIKAN TAMPILAN KARTU (MOBILE FRIENDLY) --- */
         .result-card {
             background: #fff; border: 1px solid #f0f0f0;
             border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
@@ -102,45 +101,20 @@
             transition: all 0.3s ease; position: relative; overflow: hidden;
             animation: slideDown 0.3s ease-out;
         }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         
-        .card-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; /* Agar tombol tetap di atas jika nama 2 baris */
-        }
+        .result-card.sent { border-left: 4px solid var(--success); background: #f8fff9; }
+        .result-card.not-sent { border-left: 4px solid #e0e0e0; }
         
-        /* Area Teks Nama */
-        .card-header > div:first-child {
-            flex: 1; /* Ambil sisa ruang */
-            min-width: 0; /* PENTING: Mencegah teks mendesak tombol keluar layar */
-            padding-right: 10px; /* Jarak antara teks dan tombol */
-        }
-
-        .card-header strong { font-size: 16px; color: var(--dark); display: block; margin-bottom: 4px; word-wrap: break-word; }
-        .card-header small { color: var(--gray); font-size: 11px; word-break: break-all; display: block; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-header strong { font-size: 16px; color: var(--dark); display: block; margin-bottom: 4px; }
+        .card-header small { color: var(--gray); font-size: 11px; word-break: break-all; }
         
-        /* Area Tombol Aksi */
-        .card-actions { 
-            display: flex; 
-            gap: 8px; 
-            flex-shrink: 0; /* PENTING: Mencegah tombol mengecil/hilang */
-        }
-
-        /* Tombol Edit & Hapus */
-        .icon-btn { 
-            background: #f1f3f5; /* Beri background agar terlihat jelas sebagai tombol */
-            color: #666; /* Warna ikon digelapkan agar kontras */
-            padding: 0;
-            width: 36px; /* Lebar Pasti */
-            height: 36px; /* Tinggi Pasti */
-            border-radius: 50%; /* Bentuk Bulat */
-            font-size: 16px; 
-            display: flex; align-items: center; justify-content: center; /* Ikon di tengah */
-            transition: 0.2s;
-        }
-        
-        .icon-btn:hover { background: #e9ecef; color: var(--primary); }
-        .btn-delete:hover { background: #fee2e2; color: var(--danger); }
+        .card-actions { display: flex; gap: 2px; }
+        .icon-btn { background: transparent; color: #ccc; padding: 6px; font-size: 16px; border-radius: 6px; }
+        .icon-btn:hover { background: #f5f5f5; color: var(--primary); }
+        .btn-delete:hover { color: var(--danger); background: #fff5f5; }
 
         .action-row { display: flex; gap: 8px; margin-top: 5px; }
         .btn-wa { background-color: var(--success); flex: 2; color: white; padding: 10px; font-size: 13px; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2); }
