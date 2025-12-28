@@ -8,57 +8,47 @@
     <style>
         /* --- VARIABLES & BASE --- */
         :root {
-            --primary: #4a90e2;
-            --primary-hover: #357abd;
-            --success: #2ecc71;
-            --success-hover: #27ae60;
-            --danger: #e74c3c;
-            --danger-hover: #c0392b;
-            --dark: #34495e;
-            --gray: #95a5a6;
-            --light: #f8f9fa;
-            --bg: #f0f2f5;
-            --radius: 12px;
-            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --primary: #4a90e2; --primary-hover: #357abd;
+            --success: #2ecc71; --success-hover: #27ae60;
+            --danger: #e74c3c; --danger-hover: #c0392b;
+            --dark: #34495e; --gray: #95a5a6;
+            --light: #f8f9fa; --bg: #f0f2f5;
+            --radius: 12px; --shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            margin: 0; padding: 20px;
+            background-color: var(--bg); margin: 0; padding: 20px;
             display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh; color: var(--dark);
         }
 
         .container {
             background: #ffffff; padding: 30px; border-radius: 20px;
-            box-shadow: var(--shadow);
-            width: 100%; max-width: 550px; text-align: center;
-            box-sizing: border-box; position: relative;
-            transition: transform 0.3s ease;
+            box-shadow: var(--shadow); width: 100%; max-width: 550px;
+            text-align: center; box-sizing: border-box; position: relative;
         }
 
         h2 { margin: 0 0 5px; color: var(--dark); letter-spacing: -0.5px; }
         .subtitle { color: var(--gray); font-weight: 400; margin-bottom: 25px; display: block; font-size: 0.9em; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* --- DASHBOARD --- */
-        .dashboard { display: flex; gap: 15px; margin-bottom: 25px; }
+        /* DASHBOARD */
+        .dashboard { display: flex; gap: 10px; margin-bottom: 25px; }
         .stat-card {
-            flex: 1; padding: 15px 10px; border-radius: var(--radius);
-            color: white; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1; padding: 15px 5px; border-radius: var(--radius);
+            color: white; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-3px); }
         .bg-blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
         .bg-green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
         .bg-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-		.bg-purple { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .bg-purple { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
         
-        .stat-num { font-size: 24px; font-weight: 800; display: block; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .stat-label { font-size: 11px; opacity: 0.9; font-weight: 600; text-transform: uppercase; }
+        .stat-num { font-size: 20px; font-weight: 800; display: block; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-label { font-size: 10px; opacity: 0.9; font-weight: 600; text-transform: uppercase; }
 
-        /* --- INPUT AREA --- */
+        /* INPUT AREA */
         textarea {
             width: 100%; padding: 15px; font-size: 14px;
             border: 2px solid #eee; border-radius: var(--radius);
@@ -68,7 +58,7 @@
         }
         textarea:focus { border-color: var(--primary); background: #fff; }
 
-        /* --- BUTTONS --- */
+        /* BUTTONS */
         button, .btn-wa {
             border: none; border-radius: 8px; cursor: pointer;
             font-weight: 600; transition: all 0.2s;
@@ -76,15 +66,14 @@
             text-decoration: none; font-size: 14px;
         }
         .btn-primary { 
-            width: 100%; padding: 14px; 
-            background: var(--primary); color: white;
+            width: 100%; padding: 14px; background: var(--primary); color: white;
             box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
         }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
         .btn-settings { background: none; color: var(--gray); border: 1px dashed #ccc; margin-bottom: 20px; font-size: 12px; padding: 8px 20px; border-radius: 50px; }
         .btn-settings:hover { border-color: var(--primary); color: var(--primary); background: #f0f7ff; }
 
-        /* --- TOOLBAR --- */
+        /* TOOLBAR */
         .toolbar { display: flex; gap: 10px; margin-bottom: 15px; margin-top: 10px; }
         .search-container { position: relative; flex: 2; }
         .search-box { width: 100%; padding: 12px 35px 12px 15px; font-size: 14px; border: 1px solid #eee; border-radius: var(--radius); background-color: #f9f9f9; outline: none; transition: 0.3s; box-sizing: border-box; }
@@ -92,10 +81,10 @@
         .search-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ccc; display: none; font-size: 18px; }
         .sort-select { flex: 1; padding: 0 10px; border: 1px solid #eee; border-radius: var(--radius); background: #f9f9f9; font-size: 13px; outline: none; cursor: pointer; color: var(--dark); }
 
-        /* --- LIST OUTPUT --- */
+        /* LIST OUTPUT */
         #bulkListOutput { margin-top: 10px; text-align: left; max-height: 550px; overflow-y: auto; padding-right: 5px; }
         
-        /* SCROLLBAR CUSTOM */
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
@@ -109,11 +98,7 @@
             transition: all 0.3s ease; position: relative; overflow: hidden;
             animation: slideDown 0.3s ease-out;
         }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .result-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         
         .result-card.sent { border-left: 4px solid var(--success); background: #f8fff9; }
@@ -128,19 +113,15 @@
         .icon-btn:hover { background: #f5f5f5; color: var(--primary); }
         .btn-delete:hover { color: var(--danger); background: #fff5f5; }
 
-        /* --- ACTION ROW BUTTONS --- */
         .action-row { display: flex; gap: 8px; margin-top: 5px; }
-        
         .btn-wa { background-color: var(--success); flex: 2; color: white; padding: 10px; font-size: 13px; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2); }
         .btn-wa:hover { background-color: var(--success-hover); transform: translateY(-1px); }
-
         .btn-copy { background-color: #fff; border: 1px solid #eee; color: var(--dark); flex: 1; font-size: 13px; font-weight: 600; }
         .btn-copy:hover { background-color: #f8f9fa; border-color: #ddd; }
-
         .btn-check { background-color: #f1f3f5; color: #bdc3c7; width: 42px; flex: 0 0 42px; font-size: 18px; padding: 0; transition: 0.3s; }
         .btn-check.active { background-color: var(--success); color: white; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3); }
 
-        /* --- MODAL SYSTEM (AESTHETIC) --- */
+        /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px);
@@ -160,28 +141,22 @@
 
         .modal-title { margin: 0 0 10px; font-size: 18px; color: var(--dark); font-weight: 700; }
         .modal-desc { margin: 0 0 20px; font-size: 13px; color: var(--gray); line-height: 1.5; white-space: pre-wrap; }
-
-        .modal-input {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 15px; outline: none; box-sizing: border-box; margin-bottom: 20px;
-            text-align: center; color: var(--dark);
-        }
+        .modal-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; box-sizing: border-box; margin-bottom: 20px; text-align: center; color: var(--dark); }
         .modal-input:focus { border-color: var(--primary); background: #fcfeff; }
-
         .modal-footer { display: flex; gap: 10px; justify-content: center; }
         .modal-btn { flex: 1; padding: 12px; font-size: 14px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; }
-        
         .btn-cancel { background: #f1f3f5; color: var(--dark); }
         .btn-cancel:hover { background: #e9ecef; }
-        
         .btn-confirm-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); }
         .btn-confirm-delete { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3); }
-
-        /* --- LOADING SPINNER --- */
+        
         .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ddd; border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        #syncStatus { font-size: 12px; margin: 10px 0; font-weight: 500; height: 16px; transition: color 0.3s; }
+        #syncStatus { font-size: 12px; margin: 10px 0; font-weight: 500; height: 16px; transition: color 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        
+        /* New for Pending Queue */
+        .queue-badge { background: #f39c12; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; vertical-align: middle; margin-left: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -190,27 +165,26 @@
         <h2>Generator Tamu Undangan</h2>
         <span class="subtitle">The Wedding of Fitri & Ihsan</span>
         
-		<div class="dashboard">
-    <div class="stat-card bg-blue">
-        <span class="stat-num" id="statTotal">0</span>
-        <span class="stat-label">Total</span>
-    </div>
-    <div class="stat-card bg-green">
-        <span class="stat-num" id="statSent">0</span>
-        <span class="stat-label">Terkirim</span>
-    </div>
-    <div class="stat-card bg-orange">
-        <span class="stat-num" id="statPending">0</span>
-        <span class="stat-label">Belum</span>
-    </div>
-    
-    <div class="stat-card bg-purple">
-        <span class="stat-num" id="statPercent">0%</span>
-        <span class="stat-label">Progres</span>
-    </div>
-</div>
-		
-        <button class="btn-settings" id="openSettingsBtn">&#9881; Atur Template Pesan</button>
+        <div class="dashboard">
+            <div class="stat-card bg-blue">
+                <span class="stat-num" id="statTotal">0</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-card bg-green">
+                <span class="stat-num" id="statSent">0</span>
+                <span class="stat-label">Terkirim</span>
+            </div>
+            <div class="stat-card bg-orange">
+                <span class="stat-num" id="statPending">0</span>
+                <span class="stat-label">Belum</span>
+            </div>
+            <div class="stat-card bg-purple">
+                <span class="stat-num" id="statPercent">0%</span>
+                <span class="stat-label">Progres</span>
+            </div>
+        </div>
+        
+        <button class="btn-settings" id="openSettingsBtn">&#9881; Atur Template WhatsApp</button>
 
         <div class="form-group">
             <textarea id="bulkInput" placeholder="Ketik nama tamu baru disini... (Tekan enter untuk baris baru)&#10;Contoh:&#10;Jojo Wiroro&#10;Bowo Wibowo&#10;Lilil Lahidi"></textarea>
@@ -274,7 +248,7 @@
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-box" style="max-width:450px;">
             <h3 class="modal-title">Template WhatsApp</h3>
-            <p class="modal-desc" style="margin-bottom:10px">Gunakan <b>{nama}</b> dan <b>{link}</b> sebagai variabel.<br><b>Jangan diubah !!!</b></p>
+            <p class="modal-desc" style="margin-bottom:10px">Kode <b>{nama}</b> dan <b>{link}</b> adalah rumus variabel.<br><b>Jangan diubah !!!</b></p>
             <textarea id="templateInput" style="height:120px; font-size:12px; margin-bottom:15px; text-align:left;"></textarea>
             <div class="modal-footer">
                 <button class="modal-btn btn-cancel" onclick="closeModal('settingsModal')">Batal</button>
@@ -285,15 +259,16 @@
 
     <script>
         // --- CONFIGURATION ---
-        // PASTITAN URL DEPLOY ADALAH YANG TERBARU SETELAH UPDATE SCRIPT DI GAS
         const scriptURL = 'https://script.google.com/macros/s/AKfycbx5Do6JwIv_NzPobEaXYl5qpgQERe3n-EqrD4baLDhn9yr8ci6Urhaam0MpyC_nSMZgYg/exec'; 
         const baseURL = "https://fitri-ihsan.github.io/fi/?";
 
         // --- GLOBAL VARIABLES ---
         let allGuests = []; 
-        let currentTemplate = ""; // Menyimpan template dari Cloud
+        let currentTemplate = "";
         let currentEditId = null;
         let currentDeleteId = null;
+        let pendingQueue = []; // Antrian data saat offline
+        let isSyncing = false; // Flag status sync
 
         const defaultTemplate = `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*{nama}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) *{nama}* untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n{link}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*`;
 
@@ -309,132 +284,148 @@
                 total: document.getElementById("statTotal"),
                 sent: document.getElementById("statSent"),
                 pending: document.getElementById("statPending"),
-                percent: document.getElementById("statPercent") // <--- TAMBAHAN
+                percent: document.getElementById("statPercent")
             }
         };
 
         // --- INITIALIZATION ---
         document.addEventListener("DOMContentLoaded", function() {
+            // 1. Load Queue dari LocalStorage jika ada sisa sebelumnya
+            const savedQueue = localStorage.getItem("pendingQueue");
+            if(savedQueue) pendingQueue = JSON.parse(savedQueue);
+
             loadData();
-            
-            // Initial render dengan template default dulu agar tidak error
             currentTemplate = localStorage.getItem("localTemplate") || defaultTemplate;
 
-            // Bind Main Buttons
             document.getElementById("bulkGenerateBtn").onclick = handleGenerate;
+            
             document.getElementById("openSettingsBtn").onclick = () => {
-                // Saat buka modal, isi dengan currentTemplate
                 document.getElementById("templateInput").value = currentTemplate;
                 openModal('settingsModal');
             };
             
             document.getElementById("saveSettingsBtn").onclick = () => {
                 const newTpl = document.getElementById("templateInput").value;
-                
-                // 1. Update variabel lokal (Optimistic)
                 currentTemplate = newTpl;
-                localStorage.setItem("localTemplate", newTpl); // Cadangan di local
+                localStorage.setItem("localTemplate", newTpl);
                 
-                // 2. Tutup modal & Render ulang list (agar link WA berubah)
                 closeModal('settingsModal');
                 renderList();
                 showAlert("Template disimpan!");
-
-                // 3. Simpan ke Backend (Silent Sync)
-                updateStatus("loading", "Menyimpan template...");
-                postData({ action: "save_template", template: newTpl }, () => {
-                    updateStatus("idle", "Template tersimpan di Cloud");
-                });
+                saveToCache();
+                
+                // Masukkan ke antrian
+                addToQueue({ action: "save_template", template: newTpl });
             };
 
-            // Bind Search & Sort
             els.search.addEventListener("keyup", renderList);
             els.sort.addEventListener("change", renderList);
             els.clearSearch.onclick = () => { els.search.value = ""; renderList(); };
 
-            // Bind Modal Actions
             document.getElementById("confirmEditBtn").onclick = submitEdit;
             document.getElementById("confirmDeleteBtn").onclick = submitDelete;
             document.getElementById("editNameInput").addEventListener("keypress", (e) => {
                 if(e.key === "Enter") submitEdit();
             });
+
+            // --- AUTO SYNC LISTENER ---
+            // Ketika internet nyala, otomatis jalankan antrian
+            window.addEventListener('online',  () => {
+                updateStatus('loading', 'Internet terhubung. Menyinkronkan...');
+                processQueue();
+                // Refresh data agar sinkron jika ada update dari orang lain
+                loadData(); 
+            });
+            window.addEventListener('offline', () => updateStatus('error', 'Koneksi terputus. Mode Offline.'));
+            
+            // Coba jalankan antrian saat start (siapa tau ada sisa)
+            if(navigator.onLine) processQueue();
         });
 
-        // --- MODAL UTILITIES ---
-        window.openModal = function(id) {
-            document.getElementById(id).classList.add('active');
-        }
-        window.closeModal = function(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-        window.showAlert = function(msg) {
-            document.getElementById("alertMsg").innerText = msg;
-            openModal("alertModal");
-        }
-
-        // --- CORE DATA LOGIC ---
-
+        // --- CORE DATA LOGIC WITH CACHE ---
+        
         function loadData() {
+            // 1. Load Cache First
+            const cached = localStorage.getItem("guestDataCache");
+            if(cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if(parsed.guests) {
+                        allGuests = parsed.guests;
+                        if(parsed.template) {
+                            currentTemplate = parsed.template;
+                            localStorage.setItem("localTemplate", parsed.template);
+                        }
+                        renderList();
+                    }
+                } catch(e) { console.error("Cache error", e); }
+            }
+
+            // 2. Fetch Fresh Data (Only if Online)
+            if(!navigator.onLine) {
+                updateStatus("error", "Offline Mode");
+                return;
+            }
+
             if(scriptURL.includes("GANTI_DENGAN")) {
                 document.getElementById("loadingMsg").innerText = "⚠ URL Script belum diatur."; return;
             }
+            
+            // Jangan timpa status jika sedang sync antrian
+            if(!isSyncing) updateStatus("loading", "Menyinkronkan data...");
+            
             fetch(scriptURL)
             .then(res => res.json())
             .then(data => {
-                // HANDLE NEW STRUCTURE { guests: [], template: "" }
                 if(data.guests) {
                     allGuests = data.guests;
-                    
-                    // Jika ada template dari server, pakai itu. Jika kosong, pakai default.
                     if(data.template && data.template.trim() !== "") {
                         currentTemplate = data.template;
-                        localStorage.setItem("localTemplate", currentTemplate); // Update cadangan
+                        localStorage.setItem("localTemplate", currentTemplate);
                     }
-                } else {
-                    // Fallback jika backend belum update (masih array)
-                    if(Array.isArray(data)) allGuests = data;
+                    saveToCache();
+                    if(!isSyncing) updateStatus("idle", "Data Terupdate");
+                } else if(Array.isArray(data)) {
+                    allGuests = data; 
                 }
-                
                 renderList();
             })
             .catch(err => {
                 console.error(err);
-                document.getElementById("loadingMsg").innerText = "Gagal memuat data.";
+                if(allGuests.length > 0) updateStatus("error", "Gagal sinkron (Offline)");
+                else document.getElementById("loadingMsg").innerText = "Gagal memuat data (Cek Internet).";
             });
         }
 
-function handleGenerate() {
-            const raw = els.input.value;
-            if(!raw.trim()) { showAlert("Mohon isi nama tamu terlebih dahulu."); return; }
+        function saveToCache() {
+            localStorage.setItem("guestDataCache", JSON.stringify({
+                guests: allGuests,
+                template: currentTemplate
+            }));
+        }
 
-            // Ambil input, trim spasi, dan hapus baris kosong
+        function handleGenerate() {
+            const raw = els.input.value;
+            if(!raw.trim()) { showAlert("Isi nama tamu dulu."); return; }
+
             const names = raw.split('\n').map(n => n.trim()).filter(n => n);
             if(names.length === 0) return;
 
-            // --- VALIDASI 1: CEK DUPLIKAT DI DALAM INPUT ITU SENDIRI ---
-            // Mencari nama yang ditulis lebih dari 1 kali dalam textarea
-            const inputDuplicates = names.filter((item, index) => 
-                names.map(n => n.toLowerCase()).indexOf(item.toLowerCase()) !== index
-            );
-
-            if (inputDuplicates.length > 0) {
-                // Gunakan Set agar nama yang muncul di alert unik (tidak berulang-ulang)
-                const uniqueDupes = [...new Set(inputDuplicates)];
-                showAlert("Gagal! Ada nama kembar di dalam input Anda (baris berbeda):\n\n- " + uniqueDupes.join("\n- "));
-                return; 
-            }
-
-            // --- VALIDASI 2: CEK DUPLIKAT TERHADAP DATA LAMA ---
-            const existingNames = allGuests.map(g => g.nama.toLowerCase());
-            const dbDuplicates = names.filter(newName => existingNames.includes(newName.toLowerCase()));
-
-            if (dbDuplicates.length > 0) {
-                showAlert("Gagal! Nama berikut sudah pernah disimpan sebelumnya:\n\n- " + dbDuplicates.join("\n- "));
+            // Validasi Input
+            const inputDupes = names.filter((item, index) => names.map(n => n.toLowerCase()).indexOf(item.toLowerCase()) !== index);
+            if(inputDupes.length > 0) {
+                showAlert("Gagal! Ada nama kembar di input:\n- " + [...new Set(inputDupes)].join("\n- "));
                 return;
             }
-            // --- VALIDASI SELESAI ---
 
-            // 1. Buat Data Lokal Sementara (Instant)
+            // Validasi Database
+            const existing = allGuests.map(g => g.nama.toLowerCase());
+            const dbDupes = names.filter(n => existing.includes(n.toLowerCase()));
+            if(dbDupes.length > 0) {
+                showAlert("Gagal! Nama ini sudah ada:\n- " + dbDupes.join("\n- "));
+                return;
+            }
+
             const tempGuests = names.map((name, index) => ({
                 id: Date.now() + index, 
                 nama: name,
@@ -442,53 +433,41 @@ function handleGenerate() {
                 isSent: "FALSE"
             }));
 
-            // 2. Update State & UI secara Optimistic
+            // UI Optimistic
             allGuests.unshift(...tempGuests);
-            
+            saveToCache();
             renderList();
             els.input.value = "";
             showAlert(`${tempGuests.length} Tamu ditambahkan.`);
-
-            // 3. Sinkronisasi ke Server
-            updateStatus("loading", "Menyimpan ke Cloud...");
-            postData({ action: "create", data: tempGuests }, () => {
-                updateStatus("idle", "Tersimpan");
-            });
+            
+            // Masuk Antrian
+            addToQueue({ action: "create", data: tempGuests });
         }
 
-        // --- RENDER & UI ---
+        // --- UI FUNCTIONS ---
 
         function renderList() {
             const term = els.search.value.toLowerCase();
             const sort = els.sort.value;
-            
             els.clearSearch.style.display = term ? "block" : "none";
 
-            // Filter
             let filtered = allGuests.filter(g => g.nama.toLowerCase().includes(term));
 
-            // Sort
             if(sort === 'newest') filtered.sort((a,b) => b.id - a.id);
             else if(sort === 'oldest') filtered.sort((a,b) => a.id - b.id);
             else if(sort === 'az') filtered.sort((a,b) => a.nama.localeCompare(b.nama));
             else if(sort === 'unsent') filtered = filtered.filter(g => g.isSent !== "TRUE");
 
             updateStats(allGuests);
-
             els.output.innerHTML = "";
+            
             if(filtered.length === 0) {
-                if(allGuests.length === 0) {
-                     // Empty state handling
-                } else {
-                    document.getElementById("noResultMsg").style.display = "block";
-                }
+                if(allGuests.length > 0) document.getElementById("noResultMsg").style.display = "block";
                 return;
             }
             document.getElementById("noResultMsg").style.display = "none";
 
-            // Gunakan currentTemplate untuk link WA
             const tplToUse = currentTemplate;
-
             filtered.forEach(item => {
                 const isSent = item.isSent === "TRUE" || item.isSent === true;
                 const sentClass = isSent ? "sent" : "not-sent";
@@ -496,7 +475,7 @@ function handleGenerate() {
                 
                 const waMsg = tplToUse.replace(/{nama}/g, item.nama).replace(/{link}/g, item.link);
                 const waLink = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
-                const safeMsgEncoded = encodeURIComponent(waMsg);
+                const safeMsg = encodeURIComponent(waMsg);
 
                 const html = `
                 <div class="result-card ${sentClass}">
@@ -506,44 +485,30 @@ function handleGenerate() {
                             <small>${item.link}</small>
                         </div>
                         <div class="card-actions">
-                            <button class="icon-btn" onclick="prepEdit('${item.id}', '${item.nama}')" title="Edit">&#9998;</button>
-                            <button class="icon-btn btn-delete" onclick="prepDelete('${item.id}', '${item.nama}')" title="Hapus">&times;</button>
+                            <button class="icon-btn" onclick="prepEdit('${item.id}', '${item.nama}')">✎</button>
+                            <button class="icon-btn btn-delete" onclick="prepDelete('${item.id}', '${item.nama}')">×</button>
                         </div>
                     </div>
                     <div class="action-row">
-                        <a href="${waLink}" target="_blank" class="btn-wa" onclick="markAsSent('${item.id}')">
-                            &#128241; Kirim WA
-                        </a>
-                        <button class="btn-copy" onclick="handleCopy('${item.id}', '${safeMsgEncoded}')">
-                            Salin
-                        </button>
-                        <button class="btn-check ${checkClass}" onclick="toggleStatus('${item.id}', ${!isSent})" title="Status">
-                            &#10003;
-                        </button>
+                        <a href="${waLink}" target="_blank" class="btn-wa" onclick="markAsSent('${item.id}')">Kirim WA</a>
+                        <button class="btn-copy" onclick="handleCopy('${item.id}', '${safeMsg}')">Salin</button>
+                        <button class="btn-check ${checkClass}" onclick="toggleStatus('${item.id}', ${!isSent})">✓</button>
                     </div>
                 </div>`;
                 els.output.insertAdjacentHTML('beforeend', html);
             });
         }
 
-function updateStats(data) {
+        function updateStats(data) {
             const total = data.length;
             const sent = data.filter(g => g.isSent === "TRUE" || g.isSent === true).length;
-            
             els.stats.total.innerText = total;
             els.stats.sent.innerText = sent;
             els.stats.pending.innerText = total - sent;
-
-            // --- HITUNG PERSENTASE ---
-            let percentage = 0;
-            if (total > 0) {
-                percentage = Math.round((sent / total) * 100);
-            }
-            els.stats.percent.innerText = percentage + "%";
+            els.stats.percent.innerText = total > 0 ? Math.round((sent/total)*100)+"%" : "0%";
         }
 
-
-        // --- ACTION HANDLERS (MODAL TRIGGER) ---
+        // --- HANDLERS ---
 
         window.prepEdit = function(id, name) {
             currentEditId = id;
@@ -555,19 +520,17 @@ function updateStats(data) {
         function submitEdit() {
             const newName = document.getElementById("editNameInput").value;
             if(!newName || !currentEditId) return;
-
             const newLink = baseURL + encodeURIComponent(newName).replace(/%20/g, '+');
             
-            // Optimistic UI Update
             const idx = allGuests.findIndex(g => g.id == currentEditId);
             if(idx > -1) {
                 allGuests[idx].nama = newName;
                 allGuests[idx].link = newLink;
+                saveToCache();
                 renderList();
             }
-
             closeModal("editModal");
-            postData({ action: "update", id: currentEditId, newName: newName, newLink: newLink });
+            addToQueue({ action: "update", id: currentEditId, newName: newName, newLink: newLink });
         }
 
         window.prepDelete = function(id, name) {
@@ -578,58 +541,102 @@ function updateStats(data) {
 
         function submitDelete() {
             if(!currentDeleteId) return;
-            
-            // Optimistic UI Update
             allGuests = allGuests.filter(g => g.id != currentDeleteId);
+            saveToCache();
             renderList();
-            
             closeModal("deleteModal");
-            postData({ action: "delete", id: currentDeleteId });
+            addToQueue({ action: "delete", id: currentDeleteId });
         }
 
         window.handleCopy = function(id, encodedMsg) {
             markAsSent(id);
-            const msg = decodeURIComponent(encodedMsg);
-            navigator.clipboard.writeText(msg).then(() => showAlert("Pesan disalin & ditandai terkirim!"));
+            navigator.clipboard.writeText(decodeURIComponent(encodedMsg)).then(() => showAlert("Disalin!"));
         }
 
         window.toggleStatus = function(id, newStatus) {
             const statusStr = newStatus ? "TRUE" : "FALSE";
             const idx = allGuests.findIndex(g => g.id == id);
-            
-            // Optimistic UI
             if(idx > -1) {
                 allGuests[idx].isSent = statusStr;
+                saveToCache();
                 renderList();
             }
-            postData({ action: "toggle_status", id: id, status: statusStr });
+            addToQueue({ action: "toggle_status", id: id, status: statusStr });
         }
 
         window.markAsSent = function(id) {
             const idx = allGuests.findIndex(g => g.id == id);
-            if(idx > -1 && allGuests[idx].isSent !== "TRUE") {
-                toggleStatus(id, true);
+            if(idx > -1 && allGuests[idx].isSent !== "TRUE") toggleStatus(id, true);
+        }
+
+        // --- QUEUE & SYNC SYSTEM ---
+        
+        // 1. Tambah ke Antrian
+        function addToQueue(payload) {
+            pendingQueue.push(payload);
+            localStorage.setItem("pendingQueue", JSON.stringify(pendingQueue));
+            
+            // Coba proses langsung jika ada internet
+            if(navigator.onLine) {
+                processQueue();
+            } else {
+                updateStatus("loading", `Menunggu internet (${pendingQueue.length} antrian)`);
             }
         }
 
-        // --- BACKEND SYNC ---
-        function postData(payload, callback) {
-            fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                if(callback) callback();
-            }).catch(err => updateStatus("error", "Gagal menyimpan"));
+        // 2. Proses Antrian (Recursive)
+        async function processQueue() {
+            if(pendingQueue.length === 0) {
+                isSyncing = false;
+                updateStatus("idle", "Semua data tersinkron");
+                return;
+            }
+
+            if(!navigator.onLine) {
+                isSyncing = false;
+                updateStatus("error", `Offline (${pendingQueue.length} tertunda)`);
+                return;
+            }
+
+            isSyncing = true;
+            updateStatus("loading", `Mengupload ${pendingQueue.length} data...`);
+            const item = pendingQueue[0]; // Ambil item pertama (FIFO)
+
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(item)
+                });
+                
+                // Sukses: Hapus dari antrian
+                pendingQueue.shift(); 
+                localStorage.setItem("pendingQueue", JSON.stringify(pendingQueue));
+                
+                // Lanjut ke item berikutnya
+                processQueue();
+
+            } catch (err) {
+                console.error("Sync fail", err);
+                isSyncing = false;
+                updateStatus("error", "Gagal upload, mencoba lagi nanti...");
+            }
         }
 
+        // --- UTILS ---
         function updateStatus(state, msg) {
-            els.status.innerText = msg;
-            els.status.style.color = state === 'error' ? '#e74c3c' : (state === 'loading' ? '#f39c12' : '#2ecc71');
-            if(state === 'idle') setTimeout(() => els.status.innerText = "", 2000);
+            // Priority: Error > Loading > Idle
+            const icon = state === 'loading' ? '<div class="spinner"></div>' : '';
+            els.status.innerHTML = icon + msg;
+            els.status.style.color = state === 'error' ? 'red' : (state === 'loading' ? '#f39c12' : '#2ecc71');
+            
+            if(state === 'idle') setTimeout(() => els.status.innerText = "", 3000);
         }
-    </script>
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.showAlert = (msg) => { document.getElementById("alertMsg").innerText = msg; openModal("alertModal"); };
 
+    </script>
 </body>
 </html>
