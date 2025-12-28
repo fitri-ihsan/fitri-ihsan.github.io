@@ -14,72 +14,39 @@
             display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh; color: #333;
             overflow-x: hidden;
-            user-select: none; /* Mencegah seleksi teks saat swipe */
         }
         .container {
             background: #ffffff; padding: 30px; border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             width: 100%; max-width: 600px; text-align: center;
             box-sizing: border-box; margin-top: 20px;
-            overflow: hidden; 
             position: relative;
         }
         h2 { margin-top: 0; margin-bottom: 5px; color: #222; }
-        .subtitle { font-size: 12px; color: #999; margin-bottom: 20px; display: block; }
-
-        /* --- TAB NAVIGATION --- */
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; position: relative; z-index: 2; }
-        .tab-btn {
-            flex: 1; padding: 12px; cursor: pointer;
-            background: none; border: none; font-weight: 600; color: #888;
-            transition: all 0.3s;
-        }
-        .tab-btn.active { color: #007bff; border-bottom: 2px solid #007bff; }
-
-        /* --- SLIDER CONTAINER --- */
-        .tab-window {
-            width: 100%;
-            overflow: hidden;
-            touch-action: pan-y; /* Penting: Izinkan scroll vertikal, blok scroll horizontal browser */
-        }
         
-        .tab-slider {
-            display: flex; 
-            width: 200%; 
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .tab-panel {
-            width: 50%; 
-            flex-shrink: 0;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-
         /* --- FORM ELEMENTS --- */
         .form-group { margin-bottom: 20px; text-align: left; }
         label { display: block; margin-bottom: 8px; font-weight: 600; }
         
-        input[type="text"], textarea {
+        textarea {
             width: 100%; padding: 12px 15px; font-size: 14px;
             border: 1px solid #ddd; border-radius: 8px;
             box-sizing: border-box; font-family: inherit;
-            user-select: text; /* Izinkan teks input dipilih */
         }
         textarea#bulkInput { height: 100px; }
 
         /* --- TOMBOL --- */
-        button {
+        button, .btn-link {
             width: 100%; padding: 12px 20px; font-size: 15px; font-weight: bold;
             border: none; border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; color: white;
+            transition: all 0.2s; color: white; display: inline-block;
+            box-sizing: border-box; text-decoration: none;
         }
         .btn-primary { background-color: #007bff; margin-bottom: 15px; }
         .btn-primary:hover { background-color: #0056b3; }
         
         .action-row { display: flex; gap: 10px; margin-top: 10px; }
-        .action-row button { margin-bottom: 0; flex: 1; }
-
+        
         .btn-success { background-color: #25D366; }
         .btn-success:hover { background-color: #1EAE57; }
 
@@ -92,17 +59,40 @@
         /* --- LIST HASIL --- */
         #bulkListOutput {
             margin-top: 20px; text-align: left;
-            max-height: 400px; overflow-y: auto;
+            max-height: 600px; overflow-y: auto;
             border: 1px solid #eee; padding: 10px; border-radius: 8px;
+            background: #fafafa;
         }
         .result-card {
             background: #fff; border: 1px solid #e0e0e0;
             border-radius: 8px; padding: 15px; margin-bottom: 10px;
             display: flex; flex-direction: column; gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
+        .result-card.new-item { border-left: 5px solid #007bff; background-color: #f0f7ff; }
+        
         .result-info strong { color: #333; font-size: 1.1em; display: block; }
         .result-info small { color: #007bff; word-break: break-all; }
+
+        /* --- STATUS SYNC --- */
+        .sync-status {
+            font-size: 12px; margin-top: -10px; margin-bottom: 15px;
+            display: block; min-height: 1.5em; font-weight: 500;
+        }
+        .status-idle { color: #999; }
+        .status-loading { color: #e67e22; }
+        .status-success { color: #28a745; }
+        .status-error { color: #dc3545; }
+        
+        /* --- LOADING SPINNER --- */
+        .spinner {
+            display: inline-block; width: 12px; height: 12px;
+            border: 2px solid #ccc;
+            border-radius: 50%; border-top-color: #333;
+            animation: spin 1s ease-in-out infinite; margin-right: 5px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- CUSTOM ALERT --- */
         .aesthetic-alert-overlay {
@@ -125,52 +115,27 @@
 
     <div class="container">
         <h2>Generator Tamu Undangan</h2>
-  <label>NURFITRIANI & SYUKUR AL IHSAN</label>
-                      
-        <span class="subtitle">Swipe kiri/kanan untuk pindah menu</span>
+        <label style="color:#666; font-weight:normal; margin-bottom:20px;">NURFITRIANI & SYUKUR AL IHSAN</label>
         
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('single')">Satuan</button>
-            <button class="tab-btn" onclick="switchTab('bulk')">Massal</button>
+        <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
+
+        <div class="form-group">
+            <label>Buat Undangan Baru:</label>
+            <textarea id="bulkInput" placeholder="Masukkan nama tamu baru disini..."></textarea>
         </div>
-
-        <div class="tab-window" id="swipeArea">
-            <div class="tab-slider" id="tabSlider">
-                
-                <div class="tab-panel">
-                    <div class="form-group">
-                        <label>Nama Tamu:</label>
-                        <input type="text" id="namaInput" placeholder="Contoh: Afnan Al Fatih">
-                    </div>
-                    
-                    <button class="btn-primary" id="buatLinkBtn">Buat Link</button>
-                    
-                    <div id="hasilLink" style="margin: 15px 0; padding:10px; background:#f8f9fa; border-radius:5px; word-break:break-all; min-height: 1.2em;">Link muncul di sini...</div>
-                    
-                    <div class="action-row">
-                        <button class="btn-success" id="kirimWaBtn">Kirim WA</button>
-                        <button class="btn-copy-sm" id="copyMessageSingleBtn">Salin Pesan</button>
-                    </div>
-                </div>
-
-                <div class="tab-panel">
-                    <div class="form-group">
-                        <label>Input Daftar Nama (Satu nama per baris):</label>
-                        <textarea id="bulkInput" placeholder="Bowo Subianti&#10;Bahlul Lahadidi&#10;Jorok Widodo"></textarea>
-                    </div>
-                    <button class="btn-primary" id="bulkGenerateBtn">Generate Daftar Tamu</button>
-                    
-                    <div id="bulkListOutput">
-                        <p style="text-align:center; color:#999;">Link akan muncul di sini...</p>
-                    </div>
-                    
-                    <div style="margin-top:20px;">
-                        <textarea id="bulkResultText" readonly style="height:60px; font-size:11px; color:#777; width:100%; border:1px solid #eee; border-radius:5px;"></textarea>
-                        <button class="btn-secondary btn-sm" id="copyBulkBtn" style="width:100%; margin-top:5px; padding:8px;">Salin Semua Link Mentah</button>
-                    </div>
-                </div>
-
+        
+        <button class="btn-primary" id="bulkGenerateBtn">Generate & Simpan</button>
+        
+        <span id="syncStatus" class="sync-status status-idle"></span>
+        
+        <h3 style="text-align:left; font-size:16px; margin-bottom:10px;">Daftar Tamu (Database):</h3>
+        <div id="bulkListOutput">
+            <div style="text-align:center; padding:20px; color:#999;" id="loadingMsg">
+                <div class="spinner"></div> Memuat data dari Google Sheet...
             </div>
+        </div>
+        
+        <div style="margin-top:20px; display:none;"> <textarea id="bulkResultText"></textarea>
         </div>
     </div>
 
@@ -184,144 +149,139 @@
 
     <script>
         const baseURL = "https://fitri-ihsan.github.io/fi/?";
+        
+        // ---------------------------------------------------------
+        // PASTE URL GOOGLE APPS SCRIPT ANDA DI SINI:
+        // ---------------------------------------------------------
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwcUqk5BHC8wLGzKAkZ-bCr0biS020OIWbvm-C8mmmCPOQbJwZFzlOsb9uIR7scgwJj/exec'; 
 
-        // --- FUNGSI SLIDE & SWIPE ---
-        let currentTab = 'single'; // Melacak posisi saat ini
+        const bulkListOutput = document.getElementById("bulkListOutput");
+        const syncStatus = document.getElementById("syncStatus");
 
-        function switchTab(mode) {
-            const slider = document.getElementById('tabSlider');
-            const btns = document.querySelectorAll('.tab-btn');
-
-            btns.forEach(btn => btn.classList.remove('active'));
-
-            if(mode === 'single') {
-                btns[0].classList.add('active');
-                slider.style.transform = 'translateX(0)';
-                currentTab = 'single';
-            } else {
-                btns[1].classList.add('active');
-                slider.style.transform = 'translateX(-50%)';
-                currentTab = 'bulk';
-            }
-        }
-
-        // --- LOGIKA SENTUH / SWIPE ---
         document.addEventListener("DOMContentLoaded", function() {
-            const swipeArea = document.getElementById('swipeArea');
-            let touchStartX = 0;
-            let touchEndX = 0;
-            let minSwipeDistance = 50; // Jarak minimal usapan agar dihitung swipe
+            // Langsung load data saat web dibuka
+            loadDataFromSheet();
 
-            swipeArea.addEventListener('touchstart', function(e) {
-                touchStartX = e.changedTouches[0].screenX;
-            }, {passive: true});
-
-            swipeArea.addEventListener('touchend', function(e) {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, {passive: true});
-
-            function handleSwipe() {
-                const distance = touchStartX - touchEndX;
-
-                // Jika jarak swipe cukup jauh
-                if (Math.abs(distance) > minSwipeDistance) {
-                    // Swipe ke KIRI (Jari bergerak dari kanan ke kiri)
-                    // Artinya user ingin melihat konten di SEBELAH KANAN
-                    if (distance > 0 && currentTab === 'single') {
-                        switchTab('bulk');
-                    }
-                    
-                    // Swipe ke KANAN (Jari bergerak dari kiri ke kanan)
-                    // Artinya user ingin melihat konten di SEBELAH KIRI
-                    if (distance < 0 && currentTab === 'bulk') {
-                        switchTab('single');
-                    }
-                }
-            }
-
-            // --- KODE LAMA (LOGIKA TOMBOL & GENERATOR) ---
-            
-            // LOGIKA TAB 1: SATUAN
-            const namaInput = document.getElementById("namaInput");
-            const hasilLink = document.getElementById("hasilLink");
-
-            document.getElementById("buatLinkBtn").addEventListener("click", function() {
-                const nama = namaInput.value.trim();
-                if (!nama) { showAlert("Masukkan nama tamu dulu!"); return; }
-                const link = baseURL + encodeURIComponent(nama).replace(/%20/g, '+');
-                hasilLink.textContent = link;
-                hasilLink.style.color = "#000";
-            });
-
-            document.getElementById("kirimWaBtn").addEventListener("click", function() {
-                const nama = namaInput.value.trim();
-                const link = hasilLink.textContent;
-                if (!nama || link.includes("Link muncul")) { showAlert("Klik 'Buat Link' dulu!"); return; }
-                const msg = generateWhatsAppMessage(nama, link);
-                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
-            });
-
-            document.getElementById("copyMessageSingleBtn").addEventListener("click", function() {
-                const nama = namaInput.value.trim();
-                const link = hasilLink.textContent;
-                if (!nama || link.includes("Link muncul")) { showAlert("Klik 'Buat Link' dulu!"); return; }
-                const msg = generateWhatsAppMessage(nama, link);
-                copyToClipboard(msg, "Pesan WA berhasil disalin!");
-            });
-
-            // LOGIKA TAB 2: MASSAL
             const bulkInput = document.getElementById("bulkInput");
-            const bulkListOutput = document.getElementById("bulkListOutput");
-            const bulkResultText = document.getElementById("bulkResultText");
-
+            
+            // --- FUNGSI GENERATE BARU ---
             document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
                 const rawText = bulkInput.value;
                 if (!rawText.trim()) { showAlert("Input daftar nama dulu!"); return; }
 
                 const names = rawText.split('\n');
-                let listHTML = "";
-                let rawLinks = "";
                 let count = 0;
+                let dataToSync = []; 
 
-                names.forEach(name => {
+                // Proses nama satu per satu
+                // Kita balik urutannya agar saat di prepend, urutan input tetap terjaga secara visual
+                names.reverse().forEach(name => {
                     const cleanName = name.trim();
                     if (cleanName) {
                         const linkUrl = baseURL + encodeURIComponent(cleanName).replace(/%20/g, '+');
-                        const waMessage = generateWhatsAppMessage(cleanName, linkUrl);
-                        const safeMsgEncoded = encodeURIComponent(waMessage);
-                        const waLink = `https://wa.me/?text=${safeMsgEncoded}`;
+                        
+                        // Data object
+                        const itemData = { nama: cleanName, link: linkUrl };
+                        dataToSync.push(itemData); // Masuk antrian sync
 
-                        listHTML += `
-                        <div class="result-card">
-                            <div class="result-info">
-                                <strong>${cleanName}</strong>
-                                <small>${linkUrl}</small>
-                            </div>
-                            <div class="action-row">
-                                <a href="${waLink}" target="_blank" class="btn-success btn-sm" style="text-decoration:none; text-align:center; line-height:30px; display:block; flex:1; border-radius:8px; color:white; font-weight:bold; font-size:13px;">
-                                    &#128241; Kirim WA
-                                </a>
-                                <button class="btn-copy-sm btn-sm" onclick="copyFullMessage('${safeMsgEncoded}')" style="flex:1;">
-                                    Salin Pesan
-                                </button>
-                            </div>
-                        </div>`;
-                        rawLinks += `${linkUrl}\n`;
+                        // Tambahkan ke UI (Paling Atas)
+                        addCardToUI(cleanName, linkUrl, true);
                         count++;
                     }
                 });
 
-                bulkListOutput.innerHTML = listHTML;
-                bulkResultText.value = rawLinks;
-                if (count > 0) showAlert(`Berhasil membuat ${count} undangan!`);
-            });
-            
-            document.getElementById("copyBulkBtn").addEventListener("click", function() {
-                if(!bulkResultText.value) return;
-                copyToClipboard(bulkResultText.value, "Semua link mentah tersalin!");
+                if (count > 0) {
+                    bulkInput.value = ""; // Kosongkan input
+                    // Kembalikan urutan dataToSync ke normal untuk dikirim ke Sheet
+                    dataToSync.reverse(); 
+                    sendToGoogleSheet(dataToSync);
+                } else {
+                    showAlert("Tidak ada nama valid.");
+                }
             });
         });
+
+        // --- FUNGSI BACA DATA DARI SHEET (GET) ---
+        function loadDataFromSheet() {
+            if(scriptURL.includes("GANTI_DENGAN")) {
+                document.getElementById("loadingMsg").innerText = "URL Script belum diatur.";
+                return;
+            }
+
+            fetch(scriptURL)
+            .then(response => response.json())
+            .then(data => {
+                // Hapus loading message
+                bulkListOutput.innerHTML = "";
+                
+                if(data.length === 0) {
+                    bulkListOutput.innerHTML = '<p style="text-align:center; color:#ccc;">Belum ada data tamu.</p>';
+                    return;
+                }
+
+                // Render setiap item dari database
+                data.forEach(item => {
+                    addCardToUI(item.nama, item.link, false);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("loadingMsg").innerText = "Gagal memuat data. Cek koneksi/script.";
+            });
+        }
+
+        // --- FUNGSI TAMPILKAN KARTU (UI) ---
+        function addCardToUI(nama, link, isNew) {
+            const waMessage = generateWhatsAppMessage(nama, link);
+            const safeMsgEncoded = encodeURIComponent(waMessage);
+            const waLink = `https://wa.me/?text=${safeMsgEncoded}`;
+            
+            const newClass = isNew ? "new-item" : "";
+
+            const cardHTML = `
+            <div class="result-card ${newClass}">
+                <div class="result-info">
+                    <strong>${nama}</strong>
+                    <small>${link}</small>
+                </div>
+                <div class="action-row">
+                    <a href="${waLink}" target="_blank" class="btn-link btn-success" style="text-align:center; display:flex; align-items:center; justify-content:center; flex:1; font-size:13px;">
+                        &#128241; Kirim WA
+                    </a>
+                    <button class="btn-copy-sm" onclick="copyFullMessage('${safeMsgEncoded}')" style="flex:1;">
+                        Salin Pesan
+                    </button>
+                </div>
+            </div>`;
+
+            // Prepend: Tambahkan ke paling atas list
+            bulkListOutput.insertAdjacentHTML('afterbegin', cardHTML);
+        }
+
+        // --- FUNGSI KIRIM KE GOOGLE SHEET (POST) ---
+        function sendToGoogleSheet(data) {
+            updateStatus("loading", "⏳ Menyimpan ke database...");
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                updateStatus("success", "✓ Tersimpan!");
+                setTimeout(() => { updateStatus("idle", ""); }, 3000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                updateStatus("error", "⚠ Gagal menyimpan.");
+            });
+        }
+
+        function updateStatus(state, message) {
+            syncStatus.className = 'sync-status status-' + state;
+            syncStatus.innerText = message;
+        }
 
         // --- HELPER FUNCTIONS ---
         function generateWhatsAppMessage(namaAsli, linkLengkap) {
