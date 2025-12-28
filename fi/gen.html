@@ -32,15 +32,24 @@
             width: 100%; padding: 12px 15px; font-size: 14px;
             border: 1px solid #ddd; border-radius: 8px;
             box-sizing: border-box; font-family: inherit;
+            /* AGAR TIDAK BISA DITARIK HORIZONTAL (Hanya Vertikal) */
+            resize: vertical; 
         }
         textarea#bulkInput { height: 100px; }
 
-        /* --- SEARCH BOX --- */
+        /* --- SEARCH BOX WRAPPER --- */
+        .search-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
         .search-box {
-            width: 100%; padding: 10px 15px; font-size: 14px;
+            width: 100%; 
+            padding: 10px 35px 10px 15px; 
+            font-size: 14px;
             border: 1px solid #ddd; border-radius: 8px;
             box-sizing: border-box; font-family: inherit;
-            margin-bottom: 10px;
             background-color: #f9f9f9;
         }
         .search-box:focus {
@@ -49,7 +58,22 @@
             outline: none;
         }
 
-        /* --- TOMBOL --- */
+        /* --- TOMBOL X HAPUS --- */
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            font-weight: bold;
+            display: none; 
+            user-select: none;
+        }
+        .search-clear:hover { color: #dc3545; }
+
+        /* --- TOMBOL UTAMA --- */
         button, .btn-link {
             width: 100%; padding: 12px 20px; font-size: 15px; font-weight: bold;
             border: none; border-radius: 8px; cursor: pointer;
@@ -84,7 +108,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: transform 0.2s;
         }
-        /* Class helper untuk menyembunyikan item saat search */
+        
         .hidden-item { display: none !important; }
 
         .result-card.new-item { border-left: 5px solid #007bff; background-color: #f0f7ff; }
@@ -149,7 +173,10 @@
             Daftar Tamu (<span id="countDisplay">0</span>)
         </h3>
         
-        <input type="text" id="searchInput" class="search-box" placeholder="&#128269; Cari nama tamu...">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="&#128269; Cari nama tamu...">
+            <span id="clearSearch" class="search-clear" title="Hapus pencarian">&times;</span>
+        </div>
         
         <div id="bulkListOutput">
             <div style="text-align:center; padding:20px; color:#999;" id="loadingMsg">
@@ -184,6 +211,7 @@
         const syncStatus = document.getElementById("syncStatus");
         const countDisplay = document.getElementById("countDisplay");
         const searchInput = document.getElementById("searchInput");
+        const clearSearchBtn = document.getElementById("clearSearch");
         const noResultMsg = document.getElementById("noResultMsg");
         
         let currentTotalTamu = 0;
@@ -193,11 +221,28 @@
 
             const bulkInput = document.getElementById("bulkInput");
             
-            // --- FUNGSI SEARCH (Filter) ---
+            // --- FUNGSI SEARCH (Filter & Clear) ---
             searchInput.addEventListener("keyup", function(e) {
-                const term = e.target.value.toLowerCase();
+                filterNames(e.target.value);
+            });
+
+            // Klik tombol X
+            clearSearchBtn.addEventListener("click", function() {
+                searchInput.value = ""; // Kosongkan input
+                filterNames(""); // Reset filter
+            });
+
+            function filterNames(term) {
+                term = term.toLowerCase();
                 const cards = document.querySelectorAll(".result-card");
                 let visibleCount = 0;
+
+                // Tampilkan/Sembunyikan Tombol X
+                if (term.length > 0) {
+                    clearSearchBtn.style.display = "block";
+                } else {
+                    clearSearchBtn.style.display = "none";
+                }
 
                 cards.forEach(card => {
                     const name = card.querySelector("strong").innerText.toLowerCase();
@@ -209,13 +254,12 @@
                     }
                 });
 
-                // Tampilkan pesan jika tidak ada hasil
                 if(visibleCount === 0 && cards.length > 0) {
                     noResultMsg.style.display = "block";
                 } else {
                     noResultMsg.style.display = "none";
                 }
-            });
+            }
             
             // --- FUNGSI GENERATE BARU ---
             document.getElementById("bulkGenerateBtn").addEventListener("click", function() {
@@ -249,7 +293,7 @@
                     
                     // Reset search jika ada data baru masuk
                     searchInput.value = "";
-                    searchInput.dispatchEvent(new Event('keyup')); // Trigger refresh filter
+                    filterNames(""); 
                     
                 } else {
                     showAlert("Tidak ada nama valid.");
@@ -341,7 +385,7 @@
         }
 
         function generateWhatsAppMessage(namaAsli, linkLengkap) {
-            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) ${namaAsli} untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n${linkLengkap}\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) ${namaAsli} berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*\n\nHormat Kami\n*Fitri & Ihsan*`;
+            return `Kepada Yth.\nBapak/Ibu/Saudara(i)\n*${namaAsli}*\n--------------------\n\n*Assalamualaikum Warahmatullahi Wabarakatuh*\n\nTanpa mengurangi rasa hormat perkenankan kami mengundang Bapak/Ibu/Saudara(i) *${namaAsli}* untuk menghadiri acara pernikahan kami.\n\n*Nurfitriani & Syukur Al Ihsan*\n\nBerikut Link Undangan kami:\n*${linkLengkap}*\n\nMerupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara(i) *${namaAsli}* berkenan untuk hadir dan memberikan doa restu.\nTerima kasih.\n\n*Wassalamualaikum Warahmatullahi Wabarakatuh*\n\nHormat Kami\n*Fitri & Ihsan*`;
         }
 
         function showAlert(msg) {
