@@ -969,6 +969,7 @@ QS. Ar-Rum 21</h1>				</div>
 
 
 
+
 <script>
   // === CONFIGURATION ===
   // Pastikan URL ini benar
@@ -1030,7 +1031,7 @@ QS. Ar-Rum 21</h1>				</div>
 
     const combinedText = (nama + " " + ucapan).toLowerCase();
     if(BAD_WORDS.some(word => combinedText.includes(word))) {
-        showToast("Mohon gunakan bahasa yang sopan ð", "error"); return; 
+        showToast("Mohon gunakan bahasa yang sopan 🙏", "error"); return; 
     }
 
     // Gunakan waktu browser saat ini untuk komentar baru
@@ -1076,7 +1077,7 @@ QS. Ar-Rum 21</h1>				</div>
     let uniqueID = 'like_' + nama.replace(/\s/g, '') + '_' + ucapan.substring(0,5).replace(/\s/g, '');
     let isLoved = localStorage.getItem(uniqueID) === 'true';
     let loveClass = isLoved ? 'loved' : '';
-    let iconHeart = isLoved ? 'â¤ï¸' : 'ð¤';
+    let iconHeart = isLoved ? '❤️' : '🤍';
     
     // Pastikan likesCount angka valid
     let currentDisplayLikes = likesCount ? likesCount : 0;
@@ -1092,7 +1093,7 @@ QS. Ar-Rum 21</h1>				</div>
           <div class="comment-message">${escapeHtml(ucapan)}</div>
           
           <div class="comment-footer">
-            <span class="comment-date">ð ${dateDisplay}</span>
+            <span class="comment-date">🕒 ${dateDisplay}</span>
             <button class="btn-love ${loveClass}" id="${uniqueID}" 
                 data-nama="${escapeHtml(nama)}" data-ucapan="${escapeHtml(ucapan)}"
                 onclick="toggleLove(this)">
@@ -1126,7 +1127,7 @@ QS. Ar-Rum 21</h1>				</div>
       let countSpan = btn.querySelector('.love-count');
       let iconSpan = btn.querySelector('.love-icon');
       btn.classList.add('loved');
-      iconSpan.innerText = 'â¤ï¸';
+      iconSpan.innerText = '❤️';
       countSpan.innerText = parseInt(countSpan.innerText) + 1;
       localStorage.setItem(btn.id, 'true'); 
       spawnFloatingHearts(5); 
@@ -1140,7 +1141,7 @@ QS. Ar-Rum 21</h1>				</div>
 
   function spawnFloatingHearts(amount) {
       const container = document.getElementById('hearts-container');
-      const emojis = ['â¤ï¸', 'ð', 'ð', 'ð¥°', 'â¨'];
+      const emojis = ['❤️', '💖', '💕', '🥰', '✨'];
       for (let i = 0; i < amount; i++) {
           setTimeout(() => {
               const el = document.createElement('div');
@@ -1787,15 +1788,3 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 	</body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
