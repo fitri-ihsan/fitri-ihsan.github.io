@@ -140,42 +140,17 @@
             line-height: 1.2;
         }
         
-              /* --- PRINT STYLES --- */
+        /* --- PRINT STYLES --- */
         @media print {
-            @page { 
-                size: var(--sheet-width) var(--sheet-height); 
-                margin: 0; 
-            }
-            
-            body { 
-                /* PENTING: Override display flex dari tailwind agar page-break jalan */
-                display: block !important; 
-                background: white; 
-                margin: 0; 
-                padding: 0; 
-                overflow: visible !important; 
-                height: auto !important; 
-            }
-
-            /* Sembunyikan elemen UI */
-            header, .floating-actions, .no-print, #info-zoom, #preview-scroll-area, 
-            #styleModal, #addModal, #editModal, #printModal, #configModal, #helpModal { 
-                display: none !important; 
-            }
-
-            /* Tampilkan area cetak */
-            #print-output { 
-                display: block !important; 
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-            }
+            @page { size: var(--sheet-width) var(--sheet-height); margin: 0; }
+            body { background: white; margin: 0; padding: 0; overflow: visible; height: auto; }
+            header, .floating-actions, .no-print, #info-zoom, #preview-scroll-area { display: none !important; }
+            #print-output { display: block !important; }
             
             .sheet-print-page {
                 width: var(--sheet-width); 
                 height: var(--sheet-height); 
-                page-break-after: always; /* PENTING: Memutus halaman */
+                page-break-after: always;
                 padding-top: var(--margin-top); 
                 padding-left: var(--margin-left);
                 display: grid; 
@@ -184,7 +159,6 @@
                 column-gap: var(--gap-x); 
                 row-gap: var(--gap-y);
             }
-
             .label-item-print { 
                 display: flex; 
                 flex-direction: column; 
@@ -193,12 +167,7 @@
                 text-align: center; 
                 height: 36mm; 
                 overflow: hidden; 
-                /* Pastikan warna teks hitam pekat untuk printer */
-                color: black !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
             }
-     
         }
     </style>
 </head>
@@ -233,11 +202,6 @@
                 <button onclick="document.getElementById('excelInput').click()" class="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition" title="Import Excel">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span class="hidden sm:inline">Import</span>
-                </button>
-
-                <button onclick="exportToExcel()" class="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg transition" title="Export to Excel">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    <span class="hidden sm:inline">Export</span>
                 </button>
 
                 <button onclick="openConfigModal()" class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 rounded-lg transition" title="Pengaturan">
@@ -346,160 +310,10 @@
 
     <div id="editModal" class="fixed inset-0 z-50 hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('editModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl w-full sm:max-w-md p-6"><h3 class="font-bold text-lg mb-6">Edit Label</h3><input type="hidden" id="editIndex"><div class="space-y-4"><input id="editName" class="w-full p-3 border rounded-xl" placeholder="Nama"><input id="editAddress" class="w-full p-3 border rounded-xl" placeholder="Alamat"></div><div class="mt-8 flex gap-3"><button onclick="confirmDelete()" class="flex-1 bg-red-50 text-red-600 py-3 rounded-xl font-bold">Hapus</button><button onclick="updateGuest()" class="flex-[2] bg-indigo-600 text-white py-3 rounded-xl font-bold">Update</button></div></div></div></div>
 
-    <div id="printModal" class="fixed inset-0 z-50 hidden">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('printModal')"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in">
-                <div class="px-5 py-4 border-b bg-slate-50 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800">Cetak Label</h3>
-                    <button onclick="closeModal('printModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
-                </div>
-                <div class="p-6 space-y-3">
-                    <button onclick="printLabels('all')" class="w-full py-3 border border-indigo-100 bg-indigo-50 text-indigo-700 rounded-xl font-bold hover:bg-indigo-100 transition">Cetak Semua</button>
-                    <button onclick="printLabels('selected')" class="w-full py-3 border border-slate-200 bg-white text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition">Cetak Yang Dipilih</button>
-                    
-                    <div class="relative pt-4 border-t mt-4">
-                        <label class="text-xs font-bold text-slate-400 absolute -top-2.5 left-2 bg-white px-1">Halaman Tertentu</label>
-                        <div class="flex gap-2">
-                            <input id="pageRangeMobile" type="text" placeholder="Contoh: 1, 3-5" class="flex-1 p-2 border rounded-lg text-sm bg-white text-slate-800 border-slate-300">
-                            <button onclick="printLabels('range')" class="bg-slate-800 text-white px-4 rounded-lg text-sm font-bold">Print</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="helpModal" class="fixed inset-0 z-[60] hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('helpModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col"><div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl"><h3 class="font-bold text-lg">Panduan Lengkap</h3><button onclick="closeModal('helpModal')">✕</button></div><div class="p-6 overflow-y-auto space-y-6 text-sm text-slate-600"><section><h4 class="font-bold text-slate-900">1. Input Manual / Copy-Paste</h4><p>Klik tombol (+) di bawah. Paste data dari Excel dengan format <b>Nama - Alamat</b>.</p></section><section><h4 class="font-bold text-slate-900">2. Import File Excel</h4><p>Klik tombol <b>Import Excel</b>. Gunakan file .xlsx dengan <b>Kolom A: Nama</b> dan <b>Kolom B: Alamat</b>.</p></section><section><h4 class="font-bold text-slate-900">3. Reset Data</h4><p>Tombol <b>Tong Sampah</b> (Merah) di atas akan menghapus SEMUA data.</p></section><section><h4 class="font-bold text-slate-900">4. Google Sync (Opsional)</h4><p>Untuk menyimpan data online, pasang Google Apps Script di Google Sheet Anda dan masukkan URL Web App di menu Pengaturan (Gear).</p><pre class="bg-slate-800 text-slate-300 p-2 rounded text-[10px] mt-2 overflow-auto">function doGet(e){var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();var d=s.getDataRange().getValues();if(d.length<=1&&d[0][0]=="")return ContentService.createTextOutput("[]");var r=[];for(var i=0;i<d.length;i++){if(d[i][0])r.push({name:d[i][0],address:d[i][1],selected:true});}return ContentService.createTextOutput(JSON.stringify(r)).setMimeType(ContentService.MimeType.JSON);}function doPost(e){try{var s=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();var j=JSON.parse(e.postData.contents);s.clear();if(j.length>0){var r=j.map(function(i){return[i.name,i.address];});s.getRange(1,1,r.length,2).setValues(r);}return ContentService.createTextOutput("Success");}catch(e){return ContentService.createTextOutput("Error");}}</pre></section></div></div></div></div>
 
-    <div id="configModal" class="fixed inset-0 z-[60] hidden">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('configModal')"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg text-slate-800">Pengaturan Sinkronisasi</h3>
-                    <button onclick="closeModal('configModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
-                </div>
-                <p class="text-xs text-slate-500 mb-2">Masukkan URL Web App Google Script untuk menyimpan data secara online.</p>
-                <input id="apiUrlInput" class="w-full p-3 border rounded-xl text-sm mb-4 bg-slate-50 focus:bg-white transition" placeholder="https://script.google.com/macros/s/...">
-                <div class="flex justify-end gap-2">
-                     <button onclick="closeModal('configModal')" class="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">Batal</button>
-                    <button onclick="testAndSaveConfig()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-indigo-700 transition">Simpan & Connect</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="helpModal" class="fixed inset-0 z-[60] hidden">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('helpModal')"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
-                <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-800">Panduan Penggunaan</h3>
-                    </div>
-                    <button onclick="closeModal('helpModal')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
-                </div>
-                
-                <div class="flex-1 overflow-y-auto p-8 space-y-8 text-slate-600 text-sm leading-relaxed">
-                    
-                    <div class="flex gap-4">
-                        <div class="flex-none w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-sm">1</div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-base mb-2">Input Manual & Copy Paste</h4>
-                            <p class="mb-2">Klik tombol <span class="inline-block bg-indigo-600 text-white rounded-full w-5 h-5 text-center text-[10px] leading-5 align-middle">+</span> di pojok kanan bawah.</p>
-                            <p>Anda bisa mengetik satu per satu atau <b>Copy-Paste</b> langsung dari Excel/Word dengan format:</p>
-                            <div class="bg-slate-100 p-3 rounded-lg font-mono text-xs mt-2 border border-slate-200">
-                                Nama Tamu 1 - Alamat Tamu 1<br>
-                                Nama Tamu 2 - Alamat Tamu 2<br>
-                                Nama Tamu 3 - Alamat Tamu 3
-                            </div>
-                            <p class="mt-2 text-xs text-slate-500">Keterangan: Gunakan tanda strip (-) sebagai pemisah antara Nama dan Alamat.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <div class="flex-none w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-base mb-2">Import File Excel (.xlsx)</h4>
-                            <p class="mb-2">Klik tombol <b>"Import Excel"</b> di menu atas. Siapkan file Excel dengan susunan kolom:</p>
-                            <ul class="list-disc list-inside space-y-1 mb-2 ml-1">
-                                <li><b>Kolom A:</b> Nama Tamu</li>
-                                <li><b>Kolom B:</b> Alamat / Jabatan / Kota</li>
-                            </ul>
-                            <p class="text-xs bg-yellow-50 text-yellow-800 p-2 rounded border border-yellow-100">
-                                <b>Catatan:</b> Jika baris pertama berisi tulisan "Nama" atau "Name", baris tersebut akan otomatis diabaikan (dianggap Header).
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <div class="flex-none w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-base mb-2">Edit, Hapus & Reset</h4>
-                            <ul class="space-y-2">
-                                <li><b>Edit Data:</b> Arahkan kursor ke label (atau tap pada HP), lalu klik icon pensil di pojok label.</li>
-                                <li><b>Hapus Data:</b> Di dalam menu Edit, klik tombol merah "Hapus".</li>
-                                <li><b>Reset Total:</b> Klik tombol merah <b>"Reset"</b> di bagian atas aplikasi untuk menghapus <b>SEMUA</b> data dan memulai dari nol.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <div class="flex-none w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">4</div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-base mb-2">Sinkronisasi Google Sheet (Opsional)</h4>
-                            <p class="mb-3">Fitur ini untuk menyimpan data secara online (Cloud). Langkah setup:</p>
-                            <ol class="list-decimal list-inside space-y-2 ml-1 text-xs sm:text-sm">
-                                <li>Buat Google Sheet baru di <a href="https://sheets.google.com" target="_blank" class="text-indigo-600 underline">sheets.google.com</a>.</li>
-                                <li>Klik menu <b>Extensions</b> &gt; <b>Apps Script</b>.</li>
-                                <li>Hapus kode bawaan, lalu copy-paste kode di bawah ini.</li>
-                                <li>Klik <b>Deploy</b> (Biru) &gt; <b>New Deployment</b>.</li>
-                                <li>Pilih type: <b>Web App</b>. Akses (Who has access): Pilih <b>Anyone</b>.</li>
-                                <li>Deploy, lalu Copy <b>Web App URL</b>.</li>
-                                <li>Paste URL tersebut di menu Pengaturan (Icon Gear) aplikasi ini.</li>
-                            </ol>
-                         
-                            <div class="mt-4 relative group">
-                                <button onclick="copyScript()" class="absolute right-2 top-2 bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded text-xs border border-white/20 transition">Salin Kode</button>
-                                <pre id="scriptCode" class="bg-slate-800 text-slate-300 p-4 rounded-lg text-[10px] sm:text-xs font-mono overflow-x-auto">function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  // Skip header if empty or just 1 row
-  if (data.length <= 1 && data[0][0] == "") return ContentService.createTextOutput("[]");
-  
-  var result = [];
-  // Start from row 0 if no header, or row 1 if header exists. 
-  // Simple logic: Read all rows
-  for(var i=0; i<data.length; i++){
-    if(data[i][0]) result.push({name: data[i][0], address: data[i][1], selected: true});
-  }
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var json = JSON.parse(e.postData.contents);
-    sheet.clear(); // Hapus data lama
-    
-    if (json.length > 0) {
-      var rows = json.map(function(item) { return [item.name, item.address]; });
-      sheet.getRange(1, 1, rows.length, 2).setValues(rows);
-    }
-    return ContentService.createTextOutput("Success");
-  } catch(err) {
-    return ContentService.createTextOutput("Error: " + err.toString());
-  }
-}</pre>
-                            </div>
-                        </div> 
-                    </div>        
-            </div>
-                        
-                
-       
+    <div id="printModal" class="fixed inset-0 z-50 hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('printModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-xl w-full sm:max-w-sm p-6"><h3 class="font-bold text-center mb-4">Cetak</h3><div class="space-y-3"><button onclick="printLabels('all')" class="w-full p-3 bg-indigo-50 text-indigo-700 font-bold rounded-xl border border-indigo-200">Cetak Semua</button><button onclick="printLabels('selected')" class="w-full p-3 bg-emerald-50 text-emerald-700 font-bold rounded-xl border border-emerald-200">Cetak Terpilih</button><div class="pt-2"><input id="pageRangeMobile" class="border rounded-lg px-3 py-2 w-full text-center mb-2" placeholder="Hal: 1, 3-5"><button onclick="printLabels('range')" class="w-full bg-slate-800 text-white py-2 rounded-lg font-bold">Print Halaman</button></div></div></div></div></div>
+    <div id="configModal" class="fixed inset-0 z-[60] hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('configModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="text-lg font-bold mb-2">Google Sheet Sync</h3><input type="text" id="apiUrlInput" class="w-full p-3 text-sm border border-slate-300 rounded-xl mb-4" placeholder="URL Web App Script..."><div class="flex justify-end gap-2"><button onclick="testAndSaveConfig()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Simpan</button></div></div></div></div>
 
     <div id="print-output" class="hidden"></div>
 
@@ -654,32 +468,6 @@ function doPost(e) {
             reader.readAsArrayBuffer(file);
         }
 
-        // FUNGSI BARU: EXPORT TO EXCEL
-        function exportToExcel() {
-            if (guests.length === 0) {
-                Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
-                return;
-            }
-
-            // Siapkan data: Header + Rows
-            const dataToExport = [
-                ["Nama", "Alamat"] // Header
-            ];
-
-            // Masukkan data tamu
-            guests.forEach(guest => {
-                dataToExport.push([guest.name, guest.address]);
-            });
-
-            // Buat Worksheet & Workbook
-            const ws = XLSX.utils.aoa_to_sheet(dataToExport);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Data Label");
-
-            // Download File
-            XLSX.writeFile(wb, "Data_Label_121.xlsx");
-        }
-
         // CRUD & UTILS
         function saveGuests() {
             let c=0; document.getElementById('guestInput').value.split('\n').forEach(l=>{
@@ -705,97 +493,30 @@ function doPost(e) {
         async function saveDataToCloud() { if(!apiUrl)return; try{await fetch(apiUrl,{method:'POST',mode:'no-cors',body:JSON.stringify(guests)});}catch(e){} }
         function testAndSaveConfig(){ const u=document.getElementById('apiUrlInput').value.trim(); apiUrl=u; if(u)localStorage.setItem('label121_apiUrl',u); else localStorage.removeItem('label121_apiUrl'); closeModal('configModal'); updateSyncStatus(); if(u)syncWithCloud(); }
 
-
+        // PRINT
         function printLabels(m){
-            closeModal('printModal'); 
-            const o = document.getElementById('print-output'); 
-            o.innerHTML = '';
+            closeModal('printModal'); const o=document.getElementById('print-output'); o.innerHTML='';
+            let d = m==='all'?guests:(m==='selected'?guests.filter(g=>g.selected):[]);
+            if(m==='range'){ let r=document.getElementById('pageRangeMobile').value.split(','), idx=[]; r.forEach(p=>{if(p.includes('-')){let[s,e]=p.split('-');for(let i=+s;i<=+e;i++)idx.push(i)}else idx.push(+p)}); idx.forEach(p=>{let s=(p-1)*10; d=d.concat(guests.slice(s,s+10))}); }
+            if(!d.length) return Swal.fire('Info','Data kosong','info');
             
-            // Filter Data
-            let d = m === 'all' ? guests : (m === 'selected' ? guests.filter(g => g.selected) : []);
-            
-            // Logika Range Halaman
-            if(m === 'range'){ 
-                let r = document.getElementById('pageRangeMobile').value.split(',');
-                let idx = []; 
-                r.forEach(p => {
-                    if(p.includes('-')){
-                        let [s,e] = p.split('-');
-                        for(let i = +s; i <= +e; i++) idx.push(i);
-                    } else {
-                        idx.push(+p);
-                    }
-                }); 
-                // Hapus duplikat dan sort
-                idx = [...new Set(idx)].sort((a,b)=>a-b);
-                
-                idx.forEach(p => {
-                    let s = (p-1) * 10; 
-                    // Pastikan data ada di range tersebut
-                    if(s < guests.length) {
-                        d = d.concat(guests.slice(s, s+10));
-                    }
-                }); 
-            }
-
-            if(!d.length) return Swal.fire('Info','Data kosong atau tidak ada yang dipilih','info');
-            
-            // Siapkan Style String
+            // Build inline styles for printing based on current config to ensure consistency
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${styleConfig.nameSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:2px; line-height:1.2;`;
             const sAddr = `font-size:${styleConfig.addrSize}pt; font-weight:500; text-transform:none; line-height:1.2;`;
 
-            // Render HTML untuk Cetak
-            let fullHtml = '';
             for(let i=0; i<d.length; i+=10){
-                let h = `<div class="sheet-print-page">`;
-                const chunk = d.slice(i, i+10);
-                
-                chunk.forEach(g => { 
-                    h += `<div class="label-item-print" style="${sFont}">
+                let h=`<div class="sheet-print-page">`;
+                d.slice(i,i+10).forEach(g=>{ 
+                    h+=`<div class="label-item-print" style="${sFont}">
                         <div style="${sName}">${g.name}</div>
-                        <div style="font-size:8pt;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;color:#64748b;">DI</div>
+                        <div style="font-size:8pt;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;">DI</div>
                         <div style="${sAddr}">${g.address}</div>
                     </div>`; 
                 });
-                
-                // Jika chunk kurang dari 10 (halaman terakhir tidak penuh), isi dummy agar grid tetap rapi (opsional tapi disarankan)
-                const sisa = 10 - chunk.length;
-                if(sisa > 0) {
-                    for(let x=0; x<sisa; x++) {
-                        h += `<div></div>`; // Grid item kosong
-                    }
-                }
-
-                h += `</div>`;
-                fullHtml += h;
+                h+=`</div>`; o.innerHTML+=h;
             }
-            
-            o.innerHTML = fullHtml;
-
-            // --- PROSES CETAK ---
-            // 1. Hapus class hidden agar browser merender elemen ini
-            o.classList.remove('hidden');
-
-            // 2. Beri jeda sedikit agar DOM terupdate, lalu print
-            setTimeout(() => {
-                window.print();
-                
-                // 3. (Opsional) Kembalikan hidden setelah dialog print tertutup/dipanggil
-                // Kita gunakan timeout lagi karena window.print() memblokir script di beberapa browser
-                setTimeout(() => {
-                    o.classList.add('hidden');
-                    o.innerHTML = ''; // Bersihkan memori
-                }, 500);
-            }, 100);
-        }
-
-        
-        function copyScript() {
-            const code = document.getElementById('scriptCode').innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Kode Script Disalin', showConfirmButton: false, timer: 1500});
-            });
+            window.print();
         }
     </script>
 </body>
