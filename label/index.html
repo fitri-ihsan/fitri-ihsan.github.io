@@ -140,17 +140,42 @@
             line-height: 1.2;
         }
         
-        /* --- PRINT STYLES --- */
+              /* --- PRINT STYLES --- */
         @media print {
-            @page { size: var(--sheet-width) var(--sheet-height); margin: 0; }
-            body { background: white; margin: 0; padding: 0; overflow: visible; height: auto; }
-            header, .floating-actions, .no-print, #info-zoom, #preview-scroll-area { display: none !important; }
-            #print-output { display: block !important; }
+            @page { 
+                size: var(--sheet-width) var(--sheet-height); 
+                margin: 0; 
+            }
+            
+            body { 
+                /* PENTING: Override display flex dari tailwind agar page-break jalan */
+                display: block !important; 
+                background: white; 
+                margin: 0; 
+                padding: 0; 
+                overflow: visible !important; 
+                height: auto !important; 
+            }
+
+            /* Sembunyikan elemen UI */
+            header, .floating-actions, .no-print, #info-zoom, #preview-scroll-area, 
+            #styleModal, #addModal, #editModal, #printModal, #configModal, #helpModal { 
+                display: none !important; 
+            }
+
+            /* Tampilkan area cetak */
+            #print-output { 
+                display: block !important; 
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
             
             .sheet-print-page {
                 width: var(--sheet-width); 
                 height: var(--sheet-height); 
-                page-break-after: always;
+                page-break-after: always; /* PENTING: Memutus halaman */
                 padding-top: var(--margin-top); 
                 padding-left: var(--margin-left);
                 display: grid; 
@@ -159,6 +184,7 @@
                 column-gap: var(--gap-x); 
                 row-gap: var(--gap-y);
             }
+
             .label-item-print { 
                 display: flex; 
                 flex-direction: column; 
@@ -167,7 +193,12 @@
                 text-align: center; 
                 height: 36mm; 
                 overflow: hidden; 
+                /* Pastikan warna teks hitam pekat untuk printer */
+                color: black !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
+     
         }
     </style>
 </head>
@@ -674,31 +705,91 @@ function doPost(e) {
         async function saveDataToCloud() { if(!apiUrl)return; try{await fetch(apiUrl,{method:'POST',mode:'no-cors',body:JSON.stringify(guests)});}catch(e){} }
         function testAndSaveConfig(){ const u=document.getElementById('apiUrlInput').value.trim(); apiUrl=u; if(u)localStorage.setItem('label121_apiUrl',u); else localStorage.removeItem('label121_apiUrl'); closeModal('configModal'); updateSyncStatus(); if(u)syncWithCloud(); }
 
-        // PRINT
+
         function printLabels(m){
-            closeModal('printModal'); const o=document.getElementById('print-output'); o.innerHTML='';
-            let d = m==='all'?guests:(m==='selected'?guests.filter(g=>g.selected):[]);
-            if(m==='range'){ let r=document.getElementById('pageRangeMobile').value.split(','), idx=[]; r.forEach(p=>{if(p.includes('-')){let[s,e]=p.split('-');for(let i=+s;i<=+e;i++)idx.push(i)}else idx.push(+p)}); idx.forEach(p=>{let s=(p-1)*10; d=d.concat(guests.slice(s,s+10))}); }
-            if(!d.length) return Swal.fire('Info','Data kosong','info');
+            closeModal('printModal'); 
+            const o = document.getElementById('print-output'); 
+            o.innerHTML = '';
             
-            // Build inline styles for printing based on current config to ensure consistency
+            // Filter Data
+            let d = m === 'all' ? guests : (m === 'selected' ? guests.filter(g => g.selected) : []);
+            
+            // Logika Range Halaman
+            if(m === 'range'){ 
+                let r = document.getElementById('pageRangeMobile').value.split(',');
+                let idx = []; 
+                r.forEach(p => {
+                    if(p.includes('-')){
+                        let [s,e] = p.split('-');
+                        for(let i = +s; i <= +e; i++) idx.push(i);
+                    } else {
+                        idx.push(+p);
+                    }
+                }); 
+                // Hapus duplikat dan sort
+                idx = [...new Set(idx)].sort((a,b)=>a-b);
+                
+                idx.forEach(p => {
+                    let s = (p-1) * 10; 
+                    // Pastikan data ada di range tersebut
+                    if(s < guests.length) {
+                        d = d.concat(guests.slice(s, s+10));
+                    }
+                }); 
+            }
+
+            if(!d.length) return Swal.fire('Info','Data kosong atau tidak ada yang dipilih','info');
+            
+            // Siapkan Style String
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${styleConfig.nameSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:2px; line-height:1.2;`;
             const sAddr = `font-size:${styleConfig.addrSize}pt; font-weight:500; text-transform:none; line-height:1.2;`;
 
+            // Render HTML untuk Cetak
+            let fullHtml = '';
             for(let i=0; i<d.length; i+=10){
-                let h=`<div class="sheet-print-page">`;
-                d.slice(i,i+10).forEach(g=>{ 
-                    h+=`<div class="label-item-print" style="${sFont}">
+                let h = `<div class="sheet-print-page">`;
+                const chunk = d.slice(i, i+10);
+                
+                chunk.forEach(g => { 
+                    h += `<div class="label-item-print" style="${sFont}">
                         <div style="${sName}">${g.name}</div>
-                        <div style="font-size:8pt;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;">DI</div>
+                        <div style="font-size:8pt;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;color:#64748b;">DI</div>
                         <div style="${sAddr}">${g.address}</div>
                     </div>`; 
                 });
-                h+=`</div>`; o.innerHTML+=h;
+                
+                // Jika chunk kurang dari 10 (halaman terakhir tidak penuh), isi dummy agar grid tetap rapi (opsional tapi disarankan)
+                const sisa = 10 - chunk.length;
+                if(sisa > 0) {
+                    for(let x=0; x<sisa; x++) {
+                        h += `<div></div>`; // Grid item kosong
+                    }
+                }
+
+                h += `</div>`;
+                fullHtml += h;
             }
-            window.print();
+            
+            o.innerHTML = fullHtml;
+
+            // --- PROSES CETAK ---
+            // 1. Hapus class hidden agar browser merender elemen ini
+            o.classList.remove('hidden');
+
+            // 2. Beri jeda sedikit agar DOM terupdate, lalu print
+            setTimeout(() => {
+                window.print();
+                
+                // 3. (Opsional) Kembalikan hidden setelah dialog print tertutup/dipanggil
+                // Kita gunakan timeout lagi karena window.print() memblokir script di beberapa browser
+                setTimeout(() => {
+                    o.classList.add('hidden');
+                    o.innerHTML = ''; // Bersihkan memori
+                }, 500);
+            }, 100);
         }
+
         
         function copyScript() {
             const code = document.getElementById('scriptCode').innerText;
