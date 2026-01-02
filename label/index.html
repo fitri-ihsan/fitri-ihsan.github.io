@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50 antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Label 121 Pro - Custom Edition</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                extend: {
+                    colors: { primary: '#4f46e5', secondary: '#818cf8' },
+                    animation: { 'slide-up': 'slideUp 0.3s ease-out', 'scale-in': 'scaleIn 0.2s ease-out' },
+                    keyframes: {
+                        slideUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } },
+                        scaleIn: { '0%': { transform: 'scale(0.9)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            /* Settings Default - Akan diupdate via JS */
+            --lbl-font: 'Plus Jakarta Sans', sans-serif;
+            --lbl-name-size: 12pt;
+            --lbl-addr-size: 11pt;
+            --lbl-transform: capitalize;
+            --lbl-weight: 800;
+
+            /* Ukuran Kertas Label 121 */
+            --sheet-width: 167mm; 
+            --sheet-height: 208mm;
+            --label-width: 75mm; 
+            --label-height: 36mm;
+            --margin-top: 10mm; 
+            --margin-left: 7mm;
+            --gap-x: 3mm; 
+            --gap-y: 2mm;
+        }
+
+        /* --- PREVIEW AREA --- */
+        #preview-scroll-area {
+            overflow-y: auto; 
+            width: 100%; 
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem 8rem 1rem;
+            scrollbar-width: thin;
+        }
+
+        #sheets-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem; 
+            align-items: center;
+            transform-origin: top center;
+            transition: transform 0.2s ease-out;
+        }
+
+        .sheet-paper {
+            width: var(--sheet-width); 
+            height: var(--sheet-height);
+            background: white; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            display: grid; 
+            grid-template-columns: repeat(2, var(--label-width));
+            grid-template-rows: repeat(5, var(--label-height));
+            column-gap: var(--gap-x); 
+            row-gap: var(--gap-y);
+            padding-top: var(--margin-top); 
+            padding-left: var(--margin-left);
+            flex-shrink: 0; 
+            position: relative;
+        }
+
+        .sheet-number {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .label-item {
+            position: relative; 
+            border: 1px dashed #cbd5e1; 
+            border-radius: 6px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            text-align: center; 
+            padding: 0.5rem; 
+            background-color: white; 
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .label-item:hover { border-color: #6366f1; background-color: #f5f7ff; }
+        .label-item.selected { background-color: #eef2ff; border: 2px solid #6366f1; }
+
+        /* Dynamic Style Classes */
+        .dyn-name {
+            font-family: var(--lbl-font);
+            font-size: var(--lbl-name-size);
+            text-transform: var(--lbl-transform);
+            font-weight: var(--lbl-weight);
+            line-height: 1.2;
+            margin-bottom: 2px;
+            color: #1e293b;
+        }
+        .dyn-di {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
+        .dyn-addr {
+            font-family: var(--lbl-font);
+            font-size: var(--lbl-addr-size);
+            font-weight: 500;
+            color: #475569;
+            line-height: 1.2;
+        }
+        
+        /* --- PRINT STYLES --- */
+        @media print {
+            @page { size: var(--sheet-width) var(--sheet-height); margin: 0; }
+            body { background: white; margin: 0; padding: 0; overflow: visible; height: auto; }
+            header, .floating-actions, .no-print, #info-zoom, #preview-scroll-area { display: none !important; }
+            #print-output { display: block !important; }
+            
+            .sheet-print-page {
+                width: var(--sheet-width); 
+                height: var(--sheet-height); 
+                page-break-after: always;
+                padding-top: var(--margin-top); 
+                padding-left: var(--margin-left);
+                display: grid; 
+                grid-template-columns: repeat(2, var(--label-width));
+                grid-template-rows: repeat(5, var(--label-height));
+                column-gap: var(--gap-x); 
+                row-gap: var(--gap-y);
+            }
+            .label-item-print { 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: center; 
+                align-items: center; 
+                text-align: center; 
+                height: 36mm; 
+                overflow: hidden; 
+            }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 bg-slate-100 overflow-hidden">
+
+    <header class="bg-white border-b border-slate-200 z-30 flex-none shadow-sm relative">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg shadow-md shadow-indigo-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                </div>
+                <div class="flex flex-col md:block text-center md:text-left">
+                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">Label 121 Pro</h1>
+                    <div id="sync-status" class="flex items-center justify-center md:justify-start gap-1.5 mt-1 cursor-pointer" onclick="openConfigModal()">
+                        <div id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                        <span id="sync-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Offline</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center flex-wrap gap-2 w-full md:w-auto">
+                
+                <button onclick="openStyleModal()" class="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition group" title="Atur Tampilan Font">
+                    <span class="bg-slate-200 px-1 rounded text-[10px] font-serif font-bold group-hover:bg-indigo-200 group-hover:text-indigo-800 transition">Aa</span>
+                    <span class="hidden sm:inline">Tampilan</span>
+                </button>
+
+                <div class="w-px h-6 bg-slate-200 mx-1 hidden sm:block"></div>
+
+                <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="processExcelFile(this)">
+                <button onclick="document.getElementById('excelInput').click()" class="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition" title="Import Excel">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="hidden sm:inline">Import</span>
+                </button>
+
+                <button onclick="exportToExcel()" class="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg transition" title="Export to Excel">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span class="hidden sm:inline">Export</span>
+                </button>
+
+                <button onclick="openConfigModal()" class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 rounded-lg transition" title="Pengaturan">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+
+                <button onclick="confirmClearData()" class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition" title="Hapus Semua Data">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+
+                <button onclick="openPrintModal()" class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-md shadow-indigo-200 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 relative overflow-hidden flex flex-col">
+        <div id="preview-scroll-area">
+            <div id="sheets-container"></div>
+        </div>
+        
+        <div id="info-zoom" class="absolute bottom-6 left-6 bg-slate-900/80 backdrop-blur text-white text-[11px] font-mono px-4 py-2 rounded-full pointer-events-none shadow-xl z-20 flex gap-4">
+            <span>Total: <b id="total-info">0</b> Tamu</span>
+            <span>Zoom: <b id="zoom-level">100%</b></span>
+        </div>
+    </main>
+
+    <div class="floating-actions fixed bottom-8 right-6 z-40 flex flex-col gap-4 items-center">
+        <button onclick="openHelpModal()" class="w-12 h-12 bg-white text-slate-500 rounded-full shadow-lg hover:bg-slate-50 hover:text-indigo-600 transition ring-1 ring-slate-200 flex items-center justify-center group relative">
+            <span class="absolute right-12 bg-slate-800 text-white text-xs px-2 py-1 rounded mr-2 opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">Panduan</span>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <button onclick="openAddModal()" class="w-16 h-16 bg-indigo-600 text-white rounded-full shadow-2xl shadow-indigo-500/40 hover:bg-indigo-700 hover:scale-105 transition flex items-center justify-center">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+        </button>
+    </div>
+
+    <div id="styleModal" class="fixed inset-0 z-[70] hidden">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('styleModal')"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in">
+                <div class="px-5 py-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800">Atur Tampilan Label</h3>
+                    <button onclick="closeModal('styleModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Jenis Font</label>
+                        <select id="cfgFont" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="'Plus Jakarta Sans', sans-serif">Standar (Sans Serif)</option>
+                            <option value="'Playfair Display', serif">Klasik (Serif)</option>
+                            <option value="'Courier New', monospace">Mesin Ketik</option>
+                            <option value="'Dancing Script', cursive">Tulisan Tangan (Sambung)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ukuran Nama</label>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs w-4">A</span>
+                                <input type="range" id="cfgNameSize" min="8" max="24" step="1" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateStyles()">
+                                <span class="text-xs font-bold w-6 text-right" id="dispNameSize">12</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ukuran Alamat</label>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs w-4">A</span>
+                                <input type="range" id="cfgAddrSize" min="8" max="18" step="1" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateStyles()">
+                                <span class="text-xs font-bold w-6 text-right" id="dispAddrSize">11</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Huruf (Casing)</label>
+                            <select id="cfgTransform" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="uppercase">HURUF BESAR</option>
+                                <option value="capitalize">Huruf Depan</option>
+                                <option value="lowercase">huruf kecil</option>
+                                <option value="none">Sesuai Input</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Tebal Nama</label>
+                            <select id="cfgWeight" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="400">Normal</option>
+                                <option value="600">Semi Bold</option>
+                                <option value="800">Bold (Tebal)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+                    <button onclick="saveStyleConfig()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-indigo-700 transition">Simpan Tampilan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addModal" class="fixed inset-0 z-50 hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('addModal')"></div><div class="fixed inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-4"><div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg flex flex-col max-h-[90vh]"><div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl"><h3 class="text-lg font-bold text-slate-800">Tambah Manual</h3><button onclick="closeModal('addModal')" class="text-slate-400 hover:text-red-500 text-2xl leading-none">&times;</button></div><div class="p-6 overflow-y-auto"><div class="bg-indigo-50 text-indigo-800 p-3 rounded-xl mb-4 text-xs font-medium border border-indigo-100">Format: <b>Nama - Alamat</b> (Pisahkan dengan strip)<br>Paste dari Excel langsung di sini.</div><textarea id="guestInput" rows="6" class="w-full p-4 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none" placeholder="Budi - Jakarta"></textarea></div><div class="px-6 py-4 border-t bg-slate-50 rounded-b-2xl"><button onclick="saveGuests()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">Simpan Data</button></div></div></div></div>
+
+    <div id="editModal" class="fixed inset-0 z-50 hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('editModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl w-full sm:max-w-md p-6"><h3 class="font-bold text-lg mb-6">Edit Label</h3><input type="hidden" id="editIndex"><div class="space-y-4"><input id="editName" class="w-full p-3 border rounded-xl" placeholder="Nama"><input id="editAddress" class="w-full p-3 border rounded-xl" placeholder="Alamat"></div><div class="mt-8 flex gap-3"><button onclick="confirmDelete()" class="flex-1 bg-red-50 text-red-600 py-3 rounded-xl font-bold">Hapus</button><button onclick="updateGuest()" class="flex-[2] bg-indigo-600 text-white py-3 rounded-xl font-bold">Update</button></div></div></div></div>
+
+    <div id="printModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('printModal')"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in">
+                <div class="px-5 py-4 border-b bg-slate-50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800">Cetak Label</h3>
+                    <button onclick="closeModal('printModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-3">
+                    <button onclick="printLabels('all')" class="w-full py-3 border border-indigo-100 bg-indigo-50 text-indigo-700 rounded-xl font-bold hover:bg-indigo-100 transition">Cetak Semua</button>
+                    <button onclick="printLabels('selected')" class="w-full py-3 border border-slate-200 bg-white text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition">Cetak Yang Dipilih</button>
+                    
+                    <div class="relative pt-4 border-t mt-4">
+                        <label class="text-xs font-bold text-slate-400 absolute -top-2.5 left-2 bg-white px-1">Halaman Tertentu</label>
+                        <div class="flex gap-2">
+                            <input id="pageRangeMobile" type="text" placeholder="Contoh: 1, 3-5" class="flex-1 p-2 border rounded-lg text-sm bg-white text-slate-800 border-slate-300">
+                            <button onclick="printLabels('range')" class="bg-slate-800 text-white px-4 rounded-lg text-sm font-bold">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="configModal" class="fixed inset-0 z-[60] hidden">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('configModal')"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-slate-800">Pengaturan Sinkronisasi</h3>
+                    <button onclick="closeModal('configModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
+                </div>
+                <p class="text-xs text-slate-500 mb-2">Masukkan URL Web App Google Script untuk menyimpan data secara online.</p>
+                <input id="apiUrlInput" class="w-full p-3 border rounded-xl text-sm mb-4 bg-slate-50 focus:bg-white transition" placeholder="https://script.google.com/macros/s/...">
+                <div class="flex justify-end gap-2">
+                     <button onclick="closeModal('configModal')" class="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100">Batal</button>
+                    <button onclick="testAndSaveConfig()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-indigo-700 transition">Simpan & Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="fixed inset-0 z-[60] hidden">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('helpModal')"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
+                <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800">Panduan Penggunaan</h3>
+                    </div>
+                    <button onclick="closeModal('helpModal')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-8 space-y-8 text-slate-600 text-sm leading-relaxed">
+                    
+                    <div class="flex gap-4">
+                        <div class="flex-none w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-sm">1</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base mb-2">Input Manual & Copy Paste</h4>
+                            <p class="mb-2">Klik tombol <span class="inline-block bg-indigo-600 text-white rounded-full w-5 h-5 text-center text-[10px] leading-5 align-middle">+</span> di pojok kanan bawah.</p>
+                            <p>Anda bisa mengetik satu per satu atau <b>Copy-Paste</b> langsung dari Excel/Word dengan format:</p>
+                            <div class="bg-slate-100 p-3 rounded-lg font-mono text-xs mt-2 border border-slate-200">
+                                Nama Tamu 1 - Alamat Tamu 1<br>
+                                Nama Tamu 2 - Alamat Tamu 2<br>
+                                Nama Tamu 3 - Alamat Tamu 3
+                            </div>
+                            <p class="mt-2 text-xs text-slate-500">Keterangan: Gunakan tanda strip (-) sebagai pemisah antara Nama dan Alamat.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-none w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base mb-2">Import File Excel (.xlsx)</h4>
+                            <p class="mb-2">Klik tombol <b>"Import Excel"</b> di menu atas. Siapkan file Excel dengan susunan kolom:</p>
+                            <ul class="list-disc list-inside space-y-1 mb-2 ml-1">
+                                <li><b>Kolom A:</b> Nama Tamu</li>
+                                <li><b>Kolom B:</b> Alamat / Jabatan / Kota</li>
+                            </ul>
+                            <p class="text-xs bg-yellow-50 text-yellow-800 p-2 rounded border border-yellow-100">
+                                <b>Catatan:</b> Jika baris pertama berisi tulisan "Nama" atau "Name", baris tersebut akan otomatis diabaikan (dianggap Header).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-none w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">3</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base mb-2">Edit, Hapus & Reset</h4>
+                            <ul class="space-y-2">
+                                <li><b>Edit Data:</b> Arahkan kursor ke label (atau tap pada HP), lalu klik icon pensil di pojok label.</li>
+                                <li><b>Hapus Data:</b> Di dalam menu Edit, klik tombol merah "Hapus".</li>
+                                <li><b>Reset Total:</b> Klik tombol merah <b>"Reset"</b> di bagian atas aplikasi untuk menghapus <b>SEMUA</b> data dan memulai dari nol.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-none w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">4</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base mb-2">Sinkronisasi Google Sheet (Opsional)</h4>
+                            <p class="mb-3">Fitur ini untuk menyimpan data secara online (Cloud). Langkah setup:</p>
+                            <ol class="list-decimal list-inside space-y-2 ml-1 text-xs sm:text-sm">
+                                <li>Buat Google Sheet baru di <a href="https://sheets.google.com" target="_blank" class="text-indigo-600 underline">sheets.google.com</a>.</li>
+                                <li>Klik menu <b>Extensions</b> &gt; <b>Apps Script</b>.</li>
+                                <li>Hapus kode bawaan, lalu copy-paste kode di bawah ini.</li>
+                                <li>Klik <b>Deploy</b> (Biru) &gt; <b>New Deployment</b>.</li>
+                                <li>Pilih type: <b>Web App</b>. Akses (Who has access): Pilih <b>Anyone</b>.</li>
+                                <li>Deploy, lalu Copy <b>Web App URL</b>.</li>
+                                <li>Paste URL tersebut di menu Pengaturan (Icon Gear) aplikasi ini.</li>
+                            </ol>
+                         
+                            <div class="mt-4 relative group">
+                                <button onclick="copyScript()" class="absolute right-2 top-2 bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded text-xs border border-white/20 transition">Salin Kode</button>
+                                <pre id="scriptCode" class="bg-slate-800 text-slate-300 p-4 rounded-lg text-[10px] sm:text-xs font-mono overflow-x-auto">function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  // Skip header if empty or just 1 row
+  if (data.length <= 1 && data[0][0] == "") return ContentService.createTextOutput("[]");
+  
+  var result = [];
+  // Start from row 0 if no header, or row 1 if header exists. 
+  // Simple logic: Read all rows
+  for(var i=0; i<data.length; i++){
+    if(data[i][0]) result.push({name: data[i][0], address: data[i][1], selected: true});
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var json = JSON.parse(e.postData.contents);
+    sheet.clear(); // Hapus data lama
+    
+    if (json.length > 0) {
+      var rows = json.map(function(item) { return [item.name, item.address]; });
+      sheet.getRange(1, 1, rows.length, 2).setValues(rows);
+    }
+    return ContentService.createTextOutput("Success");
+  } catch(err) {
+    return ContentService.createTextOutput("Error: " + err.toString());
+  }
+}</pre>
+                            </div>
+                        </div> 
+                    </div>        
+            </div>
+                        
+                
+       
+
+    <div id="print-output" class="hidden"></div>
+
+    <script>
+        // DATA & STATE
+        let guests = [];
+        let apiUrl = localStorage.getItem('label121_apiUrl') || '';
+        const ITEMS_PER_SHEET = 10;
+        
+        // STYLE DEFAULT CONFIG
+        let styleConfig = {
+            font: "'Plus Jakarta Sans', sans-serif",
+            nameSize: 12,
+            addrSize: 11,
+            transform: "capitalize",
+            weight: "800"
+        };
+
+        window.onload = function() {
+            loadStyleConfig();
+            loadData();
+            if(apiUrl) syncWithCloud();
+            updateSyncStatus();
+            adjustZoom();
+        };
+        window.addEventListener('resize', adjustZoom);
+
+        // --- STYLE LOGIC ---
+        function loadStyleConfig() {
+            const saved = localStorage.getItem('label121_style');
+            if(saved) styleConfig = JSON.parse(saved);
+            
+            // Set inputs value
+            document.getElementById('cfgFont').value = styleConfig.font;
+            document.getElementById('cfgNameSize').value = styleConfig.nameSize;
+            document.getElementById('cfgAddrSize').value = styleConfig.addrSize;
+            document.getElementById('cfgTransform').value = styleConfig.transform;
+            document.getElementById('cfgWeight').value = styleConfig.weight;
+
+            updateStyles();
+        }
+
+        function updateStyles() {
+            // Get values from input
+            styleConfig.font = document.getElementById('cfgFont').value;
+            styleConfig.nameSize = document.getElementById('cfgNameSize').value;
+            styleConfig.addrSize = document.getElementById('cfgAddrSize').value;
+            styleConfig.transform = document.getElementById('cfgTransform').value;
+            styleConfig.weight = document.getElementById('cfgWeight').value;
+
+            // Update Displays
+            document.getElementById('dispNameSize').innerText = styleConfig.nameSize;
+            document.getElementById('dispAddrSize').innerText = styleConfig.addrSize;
+
+            // Apply to CSS Variables
+            const r = document.querySelector(':root');
+            r.style.setProperty('--lbl-font', styleConfig.font);
+            r.style.setProperty('--lbl-name-size', styleConfig.nameSize + 'pt');
+            r.style.setProperty('--lbl-addr-size', styleConfig.addrSize + 'pt');
+            r.style.setProperty('--lbl-transform', styleConfig.transform);
+            r.style.setProperty('--lbl-weight', styleConfig.weight);
+        }
+
+        function saveStyleConfig() {
+            localStorage.setItem('label121_style', JSON.stringify(styleConfig));
+            closeModal('styleModal');
+            Swal.fire({icon:'success', title:'Tampilan Disimpan', timer:1000, showConfirmButton:false});
+        }
+        
+        function openStyleModal() { openModal('styleModal'); }
+
+        // --- CORE LOGIC (SAME AS BEFORE) ---
+        function adjustZoom() {
+            const container = document.getElementById('sheets-container');
+            const paperW = 631; 
+            const screenW = window.innerWidth;
+            let scale = (screenW - 40) / paperW;
+            if (scale > 1.2) scale = 1.2;
+            if (scale < 0.45) scale = 0.45;
+            container.style.transform = `scale(${scale})`;
+            document.getElementById('zoom-level').innerText = Math.round(scale * 100) + '%';
+        }
+
+        function render() {
+            const container = document.getElementById('sheets-container');
+            container.innerHTML = '';
+            const totalSheets = Math.ceil(guests.length / ITEMS_PER_SHEET) || 1;
+            
+            for (let s = 0; s < totalSheets; s++) {
+                const sheetDiv = document.createElement('div');
+                sheetDiv.className = 'sheet-paper';
+                sheetDiv.innerHTML = `<div class="sheet-number">Halaman ${s + 1}</div>`;
+                const startIdx = s * ITEMS_PER_SHEET;
+                const chunk = guests.slice(startIdx, startIdx + ITEMS_PER_SHEET);
+
+                for (let i = 0; i < ITEMS_PER_SHEET; i++) {
+                    const guest = chunk[i];
+                    const realIndex = startIdx + i;
+                    const labelDiv = document.createElement('div');
+                    if (guest) {
+                        labelDiv.className = `label-item group cursor-pointer ${guest.selected ? 'selected' : ''}`;
+                        // Menggunakan class dyn-name dll untuk styling dinamis
+                        labelDiv.innerHTML = `
+                            <div class="absolute top-2 left-2 z-10"><input type="checkbox" class="w-4 h-4 cursor-pointer accent-indigo-600" ${guest.selected ? 'checked' : ''} onchange="toggleSelect(${realIndex}, event)"></div>
+                            <button onclick="openEdit(${realIndex})" class="absolute top-2 right-2 text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition z-10 bg-white/80 rounded-full p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            <div class="w-full pointer-events-none px-2">
+                                <div class="dyn-name truncate">${guest.name}</div>
+                                <div class="dyn-di">DI</div>
+                                <div class="dyn-addr truncate">${guest.address}</div>
+                            </div>`;
+                    } else { labelDiv.className = 'label-item opacity-30 bg-slate-50 border-slate-100'; }
+                    sheetDiv.appendChild(labelDiv);
+                }
+                container.appendChild(sheetDiv);
+            }
+            document.getElementById('total-info').innerText = guests.length;
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('label121Pro_v3');
+            guests = stored ? JSON.parse(stored) : [{ name: "Contoh Nama", address: "Alamat", selected: true }];
+            render();
+        }
+        function saveData() {
+            localStorage.setItem('label121Pro_v3', JSON.stringify(guests));
+            render();
+            if(apiUrl) { clearTimeout(window.saveTimer); window.saveTimer = setTimeout(saveDataToCloud, 1500); }
+        }
+        function toggleSelect(i) { guests[i].selected = !guests[i].selected; saveData(); }
+
+        // EXCEL
+        function processExcelFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const wb = XLSX.read(e.target.result, {type: 'array'});
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(ws, {header: 1});
+                    let c = 0;
+                    json.forEach((r, i) => {
+                        let n = r[0]?String(r[0]).trim():"", a = r[1]?String(r[1]).trim():"Tempat";
+                        if(i===0 && (n.toLowerCase()==='nama' || n.toLowerCase()==='name')) return;
+                        if(n) { guests.push({name:n, address:a, selected:true}); c++; }
+                    });
+                    if(c>0) { saveData(); Swal.fire('Sukses', `Import ${c} data`, 'success'); setTimeout(() => {const s=document.getElementById('preview-scroll-area'); s.scrollTo({top:s.scrollHeight,behavior:'smooth'});}, 300);} 
+                    else Swal.fire('Info', 'Data kosong', 'info');
+                } catch (er) { Swal.fire('Error', 'Gagal baca file', 'error'); }
+                input.value='';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // FUNGSI BARU: EXPORT TO EXCEL
+        function exportToExcel() {
+            if (guests.length === 0) {
+                Swal.fire('Info', 'Tidak ada data untuk diexport', 'info');
+                return;
+            }
+
+            // Siapkan data: Header + Rows
+            const dataToExport = [
+                ["Nama", "Alamat"] // Header
+            ];
+
+            // Masukkan data tamu
+            guests.forEach(guest => {
+                dataToExport.push([guest.name, guest.address]);
+            });
+
+            // Buat Worksheet & Workbook
+            const ws = XLSX.utils.aoa_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data Label");
+
+            // Download File
+            XLSX.writeFile(wb, "Data_Label_121.xlsx");
+        }
+
+        // CRUD & UTILS
+        function saveGuests() {
+            let c=0; document.getElementById('guestInput').value.split('\n').forEach(l=>{
+                if(l.trim()){ let p=l.split('-'); if(p[0].trim()){ guests.push({name:p[0].trim(), address:p.slice(1).join('-').trim()||'Tempat', selected:true}); c++; }}
+            });
+            if(c){ saveData(); closeModal('addModal'); Swal.fire({icon:'success',title:'Berhasil',timer:1000,showConfirmButton:false}); setTimeout(() => {const s=document.getElementById('preview-scroll-area'); s.scrollTo({top:s.scrollHeight,behavior:'smooth'});}, 300);}
+        }
+        function updateGuest(){ const i=document.getElementById('editIndex').value; guests[i].name=document.getElementById('editName').value; guests[i].address=document.getElementById('editAddress').value; saveData(); closeModal('editModal'); }
+        function confirmDelete(){ guests.splice(document.getElementById('editIndex').value,1); saveData(); closeModal('editModal'); }
+        function confirmClearData(){ Swal.fire({title:'Reset Semua?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Ya, Hapus'}).then(r=>{if(r.isConfirmed){guests=[];saveData();Swal.fire('Terhapus','','success');}});}
+
+        function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+        function openAddModal(){ document.getElementById('guestInput').value=''; openModal('addModal'); }
+        function openEdit(i){ document.getElementById('editIndex').value=i; document.getElementById('editName').value=guests[i].name; document.getElementById('editAddress').value=guests[i].address; openModal('editModal'); }
+        function openHelpModal(){ openModal('helpModal'); }
+        function openPrintModal(){ openModal('printModal'); }
+        function openConfigModal(){ document.getElementById('apiUrlInput').value=apiUrl; openModal('configModal'); }
+
+        // SYNC
+        function updateSyncStatus(){ const d=document.getElementById('sync-dot'), t=document.getElementById('sync-text'); if(!apiUrl){d.className='w-1.5 h-1.5 rounded-full bg-slate-300';t.innerText='OFFLINE';}else{d.className='w-1.5 h-1.5 rounded-full bg-emerald-500';t.innerText='CONNECTED';} }
+        async function syncWithCloud() { if(!apiUrl)return; try{let r=await fetch(apiUrl); let d=await r.json(); if(d.length>0){guests=d;render();}}catch(e){} }
+        async function saveDataToCloud() { if(!apiUrl)return; try{await fetch(apiUrl,{method:'POST',mode:'no-cors',body:JSON.stringify(guests)});}catch(e){} }
+        function testAndSaveConfig(){ const u=document.getElementById('apiUrlInput').value.trim(); apiUrl=u; if(u)localStorage.setItem('label121_apiUrl',u); else localStorage.removeItem('label121_apiUrl'); closeModal('configModal'); updateSyncStatus(); if(u)syncWithCloud(); }
+
+        // PRINT
+        function printLabels(m){
+            closeModal('printModal'); const o=document.getElementById('print-output'); o.innerHTML='';
+            let d = m==='all'?guests:(m==='selected'?guests.filter(g=>g.selected):[]);
+            if(m==='range'){ let r=document.getElementById('pageRangeMobile').value.split(','), idx=[]; r.forEach(p=>{if(p.includes('-')){let[s,e]=p.split('-');for(let i=+s;i<=+e;i++)idx.push(i)}else idx.push(+p)}); idx.forEach(p=>{let s=(p-1)*10; d=d.concat(guests.slice(s,s+10))}); }
+            if(!d.length) return Swal.fire('Info','Data kosong','info');
+            
+            // Build inline styles for printing based on current config to ensure consistency
+            const sFont = `font-family:${styleConfig.font};`;
+            const sName = `font-size:${styleConfig.nameSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:2px; line-height:1.2;`;
+            const sAddr = `font-size:${styleConfig.addrSize}pt; font-weight:500; text-transform:none; line-height:1.2;`;
+
+            for(let i=0; i<d.length; i+=10){
+                let h=`<div class="sheet-print-page">`;
+                d.slice(i,i+10).forEach(g=>{ 
+                    h+=`<div class="label-item-print" style="${sFont}">
+                        <div style="${sName}">${g.name}</div>
+                        <div style="font-size:8pt;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-transform:uppercase;">DI</div>
+                        <div style="${sAddr}">${g.address}</div>
+                    </div>`; 
+                });
+                h+=`</div>`; o.innerHTML+=h;
+            }
+            window.print();
+        }
+        
+        function copyScript() {
+            const code = document.getElementById('scriptCode').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Kode Script Disalin', showConfirmButton: false, timer: 1500});
+            });
+        }
+    </script>
+</body>
+</html>
