@@ -301,8 +301,12 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 
 
 
-<div id="countdown-aesthetic-wrapper" style="center">
-    <h3 id="countdown-title" style="text-align:center; margin-bottom: 20px; color: #555; font-size: 1.2rem;">
+
+
+
+				<div id="countdown-aesthetic-wrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 20px auto;">
+    
+    <h3 id="countdown-title" style="text-align:center; margin-bottom: 20px; color: #555; font-size: 1.2rem; width: 100%;">
         Menuju Hari Bahagia
     </h3>
 
@@ -325,7 +329,7 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
         </div>
     </div>
 
-    <div id="event-live-message" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eee;">
+    <div id="event-live-message" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eee; max-width: 90%;">
         <h3 style="color: #d90a11; font-weight: bold; line-height: 1.5; margin: 0;">
             AKAD NIKAH DAN RESEPSI<br>MEMPELAI WANITA SEDANG BERLANGSUNG
         </h3>
@@ -335,15 +339,15 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 <style>
     /* Desain Kotak */
     .timer-box {
-        background: #ffffff; /* Warna background kotak */
+        background: #ffffff;
         width: 80px;
         height: 85px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        border-radius: 12px; /* Sudut melengkung */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Bayangan halus */
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         border: 1px solid #f0f0f0;
     }
 
@@ -351,7 +355,7 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
     .time-number {
         font-size: 2rem;
         font-weight: 700;
-        color: #333; /* Warna angka */
+        color: #333;
         line-height: 1;
         margin-bottom: 5px;
     }
@@ -364,7 +368,7 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
         text-transform: uppercase;
     }
 
-    /* Responsif untuk HP (Layar kecil) */
+    /* Responsif HP */
     @media (max-width: 480px) {
         .timer-box {
             width: 65px;
@@ -382,67 +386,48 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 <script>
 (function() {
     // --- KONFIGURASI TANGGAL ---
-    
-    // 1. Tanggal Acara Wanita: 09 Februari 2026, 08:00 WIB
-    // (Bulan: Jan=0, Feb=1, dst)
     const eventWanitaDate = new Date(2026, 1, 9, 8, 0, 0).getTime(); 
-
-    // 2. Tanggal Resepsi Pria: 15 Februari 2026, 08:00 WIB
     const eventPriaDate = new Date(2026, 1, 15, 8, 0, 0).getTime();
-
-    // 3. Durasi acara berlangsung (10 Jam dalam milidetik)
     const durasi10Jam = 10 * 60 * 60 * 1000;
 
-    // --- LOGIKA UTAMA ---
     const interval = setInterval(function() {
         const now = new Date().getTime();
         
-        // Elemen HTML
         const titleEl = document.getElementById('countdown-title');
         const timerBoxEl = document.getElementById('countdown-timer-box');
         const liveMsgEl = document.getElementById('event-live-message');
         
-        // Elemen Angka
         const boxD = document.getElementById('box-days');
         const boxH = document.getElementById('box-hours');
         const boxM = document.getElementById('box-minutes');
         const boxS = document.getElementById('box-seconds');
 
-        // Jarak ke Acara Wanita
         const distanceWanita = eventWanitaDate - now;
 
-        // KONDISI 1: Sebelum Acara Wanita (Countdown Biasa)
+        // KONDISI 1: Sebelum Acara Wanita
         if (distanceWanita > 0) {
             titleEl.innerHTML = "Menuju Acara Mempelai Wanita";
             titleEl.style.display = "block";
             timerBoxEl.style.display = "flex";
             liveMsgEl.style.display = "none";
-            
             updateBoxes(distanceWanita);
         } 
-        
-        // KONDISI 2: Saat Acara Wanita Berlangsung (Hingga +10 Jam)
+        // KONDISI 2: Saat Acara Wanita Berlangsung
         else if (distanceWanita <= 0 && (Math.abs(distanceWanita) < durasi10Jam)) {
-            // Sembunyikan judul & kotak waktu, tampilkan pesan LIVE
             titleEl.style.display = "none";
             timerBoxEl.style.display = "none";
             liveMsgEl.style.display = "block";
         } 
-        
-        // KONDISI 3: Setelah 10 Jam Berlalu (Pindah Countdown ke Resepsi Pria)
+        // KONDISI 3: Setelah Acara Wanita (Menuju Pria)
         else {
             const distancePria = eventPriaDate - now;
-            
             if (distancePria > 0) {
-                // Tampilkan countdown lagi untuk acara Pria
                 titleEl.innerHTML = "Menuju Unduh Mantu (Resepsi Pria)";
                 titleEl.style.display = "block";
                 timerBoxEl.style.display = "flex";
-                liveMsgEl.style.display = "none"; // Sembunyikan pesan live wanita
-                
+                liveMsgEl.style.display = "none";
                 updateBoxes(distancePria);
             } else {
-                // Semua acara selesai
                 titleEl.innerHTML = "Acara Telah Selesai";
                 timerBoxEl.style.display = "none";
                 liveMsgEl.style.display = "none";
@@ -450,7 +435,6 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
             }
         }
 
-        // Fungsi Update Angka di dalam Kotak
         function updateBoxes(distance) {
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -462,7 +446,6 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
             if(boxM) boxM.innerText = minutes;
             if(boxS) boxS.innerText = seconds;
         }
-
     }, 1000);
 })();
 </script>
