@@ -298,6 +298,178 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 				<div class="elementor-widget-container">
 					<h1 class="elementor-heading-title elementor-size-default"> </h1>				</div>
 				</div>
+
+
+
+<div id="countdown-aesthetic-wrapper">
+    <h3 id="countdown-title" style="text-align:center; margin-bottom: 20px; color: #555; font-size: 1.2rem;">
+        Menuju Hari Bahagia
+    </h3>
+
+    <div id="countdown-timer-box" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <div class="timer-box">
+            <span class="time-number" id="box-days">00</span>
+            <span class="time-label">HARI</span>
+        </div>
+        <div class="timer-box">
+            <span class="time-number" id="box-hours">00</span>
+            <span class="time-label">JAM</span>
+        </div>
+        <div class="timer-box">
+            <span class="time-number" id="box-minutes">00</span>
+            <span class="time-label">MENIT</span>
+        </div>
+        <div class="timer-box">
+            <span class="time-number" id="box-seconds">00</span>
+            <span class="time-label">DETIK</span>
+        </div>
+    </div>
+
+    <div id="event-live-message" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eee;">
+        <h3 style="color: #d90a11; font-weight: bold; line-height: 1.5; margin: 0;">
+            AKAD NIKAH DAN RESEPSI<br>MEMPELAI WANITA SEDANG BERLANGSUNG
+        </h3>
+    </div>
+</div>
+
+<style>
+    /* Desain Kotak */
+    .timer-box {
+        background: #ffffff; /* Warna background kotak */
+        width: 80px;
+        height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px; /* Sudut melengkung */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Bayangan halus */
+        border: 1px solid #f0f0f0;
+    }
+
+    /* Angka Waktu */
+    .time-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333; /* Warna angka */
+        line-height: 1;
+        margin-bottom: 5px;
+    }
+
+    /* Label (Hari, Jam, dll) */
+    .time-label {
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        color: #888;
+        text-transform: uppercase;
+    }
+
+    /* Responsif untuk HP (Layar kecil) */
+    @media (max-width: 480px) {
+        .timer-box {
+            width: 65px;
+            height: 70px;
+        }
+        .time-number {
+            font-size: 1.5rem;
+        }
+        .time-label {
+            font-size: 0.6rem;
+        }
+    }
+</style>
+
+<script>
+(function() {
+    // --- KONFIGURASI TANGGAL ---
+    
+    // 1. Tanggal Acara Wanita: 09 Februari 2026, 08:00 WIB
+    // (Bulan: Jan=0, Feb=1, dst)
+    const eventWanitaDate = new Date(2026, 1, 9, 8, 0, 0).getTime(); 
+
+    // 2. Tanggal Resepsi Pria: 15 Februari 2026, 08:00 WIB
+    const eventPriaDate = new Date(2026, 1, 15, 8, 0, 0).getTime();
+
+    // 3. Durasi acara berlangsung (10 Jam dalam milidetik)
+    const durasi10Jam = 10 * 60 * 60 * 1000;
+
+    // --- LOGIKA UTAMA ---
+    const interval = setInterval(function() {
+        const now = new Date().getTime();
+        
+        // Elemen HTML
+        const titleEl = document.getElementById('countdown-title');
+        const timerBoxEl = document.getElementById('countdown-timer-box');
+        const liveMsgEl = document.getElementById('event-live-message');
+        
+        // Elemen Angka
+        const boxD = document.getElementById('box-days');
+        const boxH = document.getElementById('box-hours');
+        const boxM = document.getElementById('box-minutes');
+        const boxS = document.getElementById('box-seconds');
+
+        // Jarak ke Acara Wanita
+        const distanceWanita = eventWanitaDate - now;
+
+        // KONDISI 1: Sebelum Acara Wanita (Countdown Biasa)
+        if (distanceWanita > 0) {
+            titleEl.innerHTML = "Menuju Acara Mempelai Wanita";
+            titleEl.style.display = "block";
+            timerBoxEl.style.display = "flex";
+            liveMsgEl.style.display = "none";
+            
+            updateBoxes(distanceWanita);
+        } 
+        
+        // KONDISI 2: Saat Acara Wanita Berlangsung (Hingga +10 Jam)
+        else if (distanceWanita <= 0 && (Math.abs(distanceWanita) < durasi10Jam)) {
+            // Sembunyikan judul & kotak waktu, tampilkan pesan LIVE
+            titleEl.style.display = "none";
+            timerBoxEl.style.display = "none";
+            liveMsgEl.style.display = "block";
+        } 
+        
+        // KONDISI 3: Setelah 10 Jam Berlalu (Pindah Countdown ke Resepsi Pria)
+        else {
+            const distancePria = eventPriaDate - now;
+            
+            if (distancePria > 0) {
+                // Tampilkan countdown lagi untuk acara Pria
+                titleEl.innerHTML = "Menuju Unduh Mantu (Resepsi Pria)";
+                titleEl.style.display = "block";
+                timerBoxEl.style.display = "flex";
+                liveMsgEl.style.display = "none"; // Sembunyikan pesan live wanita
+                
+                updateBoxes(distancePria);
+            } else {
+                // Semua acara selesai
+                titleEl.innerHTML = "Acara Telah Selesai";
+                timerBoxEl.style.display = "none";
+                liveMsgEl.style.display = "none";
+                clearInterval(interval);
+            }
+        }
+
+        // Fungsi Update Angka di dalam Kotak
+        function updateBoxes(distance) {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if(boxD) boxD.innerText = days;
+            if(boxH) boxH.innerText = hours;
+            if(boxM) boxM.innerText = minutes;
+            if(boxS) boxS.innerText = seconds;
+        }
+
+    }, 1000);
+})();
+</script>
+
+
+
+				
 				<div class="elementor-element elementor-element-17cba6ad elementor-widget elementor-widget-weddingpress-countdown" data-id="17cba6ad" data-element_type="widget" data-settings="{&quot;_animation_mobile&quot;:&quot;zoomIn&quot;}" data-widget_type="weddingpress-countdown.default">
 				<div class="elementor-widget-container">
 					
