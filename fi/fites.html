@@ -386,7 +386,7 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 <script>
 (function() {
     // --- KONFIGURASI TANGGAL ---
-    const eventWanitaDate = new Date(2026, 1, 9, 8, 0, 0).getTime(); 
+    const eventWanitaDate = new Date(2026, 0, 9, 8, 0, 0).getTime(); 
     const eventPriaDate = new Date(2026, 1, 15, 8, 0, 0).getTime();
     const durasi10Jam = 10 * 60 * 60 * 1000;
 
@@ -453,106 +453,6 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 
 
 				
-				<div class="elementor-element elementor-element-17cba6ad elementor-widget elementor-widget-weddingpress-countdown" data-id="17cba6ad" data-element_type="widget" data-settings="{&quot;_animation_mobile&quot;:&quot;zoomIn&quot;}" data-widget_type="weddingpress-countdown.default">
-				<div class="elementor-widget-container">
-					
-	<div class="wpkoi-elements-countdown-wrapper">
-		<div class="wpkoi-elements-countdown-container wpkoi-elements-countdown-label-block ">		
-			<ul id="wpkoi-elements-countdown-17cba6ad" class="wpkoi-elements-countdown-items" data-date="Feb 09 2026 10:00:00">
-			    <li class="wpkoi-elements-countdown-item"><div class="wpkoi-elements-countdown-days"><span data-days class="wpkoi-elements-countdown-digits">00</span><span class="wpkoi-elements-countdown-label">Hari</span></div></li>			    <li class="wpkoi-elements-countdown-item"><div class="wpkoi-elements-countdown-hours"><span data-hours class="wpkoi-elements-countdown-digits">00</span><span class="wpkoi-elements-countdown-label">Jam</span></div></li>			   <li class="wpkoi-elements-countdown-item"><div class="wpkoi-elements-countdown-minutes"><span data-minutes class="wpkoi-elements-countdown-digits">00</span><span class="wpkoi-elements-countdown-label">Menit</span></div></li>			   <li class="wpkoi-elements-countdown-item"><div class="wpkoi-elements-countdown-seconds"><span data-seconds class="wpkoi-elements-countdown-digits">00</span><span class="wpkoi-elements-countdown-label">Detik</span></div></li>			</ul>
-			<div class="clearfix"></div>
-		</div>
-	</div>
-
-<script>
-(function() {
-    // --- KONFIGURASI TANGGAL ---
-    
-    // 1. Tanggal Akad & Resepsi Wanita: 09 Februari 2026
-    // Format: (Tahun, Bulan-1, Tanggal, Jam, Menit, Detik)
-    // Catatan: Bulan Januari = 0, Februari = 1.
-    // Di sini kita set jam 08:00 pagi.
-    const eventWanitaDate = new Date(2026, 1, 9, 8, 0, 0).getTime(); 
-
-    // 2. Tanggal Resepsi Pria: 15 Februari 2026
-    // Di sini kita set jam 08:00 pagi.
-    const eventPriaDate = new Date(2026, 1, 15, 8, 0, 0).getTime();
-
-    // 3. ID Elemen HTML Countdown Anda
-    // GANTI 'countdown-box' dengan ID elemen div countdown di HTML Anda!
-    // Jika Anda menggunakan Elementor, Anda bisa inspect element untuk mencari ID-nya.
-    const elementID = "wpkoi-elements-countdown-17cba6ad"; 
-
-    // ---------------------------
-
-    const interval = setInterval(function() {
-        const now = new Date().getTime();
-        const element = document.getElementById(elementID);
-
-        // Jika elemen tidak ditemukan, hentikan script agar tidak error
-        if (!element) return;
-
-        // Hitung jarak waktu ke Event Wanita
-        const distanceWanita = eventWanitaDate - now;
-        
-        // Durasi 10 Jam dalam milidetik (10 jam * 60 menit * 60 detik * 1000)
-        const durasi10Jam = 10 * 60 * 60 * 1000;
-
-        // --- LOGIKA PERUBAHAN TAMPILAN ---
-
-        // KONDISI 1: Sebelum Acara Wanita (Countdown Biasa)
-        if (distanceWanita > 0) {
-            // Tampilkan fungsi countdown standar ke tanggal 9 Feb
-            renderCountdown(element, distanceWanita, "Menuju Acara Mempelai Wanita");
-        } 
-        
-        // KONDISI 2: Saat Acara Wanita Berlangsung (Hingga +10 Jam)
-        else if (distanceWanita <= 0 && (Math.abs(distanceWanita) < durasi10Jam)) {
-            element.innerHTML = `
-                <div style="text-align:center; padding: 20px; background:rgba(255,255,255,0.8); border-radius:10px;">
-                    <h3 style="color:#d90a11; font-weight:bold;">
-                        AKAD NIKAH DAN RESEPSI MEMPELAI WANITA SEDANG BERLANGSUNG
-                    </h3>
-                </div>`;
-        } 
-        
-        // KONDISI 3: Setelah 10 Jam Berlalu (Countdown ke Resepsi Pria)
-        else {
-            const distancePria = eventPriaDate - now;
-            
-            if (distancePria > 0) {
-                // Tampilkan countdown menuju tanggal 15 Feb
-                renderCountdown(element, distancePria, "Menuju Unduh Mantu (Resepsi Pria)");
-            } else {
-                element.innerHTML = "<div style='text-align:center;'>Acara Telah Selesai</div>";
-                clearInterval(interval);
-            }
-        }
-
-    }, 1000);
-
-    // Fungsi Pembantu untuk Merender Tampilan Waktu
-    function renderCountdown(elem, distance, label) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        // Sesuaikan HTML di bawah ini dengan desain website Anda
-        elem.innerHTML = `
-            <div style="text-align:center;">
-                <p style="margin-bottom:10px; font-weight:bold;">${label}</p>
-                <div style="display:flex; justify-content:center; gap:10px;">
-                    <div class="time-box"><span>${days}</span><br><small>Hari</small></div>
-                    <div class="time-box"><span>${hours}</span><br><small>Jam</small></div>
-                    <div class="time-box"><span>${minutes}</span><br><small>Menit</small></div>
-                    <div class="time-box"><span>${seconds}</span><br><small>Detik</small></div>
-                </div>
-            </div>
-        `;
-    }
-})();
-</script>
 
 	
 					</div>
