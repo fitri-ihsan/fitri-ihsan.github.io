@@ -298,6 +298,136 @@ var pp = {"ajax_url":"https://web.menujuacara.id/wp-admin/admin-ajax.php"};
 				<div class="elementor-widget-container">
 					<h1 class="elementor-heading-title elementor-size-default"> </h1>				</div>
 				</div>
+
+
+
+
+
+
+
+<div id="countdown-container" class="w-full flex flex-col justify-center items-center p-4 min-h-[200px]">
+    <div id="countdown-timer" class="flex flex-col items-center justify-center gap-6 w-full">
+        <div class="animate-pulse text-gray-500 font-mono">Memuat Waktu...</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- KONFIGURASI TANGGAL (WIB / UTC+7) ---
+        // 1. Acara Wanita: 9 Februari 2026, 08:00 WIB
+        const eventWanita = new Date("2026-02-09T08:00:00+07:00").getTime();
+        
+        // 2. Acara Pria: 15 Februari 2026, 08:00 WIB
+        const eventPria = new Date("2026-02-15T08:00:00+07:00").getTime();
+
+        // 3. Durasi Acara (10 Jam dalam milidetik)
+        const durasiLive = 10 * 60 * 60 * 1000;
+        
+        // Elemen & Style
+        const timerEl = document.getElementById("countdown-timer");
+        
+        // Style Variable (Sesuai request Anda)
+        const boxStyle = "flex flex-col items-center justify-center bg-gray-800/80 backdrop-blur-md border border-gray-600/50 rounded-xl p-3 w-[75px] md:w-28 shadow-lg transform transition hover:scale-105 duration-300";
+        const numStyle = "text-2xl md:text-5xl font-bold font-mono text-white tabular-nums leading-none mb-1 md:mb-2 drop-shadow-md";
+        const labelStyle = "text-[10px] md:text-xs text-gray-400 uppercase font-semibold tracking-wider";
+        const titleStyle = "text-sm md:text-lg font-semibold text-gray-600 uppercase tracking-widest mb-2 text-center";
+
+        const interval = setInterval(function() {
+            const now = new Date().getTime();
+            
+            // Hitung jarak ke Acara Wanita
+            const distWanita = eventWanita - now;
+            
+            let displayDist = 0;
+            let titleText = "";
+            let isLive = false;
+            let isFinished = false;
+
+            // --- LOGIKA PENENTUAN FASE ---
+            
+            // FASE 1: Menuju Acara Wanita
+            if (distWanita > 0) {
+                displayDist = distWanita;
+                titleText = "Menuju Acara Mempelai Wanita";
+            }
+            // FASE 2: Acara Wanita Sedang Berlangsung (Hingga +10 Jam)
+            else if (distWanita <= 0 && Math.abs(distWanita) < durasiLive) {
+                isLive = true;
+                titleText = "AKAD & RESEPSI MEMPELAI WANITA";
+            }
+            // FASE 3: Menuju Acara Pria (Setelah 10 Jam berlalu)
+            else {
+                const distPria = eventPria - now;
+                if (distPria > 0) {
+                    displayDist = distPria;
+                    titleText = "Menuju Unduh Mantu (Resepsi Pria)";
+                } else {
+                    isFinished = true;
+                }
+            }
+
+            // --- RENDER TAMPILAN ---
+
+            // Jika Acara Selesai
+            if (isFinished) {
+                clearInterval(interval);
+                timerEl.innerHTML = `<div class="text-xl md:text-2xl font-bold text-gray-500 uppercase tracking-wider">ACARA TELAH SELESAI</div>`;
+                return;
+            }
+
+            // Jika Sedang Berlangsung (LIVE)
+            if (isLive) {
+                timerEl.innerHTML = `
+                    <div class="flex flex-col items-center gap-2 animate-pulse">
+                        <span class="text-red-500 font-bold tracking-widest text-sm md:text-base border border-red-500 px-3 py-1 rounded-full">LIVE EVENT</span>
+                        <div class="text-xl md:text-3xl font-bold text-gray-700 text-center uppercase tracking-wide max-w-lg leading-relaxed">
+                            Akad Nikah & Resepsi<br>Sedang Berlangsung
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            // Jika Mode Countdown (Fase 1 atau Fase 3)
+            const days = Math.floor(displayDist / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((displayDist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((displayDist % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((displayDist % (1000 * 60)) / 1000);
+
+            timerEl.innerHTML = `
+                <div class="${titleStyle}">${titleText}</div>
+                <div class="flex flex-wrap justify-center items-center gap-3 md:gap-6">
+                    <div class="${boxStyle} border-b-4 border-b-blue-500">
+                        <span class="${numStyle}">${days}</span>
+                        <span class="${labelStyle}">Hari</span>
+                    </div>
+                    <div class="${boxStyle} border-b-4 border-b-purple-500">
+                        <span class="${numStyle}">${String(hours).padStart(2, '0')}</span>
+                        <span class="${labelStyle}">Jam</span>
+                    </div>
+                    <div class="${boxStyle} border-b-4 border-b-pink-500">
+                        <span class="${numStyle}">${String(minutes).padStart(2, '0')}</span>
+                        <span class="${labelStyle}">Menit</span>
+                    </div>
+                    <div class="${boxStyle} border-b-4 border-b-yellow-500 bg-gray-700/50">
+                        <span class="${numStyle} text-yellow-400">${String(seconds).padStart(2, '0')}</span>
+                        <span class="${labelStyle} text-yellow-100/70">Detik</span>
+                    </div>
+                </div>
+            `;
+        }, 1000);
+        
+        window.countdownInterval = interval;
+    })();
+</script>
+
+
+
+
+
+
+
+
+				
 				<div class="elementor-element elementor-element-17cba6ad elementor-widget elementor-widget-weddingpress-countdown" data-id="17cba6ad" data-element_type="widget" data-settings="{&quot;_animation_mobile&quot;:&quot;zoomIn&quot;}" data-widget_type="weddingpress-countdown.default">
 				<div class="elementor-widget-container">
 					
