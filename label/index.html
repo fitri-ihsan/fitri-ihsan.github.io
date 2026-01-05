@@ -507,17 +507,41 @@
         }
 
         function exportToExcel() {
-            if(!guests || guests.length === 0) return Swal.fire('Info', 'Belum ada data untuk diexport', 'info');
-            const data = [["Nama", "Alamat"]];
-            guests.forEach(g => {
-                data.push([g.name, g.address]);
-            });
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            ws['!cols'] = [{wch: 30}, {wch: 40}];
-            XLSX.utils.book_append_sheet(wb, ws, "Data Label");
-            XLSX.writeFile(wb, "Data_Label_Undangan.xlsx");
-        }
+    // 1. Cek Data
+    if (!guests || guests.length === 0) {
+        return Swal.fire('Info', 'Belum ada data untuk diexport', 'info');
+    }
+
+    // 2. Siapkan Data (Header & Isi)
+    const data = [["Nama", "Alamat"]];
+    guests.forEach(g => {
+        data.push([g.name, g.address]);
+    });
+
+    // 3. Buat Workbook & Worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // Atur lebar kolom (opsional, agar rapi saat dibuka di Excel)
+    ws['!cols'] = [{wch: 30}, {wch: 40}];
+
+    // Masukkan sheet ke workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Data Label");
+
+    // --- PERUBAHAN UTAMA DI SINI ---
+    
+    // 4. Generate file sebagai Array Buffer (bukan langsung download)
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    // 5. Bungkus dalam Blob dengan tipe MIME Excel yang spesifik
+    const blob = new Blob([wbout], { 
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+    });
+
+    // 6. Paksa download menggunakan FileSaver.js (saveAs)
+    // Ini menjamin ekstensi file tetap .xlsx
+    saveAs(blob, "Data_Label_Undangan.xlsx");
+}
 
         // CRUD & UTILS
         function saveGuests() {
