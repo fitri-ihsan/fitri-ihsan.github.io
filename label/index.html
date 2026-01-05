@@ -734,6 +734,37 @@
                 Swal.fire('Error', 'Gagal membuat file Word: ' + error.message, 'error');
             }
         }
+
+
+        // --- SELECT ALL FUNCTION ---
+function toggleSelectAll() {
+    if (!guests || guests.length === 0) {
+        return Swal.fire('Info', 'Data masih kosong', 'info');
+    }
+
+    // Cek logika: Jika semua sudah terpilih, maka aksinya "Unselect All". 
+    // Jika ada satu saja yang belum terpilih, aksinya "Select All".
+    const isAllSelected = guests.every(g => g.selected);
+    const targetState = !isAllSelected;
+
+    // Terapkan ke semua data
+    guests.forEach(g => g.selected = targetState);
+    
+    // Simpan & Render ulang tampilan
+    saveData(); 
+
+    // Notifikasi kecil (Toast)
+    const msg = targetState ? 'Semua Data Dipilih' : 'Pilihan Dibatalkan';
+    Swal.fire({
+        toast: true,
+        position: 'top',
+        icon: 'success',
+        title: msg,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
     </script>
 </body>
 </html>
