@@ -36,22 +36,22 @@
             
             /* Variabel CSS */
             --lbl-base-size: 12pt; 
-            --lbl-di-size: 9pt;    
+            --lbl-di-size: 10pt;    
             
             --lbl-transform: capitalize;
             --lbl-weight: 800;
 
-            /* --- UKURAN KERTAS 153mm x 200mm --- */
-            --sheet-width: 153mm;  
-            --sheet-height: 200mm; 
+            /* --- UKURAN KERTAS 162mm x 205mm --- */
+            --sheet-width: 162mm;  
+            --sheet-height: 205mm; 
             
-            --label-width: 75mm; 
-            --label-height: 36mm;
+            --label-width: 76mm; 
+            --label-height: 38mm;
             
             --margin-top: 2mm; 
             --margin-left: 2mm;
             
-            --gap-x: 1mm; 
+            --gap-x: 2mm; 
             --gap-y: 2mm;
         }
 
@@ -617,9 +617,9 @@
 
             const mmToTwip = (mm) => Math.round(mm * 56.7);
             
-            const labelW = mmToTwip(75);
-            const labelH = mmToTwip(36);
-            const gapX = mmToTwip(1); 
+            const labelW = mmToTwip(77);
+            const labelH = mmToTwip(38);
+            const gapX = mmToTwip(2); 
             const gapY = mmToTwip(2);
             
             const marginTop = mmToTwip(2);
@@ -627,8 +627,8 @@
             const marginBottom = mmToTwip(2);
             const marginRight = mmToTwip(2);
 
-            const pageWidth = mmToTwip(153); 
-            const pageHeight = mmToTwip(200);
+            const pageWidth = mmToTwip(162); 
+            const pageHeight = mmToTwip(205);
 
             // LOGIC SIZE DOCX
             const baseSize = styleConfig.fontSize;
