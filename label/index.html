@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelPro v3.2 (Update "di" Kecil)</title>
+    <title>LabelPro v3.2 (Jabatan Rata Tengah)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
@@ -151,18 +151,17 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 95%;
+            
+            /* PERUBAHAN: Pastikan rata tengah */
+            text-align: center; 
+            width: 100%;
         }
         
-        /* UPDATE: Huruf "di" kecil */
         .dyn-di {
             font-family: var(--lbl-font); 
             font-size: var(--lbl-di-size);
             font-weight: 700;
-            
-            /* PERUBAHAN: lowercase agar huruf kecil */
             text-transform: lowercase; 
-            
             letter-spacing: 1px;
             color: #000000; 
             line-height: 1;
@@ -221,7 +220,7 @@
                 </div>
                 <div class="flex flex-col md:block text-center md:text-left">
                     <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.2</span></h1>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Update "di" Kecil</div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Jabatan Center</div>
                 </div>
             </div>
 
@@ -467,9 +466,10 @@
 
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${baseSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:0px; line-height:1.1; color:#000000; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;`;
-            const sTitle = `font-size:${baseSize * 0.85}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000;`;
             
-            // PERUBAHAN: text-transform lowercase untuk print
+            // PERUBAHAN: Menambahkan text-align: center dan width: 100% untuk Jabatan saat dicetak
+            const sTitle = `font-size:${baseSize * 0.85}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000; text-align:center; width:100%;`;
+            
             const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:lowercase; letter-spacing:1px; margin-top:10px; margin-bottom:5px; line-height:1; color:#000000;`;
             
             const sAddr = `font-size:${baseSize}pt; font-weight:500; text-transform:none; line-height:1.2; color:#000000;`;
@@ -543,7 +543,7 @@
                         }));
                     }
 
-                    // 3. DI (PERUBAHAN: Teks "di", hapus allCaps)
+                    // 3. DI
                     paragraphs.push(new Paragraph({
                         alignment: AlignmentType.CENTER,
                         spacing: { before: 240, after: 100 }, 
@@ -552,7 +552,7 @@
                             font: wordFont, 
                             size: diSize, 
                             bold: true, 
-                            allCaps: false, // Matikan Kapital Semua
+                            allCaps: false, 
                             color: "000000" 
                         })]
                     }));
