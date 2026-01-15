@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelPro v3.1 (Spasi DI)</title>
+    <title>LabelPro v3.2 (Jarak Lebar)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
@@ -154,7 +154,7 @@
             max-width: 95%;
         }
         
-        /* UPDATE: SPASI DI ATAS & BAWAH DI */
+        /* UPDATE: SPASI DIPERLEBAR DISINI */
         .dyn-di {
             font-family: var(--lbl-font); 
             font-size: var(--lbl-di-size);
@@ -164,8 +164,9 @@
             color: #000000; 
             line-height: 1;
             
-            margin-top: 6px;    /* Jarak Atas */
-            margin-bottom: 6px; /* Jarak Bawah */
+            /* Jarak diperlebar dari 6px ke 15px */
+            margin-top: 15px;    
+            margin-bottom: 5px; 
         }
         
         .dyn-addr {
@@ -218,8 +219,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 </div>
                 <div class="flex flex-col md:block text-center md:text-left">
-                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.1</span></h1>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Support Jabatan + Spacing</div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.2</span></h1>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Update Jarak Spasi</div>
                 </div>
             </div>
 
@@ -443,7 +444,7 @@
             saveAs(blob, "Data_Label_Undangan_v3.xlsx");
         }
 
-        // --- PRINT FUNCTION (UPDATE SPASI DI) ---
+        // --- PRINT FUNCTION (UPDATE SPASI DI LEBIH BESAR) ---
         function printLabels(m){
             closeModal('printModal'); 
             const o = document.getElementById('print-output'); 
@@ -467,8 +468,8 @@
             const sName = `font-size:${baseSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:0px; line-height:1.1; color:#000000; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;`;
             const sTitle = `font-size:${baseSize * 0.85}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000;`;
             
-            // UPDATE: SPASI DI ATAS & BAWAH 'DI' UTK PRINT
-            const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-top:6px; margin-bottom:6px; line-height:1; color:#000000;`;
+            // UPDATE: SPASI DI ATAS DI PERBESAR KE 15px
+            const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-top:15px; margin-bottom:5px; line-height:1; color:#000000;`;
             
             const sAddr = `font-size:${baseSize}pt; font-weight:500; text-transform:none; line-height:1.2; color:#000000;`;
 
@@ -541,10 +542,10 @@
                         }));
                     }
 
-                    // 3. DI (UPDATE: Added Spacing Before & After)
+                    // 3. DI (UPDATE: Spacing Before ditingkatkan ke 240 twips / ~12pt)
                     paragraphs.push(new Paragraph({
                         alignment: AlignmentType.CENTER,
-                        spacing: { before: 100, after: 100 }, // ~5pt spacing
+                        spacing: { before: 240, after: 100 }, 
                         children: [new TextRun({ text: "DI", font: wordFont, size: diSize, bold: true, allCaps: true, color: "000000" })]
                     }));
 
@@ -580,7 +581,7 @@
             });
 
             const blob = await Packer.toBlob(doc);
-            saveAs(blob, "Label_Export_v3_1.docx");
+            saveAs(blob, "Label_Export_v3_2.docx");
         }
 
         // --- UTILS ---
