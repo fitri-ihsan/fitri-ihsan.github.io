@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelPro v3.2 (Jabatan Rata Tengah)</title>
+    <title>LabelPro v3.3 (Presisi 1.2mm / 1.7mm)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
@@ -47,11 +47,13 @@
             --label-width: 74mm; 
             --label-height: 37mm;
             
-            --margin-top: 1.5mm; 
-            --margin-left: 1.5mm;
+            /* UPDATE: Margin Kertas (Top/Left) jadi 1.2mm */
+            --margin-top: 1.2mm; 
+            --margin-left: 1.2mm;
             
-            --gap-x: 1.5mm; 
-            --gap-y: 1.5mm;
+            /* UPDATE: Jarak Antar Label (Gap) jadi 1.7mm */
+            --gap-x: 1.7mm; 
+            --gap-y: 1.7mm;
         }
 
         /* --- PREVIEW AREA --- */
@@ -151,8 +153,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            
-            /* PERUBAHAN: Pastikan rata tengah */
+            max-width: 95%;
             text-align: center; 
             width: 100%;
         }
@@ -219,8 +220,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 </div>
                 <div class="flex flex-col md:block text-center md:text-left">
-                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.2</span></h1>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Jabatan Center</div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.3</span></h1>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Presisi 1.2mm</div>
                 </div>
             </div>
 
@@ -467,7 +468,6 @@
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${baseSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:0px; line-height:1.1; color:#000000; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;`;
             
-            // PERUBAHAN: Menambahkan text-align: center dan width: 100% untuk Jabatan saat dicetak
             const sTitle = `font-size:${baseSize * 0.85}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000; text-align:center; width:100%;`;
             
             const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:lowercase; letter-spacing:1px; margin-top:10px; margin-bottom:5px; line-height:1; color:#000000;`;
@@ -506,7 +506,9 @@
             const mmToTwip = (mm) => Math.round(mm * 56.7);
             const labelW = mmToTwip(74);
             const labelH = mmToTwip(37);
-            const gapX = mmToTwip(1.5);
+            
+            // UPDATE JS: Menggunakan nilai baru 1.7mm
+            const gapX = mmToTwip(1.7);
             
             const baseSize = styleConfig.fontSize * 2; 
             const titleSize = baseSize * 0.85; 
@@ -577,19 +579,21 @@
                 }));
 
                 if ((i/2 + 1) % 5 !== 0) {
-                     rows.push(new TableRow({ height: { value: mmToTwip(1.5), rule: HeightRule.EXACT }, children: [new TableCell({children:[]}), new TableCell({children:[]}), new TableCell({children:[]})] }));
+                     // UPDATE JS: Vertical gap 1.7mm
+                     rows.push(new TableRow({ height: { value: mmToTwip(1.7), rule: HeightRule.EXACT }, children: [new TableCell({children:[]}), new TableCell({children:[]}), new TableCell({children:[]})] }));
                 }
             }
 
             const doc = new Document({
                 sections: [{
-                    properties: { page: { size: { width: mmToTwip(155), height: mmToTwip(195) }, margin: { top: mmToTwip(1.5), left: mmToTwip(1.5), right: mmToTwip(1.5), bottom: mmToTwip(1.5) } } },
+                    // UPDATE JS: Margins 1.2mm
+                    properties: { page: { size: { width: mmToTwip(155), height: mmToTwip(195) }, margin: { top: mmToTwip(1.2), left: mmToTwip(1.2), right: mmToTwip(1.2), bottom: mmToTwip(1.2) } } },
                     children: [new Table({ rows: rows, width: { size: 100, type: WidthType.PERCENTAGE }, borders: docx.TableBorders.NONE })]
                 }]
             });
 
             const blob = await Packer.toBlob(doc);
-            saveAs(blob, "Label_Export_v3_2.docx");
+            saveAs(blob, "Label_Export_v3_3.docx");
         }
 
         // --- UTILS ---
