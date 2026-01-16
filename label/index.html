@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelPro v3.5 (Ukuran Jabatan Custom)</title>
+    <title>LabelPro v3.6 (Fixed Center)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
@@ -30,30 +30,25 @@
 
     <style>
         :root {
-            /* Settings Default */
+            /* Font Settings */
             --lbl-font: 'Plus Jakarta Sans', sans-serif;
             
-            /* Variabel CSS Update */
+            /* Font Sizes */
             --lbl-base-size: 12pt; 
-            --lbl-title-size: 10pt; /* BARU: Ukuran Jabatan */
+            --lbl-title-size: 10pt; /* Ukuran Jabatan */
             --lbl-di-size: 10pt;    
             
+            /* Styles */
             --lbl-transform: capitalize;
             --lbl-weight: 800;
 
-            /* --- UKURAN KERTAS 155mm x 195mm --- */
+            /* Paper & Label Specs (121) */
             --sheet-width: 155mm;  
             --sheet-height: 195mm; 
-            
-            /* --- UKURAN LABEL --- */
             --label-width: 75.5mm; 
             --label-height: 38.4mm;
-            
-            /* --- MARGIN (1.3mm) --- */
             --margin-top: 1.3mm; 
             --margin-left: 1.3mm;
-            
-            /* --- GAP (0mm) --- */
             --gap-x: 0mm; 
             --gap-y: 0mm;
         }
@@ -142,17 +137,22 @@
             white-space: normal;
             word-break: break-word;
             margin-bottom: 0px; 
+            width: 100%;
         }
 
         .dyn-title {
             font-family: var(--lbl-font);
-            /* UPDATE: Menggunakan variabel khusus title */
             font-size: var(--lbl-title-size);
             font-weight: 600;
             color: #334155;
             text-transform: capitalize;
             line-height: 1.1;
+            
+            /* --- FIXED: CENTER ALIGNMENT --- */
             margin-top: 2px;
+            margin-left: auto;  /* FIX */
+            margin-right: auto; /* FIX */
+            
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -223,8 +223,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 </div>
                 <div class="flex flex-col md:block text-center md:text-left">
-                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">LabelPro <span class="text-xs text-indigo-500 font-normal">v3.5</span></h1>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Custom Title Size</div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">LabelPro <span class="text-xs text-indigo-500 font-normal">v3.6</span></h1>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Fixed Center Alignment</div>
                 </div>
             </div>
 
@@ -382,7 +382,6 @@
         // --- DATA & CONFIG ---
         let guests = [];
         const ITEMS_PER_SHEET = 10;
-        // UPDATE CONFIG: Tambah titleSize
         let styleConfig = { font: "'Plus Jakarta Sans', sans-serif", fontSize: 12, titleSize: 10, transform: "capitalize", weight: "800" };
 
         window.onload = function() {
@@ -524,14 +523,14 @@
             if(!d.length) return Swal.fire('Info','Data kosong','info');
             
             const baseSize = styleConfig.fontSize;
-            const titleSize = styleConfig.titleSize; // UPDATE
+            const titleSize = styleConfig.titleSize; 
             const diSize = Math.max(6, baseSize - 3);
 
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${baseSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:0px; line-height:1.1; color:#000000; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;`;
             
-            // UPDATE JS PRINT: Gunakan titleSize dari config
-            const sTitle = `font-size:${titleSize}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000; text-align:center; width:100%;`;
+            // FIX PRINT CENTER
+            const sTitle = `font-size:${titleSize}pt; font-weight:600; text-transform:capitalize; margin-top:2px; margin-left:auto; margin-right:auto; line-height:1.1; color:#000000; text-align:center; width:100%; max-width:95%;`;
             
             const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:lowercase; letter-spacing:1px; margin-top:10px; margin-bottom:5px; line-height:1; color:#000000;`;
             
@@ -573,7 +572,6 @@
             const gapX = mmToTwip(0); 
             
             const baseSize = styleConfig.fontSize * 2; 
-            // UPDATE DOCX: Gunakan titleSize dari config
             const titleSize = styleConfig.titleSize * 2; 
             const diSize = Math.max(12, baseSize - 6);
 
@@ -654,7 +652,7 @@
             });
 
             const blob = await Packer.toBlob(doc);
-            saveAs(blob, "Label_Export_v3_5.docx");
+            saveAs(blob, "Label_Export_v3_6.docx");
         }
 
         // --- UTILS ---
@@ -662,13 +660,12 @@
             const saved = localStorage.getItem('label121_style');
             if(saved) styleConfig = { ...styleConfig, ...JSON.parse(saved) };
             
-            // Fallback jika user lama tidak punya settingan titleSize
+            // Fallback default
             if(!styleConfig.titleSize) styleConfig.titleSize = 10;
             
-            // Set slider value saat load
             document.getElementById('cfgFont').value = styleConfig.font;
             document.getElementById('cfgFontSize').value = styleConfig.fontSize;
-            document.getElementById('cfgTitleSize').value = styleConfig.titleSize; // Set slider title
+            document.getElementById('cfgTitleSize').value = styleConfig.titleSize; 
             document.getElementById('cfgTransform').value = styleConfig.transform;
             document.getElementById('cfgWeight').value = styleConfig.weight;
 
@@ -678,20 +675,16 @@
         function updateStyles() {
             styleConfig.font = document.getElementById('cfgFont').value;
             styleConfig.fontSize = parseInt(document.getElementById('cfgFontSize').value);
-            // UPDATE: Ambil value dari slider title
             styleConfig.titleSize = parseInt(document.getElementById('cfgTitleSize').value);
-            
             styleConfig.transform = document.getElementById('cfgTransform').value;
             styleConfig.weight = document.getElementById('cfgWeight').value;
             
             document.getElementById('dispSize').innerText = styleConfig.fontSize;
-            // UPDATE: Update text display title
             document.getElementById('dispTitleSize').innerText = styleConfig.titleSize;
 
             const r = document.querySelector(':root');
             r.style.setProperty('--lbl-font', styleConfig.font);
             r.style.setProperty('--lbl-base-size', styleConfig.fontSize + 'pt'); 
-            // UPDATE: Set variable CSS title
             r.style.setProperty('--lbl-title-size', styleConfig.titleSize + 'pt');
             r.style.setProperty('--lbl-di-size', Math.max(6, styleConfig.fontSize - 3) + 'pt');     
             r.style.setProperty('--lbl-transform', styleConfig.transform);
