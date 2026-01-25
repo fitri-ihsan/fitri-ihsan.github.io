@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabelPro v3.1 (Spasi DI)</title>
+    <title>LabelPro v3.6 (Fixed Center)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
@@ -30,28 +30,27 @@
 
     <style>
         :root {
-            /* Settings Default */
+            /* Font Settings */
             --lbl-font: 'Plus Jakarta Sans', sans-serif;
             
-            /* Variabel CSS */
+            /* Font Sizes */
             --lbl-base-size: 12pt; 
+            --lbl-title-size: 10pt; /* Ukuran Jabatan */
             --lbl-di-size: 10pt;    
             
+            /* Styles */
             --lbl-transform: capitalize;
             --lbl-weight: 800;
 
-            /* --- UKURAN KERTAS 162mm x 205mm --- */
-            --sheet-width: 162mm;  
-            --sheet-height: 205mm; 
-            
-            --label-width: 76mm; 
-            --label-height: 38mm;
-            
-            --margin-top: 2mm; 
-            --margin-left: 2mm;
-            
-            --gap-x: 2mm; 
-            --gap-y: 2mm;
+            /* Paper & Label Specs (121) */
+            --sheet-width: 154mm;  
+            --sheet-height: 200mm; 
+            --label-width: 77mm; 
+            --label-height: 39.5mm;
+            --margin-top: 1mm; 
+            --margin-left: 1mm;
+            --gap-x: 0mm; 
+            --gap-y: 0mm;
         }
 
         /* --- PREVIEW AREA --- */
@@ -105,8 +104,8 @@
 
         .label-item {
             position: relative; 
-            border: 1px dashed #cbd5e1; 
-            border-radius: 6px;
+            border: 1px dashed #e2e8f0;
+            border-radius: 4px;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -120,8 +119,8 @@
             user-select: none; 
         }
         
-        .label-item:hover { border-color: #6366f1; background-color: #f5f7ff; }
-        .label-item.selected { background-color: #eef2ff; border: 2px solid #6366f1; box-shadow: inset 0 0 0 1px #6366f1; }
+        .label-item:hover { border-color: #6366f1; background-color: #f5f7ff; z-index: 10; }
+        .label-item.selected { background-color: #eef2ff; border: 2px solid #6366f1; box-shadow: inset 0 0 0 1px #6366f1; z-index: 10; }
 
         /* --- TYPOGRAPHY STYLES --- */
         .dyn-name {
@@ -138,34 +137,40 @@
             white-space: normal;
             word-break: break-word;
             margin-bottom: 0px; 
+            width: 100%;
         }
 
         .dyn-title {
             font-family: var(--lbl-font);
-            font-size: calc(var(--lbl-base-size) * 0.85);
+            font-size: var(--lbl-title-size);
             font-weight: 600;
             color: #334155;
             text-transform: capitalize;
             line-height: 1.1;
+            
+            /* --- FIXED: CENTER ALIGNMENT --- */
             margin-top: 2px;
+            margin-left: auto;  /* FIX */
+            margin-right: auto; /* FIX */
+            
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 95%;
+            text-align: center; 
+            width: 100%;
         }
         
-        /* UPDATE: SPASI DI ATAS & BAWAH DI */
         .dyn-di {
             font-family: var(--lbl-font); 
             font-size: var(--lbl-di-size);
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: lowercase; 
             letter-spacing: 1px;
             color: #000000; 
             line-height: 1;
-            
-            margin-top: 6px;    /* Jarak Atas */
-            margin-bottom: 6px; /* Jarak Bawah */
+            margin-top: 10px;    
+            margin-bottom: 5px; 
         }
         
         .dyn-addr {
@@ -202,8 +207,8 @@
                 justify-content: center; 
                 align-items: center; 
                 text-align: center; 
-                height: 38mm; 
-                padding: 2mm;
+                height: var(--label-height);
+                padding: 1.5mm;
                 overflow: hidden; 
             }
         }
@@ -218,8 +223,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 </div>
                 <div class="flex flex-col md:block text-center md:text-left">
-                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">i.s. MTW Pro <span class="text-xs text-indigo-500 font-normal">v3.1</span></h1>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Support Jabatan + Spacing</div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-none tracking-tight">LabelPro <span class="text-xs text-indigo-500 font-normal">v3.6</span></h1>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Fixed Center Alignment</div>
                 </div>
             </div>
 
@@ -269,9 +274,8 @@
                 </div>
                 <div class="p-6 overflow-y-auto">
                     <div class="bg-indigo-50 text-indigo-800 p-3 rounded-xl mb-4 text-xs font-medium border border-indigo-100">
-                        <b>Format 1 (Standar):</b> Nama - Alamat<br>
-                        <b>Format 2 (Jabatan):</b> Nama - Jabatan - Alamat<br>
-                        <span class="opacity-70">Gunakan tanda strip (-) sebagai pemisah.</span>
+                        <b>Format:</b> Nama - Jabatan(opsional) - Alamat<br>
+                        <span class="opacity-70">Contoh: Dr. Budi - Dokter - Surabaya</span>
                     </div>
                     <textarea id="guestInput" rows="6" class="w-full p-4 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none" placeholder="Budi - Jakarta&#10;Dr. Ani - Dokter - Surabaya"></textarea>
                 </div>
@@ -312,7 +316,65 @@
 
     <div id="printModal" class="fixed inset-0 z-50 hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('printModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-xl w-full sm:max-w-sm p-6"><h3 class="font-bold text-center mb-4">Cetak</h3><div class="space-y-3"><button onclick="printLabels('all')" class="w-full p-3 bg-indigo-50 text-indigo-700 font-bold rounded-xl border border-indigo-200">Cetak Semua</button><button onclick="printLabels('selected')" class="w-full p-3 bg-emerald-50 text-emerald-700 font-bold rounded-xl border border-emerald-200">Cetak Terpilih</button><div class="pt-2"><input id="pageRangeMobile" class="border rounded-lg px-3 py-2 w-full text-center mb-2" placeholder="Hal: 1, 3-5"><button onclick="printLabels('range')" class="w-full bg-slate-800 text-white py-2 rounded-lg font-bold">Print Halaman</button></div></div></div></div></div>
     
-    <div id="styleModal" class="fixed inset-0 z-[70] hidden"><div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('styleModal')"></div><div class="fixed inset-0 flex items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in"><div class="px-5 py-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h3 class="font-bold text-slate-800">Atur Tampilan</h3><button onclick="closeModal('styleModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button></div><div class="p-6 space-y-4"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Jenis Font</label><select id="cfgFont" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white outline-none"><option value="'Plus Jakarta Sans', sans-serif">Standar (Sans Serif)</option><option value="'Playfair Display', serif">Klasik (Serif)</option><option value="'Courier New', monospace">Mesin Ketik</option><option value="'Dancing Script', cursive">Tulisan Tangan</option></select></div><div><div class="flex justify-between mb-1"><label class="text-xs font-bold text-slate-500 uppercase">Ukuran Font</label><span class="text-xs font-bold text-indigo-600" id="dispSize">12</span></div><input type="range" id="cfgFontSize" min="8" max="24" step="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateStyles()"></div><div class="grid grid-cols-2 gap-4 pt-2"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Huruf (Casing)</label><select id="cfgTransform" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white"><option value="capitalize">Huruf Depan</option><option value="uppercase">HURUF BESAR</option><option value="lowercase">huruf kecil</option></select></div><div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Tebal Nama</label><select id="cfgWeight" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white"><option value="800">Bold (Tebal)</option><option value="600">Semi Bold</option><option value="400">Normal</option></select></div></div></div><div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end"><button onclick="saveStyleConfig()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-indigo-700 transition">Simpan</button></div></div></div></div>
+    <div id="styleModal" class="fixed inset-0 z-[70] hidden">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('styleModal')"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-scale-in">
+                <div class="px-5 py-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800">Atur Tampilan</h3>
+                    <button onclick="closeModal('styleModal')" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Jenis Font</label>
+                        <select id="cfgFont" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white outline-none">
+                            <option value="'Plus Jakarta Sans', sans-serif">Standar (Sans Serif)</option>
+                            <option value="'Playfair Display', serif">Klasik (Serif)</option>
+                            <option value="'Courier New', monospace">Mesin Ketik</option>
+                            <option value="'Dancing Script', cursive">Tulisan Tangan</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-xs font-bold text-slate-500 uppercase">Ukuran Nama & Alamat</label>
+                            <span class="text-xs font-bold text-indigo-600" id="dispSize">12</span>
+                        </div>
+                        <input type="range" id="cfgFontSize" min="8" max="24" step="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateStyles()">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-xs font-bold text-slate-500 uppercase">Ukuran Jabatan</label>
+                            <span class="text-xs font-bold text-indigo-600" id="dispTitleSize">10</span>
+                        </div>
+                        <input type="range" id="cfgTitleSize" min="6" max="20" step="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600" oninput="updateStyles()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Huruf (Casing)</label>
+                            <select id="cfgTransform" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="capitalize">Huruf Depan</option>
+                                <option value="uppercase">HURUF BESAR</option>
+                                <option value="lowercase">huruf kecil</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Tebal Nama</label>
+                            <select id="cfgWeight" onchange="updateStyles()" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-white">
+                                <option value="800">Bold (Tebal)</option>
+                                <option value="600">Semi Bold</option><option value="400">Normal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+                    <button onclick="saveStyleConfig()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-indigo-700 transition">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="print-output" class="hidden"></div>
 
@@ -320,7 +382,7 @@
         // --- DATA & CONFIG ---
         let guests = [];
         const ITEMS_PER_SHEET = 10;
-        let styleConfig = { font: "'Plus Jakarta Sans', sans-serif", fontSize: 12, transform: "capitalize", weight: "800" };
+        let styleConfig = { font: "'Plus Jakarta Sans', sans-serif", fontSize: 12, titleSize: 10, transform: "capitalize", weight: "800" };
 
         window.onload = function() {
             loadStyleConfig();
@@ -363,7 +425,7 @@
                             <div class="w-full pointer-events-none px-2">
                                 <div class="dyn-name">${guest.name}</div>
                                 ${titleHtml}
-                                <div class="dyn-di">DI</div>
+                                <div class="dyn-di">di</div>
                                 <div class="dyn-addr truncate">${guest.address}</div>
                             </div>`;
                     } else { 
@@ -443,7 +505,7 @@
             saveAs(blob, "Data_Label_Undangan_v3.xlsx");
         }
 
-        // --- PRINT FUNCTION (UPDATE SPASI DI) ---
+        // --- PRINT FUNCTION ---
         function printLabels(m){
             closeModal('printModal'); 
             const o = document.getElementById('print-output'); 
@@ -461,14 +523,16 @@
             if(!d.length) return Swal.fire('Info','Data kosong','info');
             
             const baseSize = styleConfig.fontSize;
+            const titleSize = styleConfig.titleSize; 
             const diSize = Math.max(6, baseSize - 3);
 
             const sFont = `font-family:${styleConfig.font};`;
             const sName = `font-size:${baseSize}pt; font-weight:${styleConfig.weight}; text-transform:${styleConfig.transform}; margin-bottom:0px; line-height:1.1; color:#000000; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;`;
-            const sTitle = `font-size:${baseSize * 0.85}pt; font-weight:600; text-transform:capitalize; margin-top:2px; line-height:1.1; color:#000000;`;
             
-            // UPDATE: SPASI DI ATAS & BAWAH 'DI' UTK PRINT
-            const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-top:6px; margin-bottom:6px; line-height:1; color:#000000;`;
+            // FIX PRINT CENTER
+            const sTitle = `font-size:${titleSize}pt; font-weight:600; text-transform:capitalize; margin-top:2px; margin-left:auto; margin-right:auto; line-height:1.1; color:#000000; text-align:center; width:100%; max-width:95%;`;
+            
+            const sDi = `font-size:${diSize}pt; font-weight:700; text-transform:lowercase; letter-spacing:1px; margin-top:10px; margin-bottom:5px; line-height:1; color:#000000;`;
             
             const sAddr = `font-size:${baseSize}pt; font-weight:500; text-transform:none; line-height:1.2; color:#000000;`;
 
@@ -479,7 +543,7 @@
                     h+=`<div class="label-item-print" style="${sFont}">
                         <div style="${sName}">${g.name}</div>
                         ${htmlTitle}
-                        <div style="${sDi}">DI</div>
+                        <div style="${sDi}">di</div>
                         <div style="${sAddr}">${g.address}</div>
                     </div>`; 
                 });
@@ -488,7 +552,7 @@
             window.print();
         }
 
-        // --- WORD EXPORT (UPDATE SPASI DI) ---
+        // --- WORD EXPORT ---
         async function downloadDocx() {
             if (typeof docx === 'undefined') return Swal.fire('Error', 'Library Word belum siap.', 'error');
             const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, HeightRule, TextRun, AlignmentType } = docx;
@@ -502,12 +566,13 @@
             else if (styleConfig.font.includes("Dancing")) wordFont = "Monotype Corsiva";
 
             const mmToTwip = (mm) => Math.round(mm * 56.7);
+            
             const labelW = mmToTwip(77);
-            const labelH = mmToTwip(38);
-            const gapX = mmToTwip(2);
+            const labelH = mmToTwip(39.5);
+            const gapX = mmToTwip(0); 
             
             const baseSize = styleConfig.fontSize * 2; 
-            const titleSize = baseSize * 0.85; 
+            const titleSize = styleConfig.titleSize * 2; 
             const diSize = Math.max(12, baseSize - 6);
 
             const rows = [];
@@ -541,11 +606,18 @@
                         }));
                     }
 
-                    // 3. DI (UPDATE: Added Spacing Before & After)
+                    // 3. DI
                     paragraphs.push(new Paragraph({
                         alignment: AlignmentType.CENTER,
-                        spacing: { before: 100, after: 100 }, // ~5pt spacing
-                        children: [new TextRun({ text: "DI", font: wordFont, size: diSize, bold: true, allCaps: true, color: "000000" })]
+                        spacing: { before: 240, after: 100 }, 
+                        children: [new TextRun({ 
+                            text: "di", 
+                            font: wordFont, 
+                            size: diSize, 
+                            bold: true, 
+                            allCaps: false, 
+                            color: "000000" 
+                        })]
                     }));
 
                     // 4. Alamat
@@ -568,36 +640,52 @@
                 }));
 
                 if ((i/2 + 1) % 5 !== 0) {
-                     rows.push(new TableRow({ height: { value: mmToTwip(2), rule: HeightRule.EXACT }, children: [new TableCell({children:[]}), new TableCell({children:[]}), new TableCell({children:[]})] }));
+                     rows.push(new TableRow({ height: { value: mmToTwip(0), rule: HeightRule.EXACT }, children: [new TableCell({children:[]}), new TableCell({children:[]}), new TableCell({children:[]})] }));
                 }
             }
 
             const doc = new Document({
                 sections: [{
-                    properties: { page: { size: { width: mmToTwip(162), height: mmToTwip(205) }, margin: { top: mmToTwip(2), left: mmToTwip(2), right: mmToTwip(2), bottom: mmToTwip(2) } } },
+                    properties: { page: { size: { width: mmToTwip(154), height: mmToTwip(200) }, margin: { top: mmToTwip(1.3), left: mmToTwip(1.3), right: mmToTwip(1.3), bottom: mmToTwip(1.3) } } },
                     children: [new Table({ rows: rows, width: { size: 100, type: WidthType.PERCENTAGE }, borders: docx.TableBorders.NONE })]
                 }]
             });
 
             const blob = await Packer.toBlob(doc);
-            saveAs(blob, "Label_Export_v3_1.docx");
+            saveAs(blob, "Label_Export_v3_6.docx");
         }
 
         // --- UTILS ---
         function loadStyleConfig() {
             const saved = localStorage.getItem('label121_style');
             if(saved) styleConfig = { ...styleConfig, ...JSON.parse(saved) };
+            
+            // Fallback default
+            if(!styleConfig.titleSize) styleConfig.titleSize = 10;
+            
+            document.getElementById('cfgFont').value = styleConfig.font;
+            document.getElementById('cfgFontSize').value = styleConfig.fontSize;
+            document.getElementById('cfgTitleSize').value = styleConfig.titleSize; 
+            document.getElementById('cfgTransform').value = styleConfig.transform;
+            document.getElementById('cfgWeight').value = styleConfig.weight;
+
             updateStyles();
         }
+
         function updateStyles() {
             styleConfig.font = document.getElementById('cfgFont').value;
             styleConfig.fontSize = parseInt(document.getElementById('cfgFontSize').value);
+            styleConfig.titleSize = parseInt(document.getElementById('cfgTitleSize').value);
             styleConfig.transform = document.getElementById('cfgTransform').value;
             styleConfig.weight = document.getElementById('cfgWeight').value;
+            
             document.getElementById('dispSize').innerText = styleConfig.fontSize;
+            document.getElementById('dispTitleSize').innerText = styleConfig.titleSize;
+
             const r = document.querySelector(':root');
             r.style.setProperty('--lbl-font', styleConfig.font);
             r.style.setProperty('--lbl-base-size', styleConfig.fontSize + 'pt'); 
+            r.style.setProperty('--lbl-title-size', styleConfig.titleSize + 'pt');
             r.style.setProperty('--lbl-di-size', Math.max(6, styleConfig.fontSize - 3) + 'pt');     
             r.style.setProperty('--lbl-transform', styleConfig.transform);
             r.style.setProperty('--lbl-weight', styleConfig.weight);
